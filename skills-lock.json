@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "sap-fiori-guidelines": {
+      "source": "SAP/ai-skills-library",
+      "sourceType": "github",
+      "skillPath": "skills/sap-fiori-guidelines/SKILL.md",
+      "computedHash": "9b9df87bb0bf1f86e115fd671ba44afd16ed7754c27bc4e36fddcd651c755fb4"
+    }
+  }
+}
