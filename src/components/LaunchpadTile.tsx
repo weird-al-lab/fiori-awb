@@ -1,5 +1,3 @@
-import { Card } from '@ui5/webcomponents-react/Card'
-import { CardHeader } from '@ui5/webcomponents-react/CardHeader'
 import { Icon } from '@ui5/webcomponents-react/Icon'
 import type { CSSProperties } from 'react'
 import './LaunchpadTile.css'
@@ -33,23 +31,20 @@ export function LaunchpadTile({
   onClick,
 }: LaunchpadTileProps) {
   const isNumeric = value !== undefined
-  const accessibleName = [title, tcode].filter(Boolean).join(' ')
+  const accessibleName = [title, subtitle, tcode].filter(Boolean).join(' ')
 
   return (
     <button type="button" className="launchpad-tile" onClick={onClick} aria-label={accessibleName}>
-      <Card
-        className="launchpad-tile__card"
-        accessibleName={accessibleName}
-        header={
-          <CardHeader
-            titleText={title}
-            subtitleText={subtitle}
-            interactive={false}
-          />
-        }
-      >
-        <div className="launchpad-tile__body">
-          <div className="launchpad-tile__main">
+      <div className="launchpad-tile__surface">
+        <div
+          className={`launchpad-tile__body${tcode ? ' launchpad-tile__body--with-tcode' : ' launchpad-tile__body--full'}`}
+        >
+          <div className="launchpad-tile__header">
+            <span className="launchpad-tile__title">{title}</span>
+            {subtitle ? <span className="launchpad-tile__subtitle">{subtitle}</span> : null}
+          </div>
+
+          <div className="launchpad-tile__content">
             {isNumeric ? (
               <div className="launchpad-tile__numeric">
                 {icon ? <Icon name={icon} className="launchpad-tile__numeric-icon" /> : null}
@@ -58,14 +53,26 @@ export function LaunchpadTile({
                 </span>
               </div>
             ) : icon ? (
-              <Icon name={icon} className="launchpad-tile__icon" />
+              <Icon
+                name={icon}
+                className={
+                  icon === 'pdf-attachment'
+                    ? 'launchpad-tile__icon launchpad-tile__icon--small'
+                    : 'launchpad-tile__icon'
+                }
+              />
             ) : null}
           </div>
 
           {footer ? <div className="launchpad-tile__footer">{footer}</div> : null}
-          {tcode ? <div className="launchpad-tile__tcode">{tcode}</div> : null}
         </div>
-      </Card>
+
+        {tcode ? (
+          <div className="launchpad-tile__tcode-wrap">
+            <span className="launchpad-tile__tcode">{tcode}</span>
+          </div>
+        ) : null}
+      </div>
     </button>
   )
 }

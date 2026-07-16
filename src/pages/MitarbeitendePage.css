@@ -5,15 +5,21 @@
   background: var(--sapBackgroundColor);
 }
 
-.mitarbeitende-page > ui5-shellbar {
+.mitarbeitende-page__page-shell {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
   width: 100%;
-  --_ui5_shellbar_search_field_width: 25rem;
+  padding-inline: 5rem;
 }
 
-@media (min-width: 1024px) {
-  .mitarbeitende-page > ui5-shellbar {
-    padding-inline: 0.875rem 1rem;
-  }
+.mitarbeitende-page__page-shell--content {
+  padding-block: 1rem 5rem;
+}
+
+.mitarbeitende-page__page-column {
+  width: 100%;
+  max-width: 80rem;
 }
 
 .mitarbeitende-page__nav {
@@ -21,14 +27,25 @@
   box-shadow: var(--sapContent_HeaderShadow);
 }
 
-.mitarbeitende-page__nav-inner {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0 5rem;
+.mitarbeitende-page__nav-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+}
+
+.mitarbeitende-page__edit-tab-btn {
+  flex-shrink: 0;
 }
 
 .mitarbeitende-page__tabs {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  --sapContent_Space_Medium: 2rem;
+}
+
+.mitarbeitende-page__tabs::part(tabstrip) {
+  gap: 2rem;
 }
 
 .mitarbeitende-page__home-tab {
@@ -37,12 +54,11 @@
 
 .mitarbeitende-page__content {
   flex: 1;
-  padding: 1rem 5rem 5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .mitarbeitende-page__content-inner {
-  max-width: 80rem;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -59,7 +75,7 @@
 .tile-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  width: 100%;
 }
 
 .tile-section__title {
@@ -72,8 +88,7 @@
 }
 
 @media (max-width: 1024px) {
-  .mitarbeitende-page__nav-inner,
-  .mitarbeitende-page__content {
+  .mitarbeitende-page__page-shell {
     padding-inline: 1.5rem;
   }
 }
