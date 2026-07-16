@@ -1,0 +1,79 @@
+.mitarbeitende-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--sapBackgroundColor);
+}
+
+.mitarbeitende-page > ui5-shellbar {
+  width: 100%;
+  --_ui5_shellbar_search_field_width: 25rem;
+}
+
+@media (min-width: 1024px) {
+  .mitarbeitende-page > ui5-shellbar {
+    padding-inline: 0.875rem 1rem;
+  }
+}
+
+.mitarbeitende-page__nav {
+  background: var(--sapPageHeader_Background);
+  box-shadow: var(--sapContent_HeaderShadow);
+}
+
+.mitarbeitende-page__nav-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 5rem;
+}
+
+.mitarbeitende-page__tabs {
+  width: 100%;
+}
+
+.mitarbeitende-page__home-tab {
+  color: var(--sapTab_Selected_TextColor);
+}
+
+.mitarbeitende-page__content {
+  flex: 1;
+  padding: 1rem 5rem 5rem;
+}
+
+.mitarbeitende-page__content-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.mitarbeitende-page__page-title {
+  color: var(--sapGroup_TitleTextColor);
+}
+
+.mitarbeitende-page__sections {
+  gap: 2rem;
+}
+
+.tile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tile-section__title {
+  padding: 0.5rem 0 1rem;
+  color: var(--sapShell_GroupTitleTextColor);
+}
+
+.tile-section__grid {
+  gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .mitarbeitende-page__nav-inner,
+  .mitarbeitende-page__content {
+    padding-inline: 1.5rem;
+  }
+}

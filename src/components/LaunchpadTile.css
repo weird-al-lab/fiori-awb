@@ -1,0 +1,94 @@
+.launchpad-tile {
+  position: relative;
+  width: 11rem;
+  height: 11rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+  font-family: var(--sapFontFamily);
+}
+
+.launchpad-tile:focus-visible {
+  outline: var(--sapContent_FocusWidth, 0.125rem) var(--sapContent_FocusStyle, solid)
+    var(--sapContent_FocusColor);
+  outline-offset: -0.125rem;
+}
+
+.launchpad-tile__card {
+  width: 100%;
+  height: 100%;
+}
+
+.launchpad-tile__card::part(root) {
+  background: var(--sapTile_Background);
+  border-radius: var(--sapTile_BorderCornerRadius, 16px);
+  box-shadow: var(--sapContent_Shadow0);
+  overflow: hidden;
+}
+
+.launchpad-tile:hover .launchpad-tile__card::part(root) {
+  background: var(--sapTile_Hover_Background, var(--sapTile_Background));
+}
+
+.launchpad-tile__card::part(content) {
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.launchpad-tile__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.launchpad-tile__main {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+}
+
+.launchpad-tile__icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--sapContent_IconColor);
+}
+
+.launchpad-tile__numeric {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.launchpad-tile__numeric-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--sapContent_IconColor);
+}
+
+.launchpad-tile__value {
+  font-size: 2.25rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.launchpad-tile__footer {
+  font-size: var(--sapFontSize);
+  color: var(--sapTile_TextColor);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.launchpad-tile__tcode {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  padding: 2px 8px 2px 4px;
+  font-size: var(--sapFontSmallSize);
+  color: var(--sapTile_TextColor);
+  background: var(--sapInfobar_NonInteractive_Background);
+  border-radius: 2px 0 0 2px;
+}
