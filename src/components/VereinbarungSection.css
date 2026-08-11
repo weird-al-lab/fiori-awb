@@ -1,0 +1,289 @@
+.awb-vereinbarung {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.awb-vereinbarung__banner {
+  width: 100%;
+}
+
+.awb-vereinbarung__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--sapGroup_ContentBackground);
+  border: 1px solid var(--sapGroup_ContentBorderColor);
+  border-radius: var(--sapElement_BorderCornerRadius, 0.5rem);
+}
+
+.awb-vereinbarung__summary-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.awb-vereinbarung__summary-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.awb-vereinbarung__summary-row > span {
+  flex-shrink: 0;
+  width: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.awb-vereinbarung__summary-row--ok > span {
+  color: var(--sapPositiveColor, #1c964a);
+}
+
+.awb-vereinbarung__summary-row--info > span {
+  color: var(--sapInformativeColor, #0070f2);
+}
+
+.awb-vereinbarung__summary-row--muted > span {
+  color: var(--sapContent_LabelColor, #999);
+}
+
+.awb-vereinbarung__summary-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.awb-vereinbarung__summary-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.awb-vereinbarung__summary-checks ui5-checkbox {
+  margin: 0;
+}
+
+.awb-vereinbarung__summary-zustimmung {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.awb-vereinbarung__beteiligung-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+}
+
+.awb-vereinbarung__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.awb-vereinbarung__group-title {
+  font-weight: bold;
+  color: var(--sapShell_GroupTitleTextColor);
+}
+.awb-vereinbarung__field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.awb-vereinbarung__radios {
+  gap: 0.75rem;
+}
+
+.awb-vereinbarung__input-with-unit {
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.awb-vereinbarung__input-narrow {
+  max-width: 6rem;
+}
+
+.awb-vereinbarung__month-picker {
+  width: 100%;
+}
+
+.awb-vereinbarung__kosten-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--sapGroup_ContentBackground);
+  border: 1px solid var(--sapGroup_ContentBorderColor);
+  border-radius: var(--sapElement_BorderCornerRadius, 0.5rem);
+  min-width: 0;
+}
+
+.awb-vereinbarung__kosten-label {
+  color: var(--sapContent_LabelColor);
+  font-size: var(--sapFontSmallSize);
+}
+
+.awb-vereinbarung__kosten-total {
+  color: var(--sapTextColor);
+  font-size: var(--sapFontHeader2Size, 1.5rem);
+  font-family: var(--sapFontHeaderFamily, var(--sapFontFamily));
+  font-weight: bold;
+  line-height: var(--sapContent_LineHeight);
+}
+
+.awb-vereinbarung__bar {
+  display: flex;
+  width: 100%;
+  height: 0.875rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  background: var(--sapNeutralBackground);
+}
+
+.awb-vereinbarung__bar-post {
+  background: var(--sapChart_OrderedColor_1, #5899da);
+  min-width: 0;
+}
+
+.awb-vereinbarung__bar-ma {
+  background: var(--sapChart_OrderedColor_2, #bfd1e0);
+  min-width: 0;
+}
+
+.awb-vereinbarung__legend {
+  gap: 1.5rem;
+}
+
+.awb-vereinbarung__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--sapFontSmallSize);
+  color: var(--sapContent_LabelColor);
+}
+
+.awb-vereinbarung__legend-swatch {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.awb-vereinbarung__legend-swatch--post {
+  background: var(--sapChart_OrderedColor_1, #5899da);
+}
+
+.awb-vereinbarung__legend-swatch--ma {
+  background: var(--sapChart_OrderedColor_2, #bfd1e0);
+}
+
+.awb-vereinbarung__toggle-link {
+  align-self: flex-start;
+}
+
+.awb-vereinbarung__breakdown {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.awb-vereinbarung__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--sapFontSmallSize);
+}
+
+.awb-vereinbarung__table thead tr {
+  background: var(--sapList_TableGroupHeaderBackground, #475261);
+  color: var(--sapList_TableGroupHeaderTextColor, #fff);
+}
+
+.awb-vereinbarung__table th,
+.awb-vereinbarung__table td {
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+.awb-vereinbarung__table th:not(:first-child),
+.awb-vereinbarung__table-num {
+  text-align: right;
+}
+
+.awb-vereinbarung__table-group {
+  background: var(--sapList_AlternatingBackground, #f2f5fa);
+  font-weight: bold;
+}
+
+.awb-vereinbarung__table-row {
+  color: var(--sapContent_LabelColor);
+}
+
+.awb-vereinbarung__table-indent {
+  padding-left: 2rem;
+}
+
+.awb-vereinbarung__auszahlung-grid,
+.awb-vereinbarung__rueckzahlung-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+.awb-vereinbarung__auszahlung-col,
+.awb-vereinbarung__rueckzahlung-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.awb-vereinbarung__switch-row {
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.awb-vereinbarung__auszahlung-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.awb-vereinbarung__rueckzahlung-grid--single {
+  grid-template-columns: 1fr;
+}
+
+.awb-vereinbarung__zwingende-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.awb-vereinbarung__radios--inline {
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.awb-vereinbarung__vertrag-input {
+  width: 100%;
+}
+
+.awb-vereinbarung__preview-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .awb-vereinbarung__beteiligung-grid,
+  .awb-vereinbarung__auszahlung-grid,
+  .awb-vereinbarung__rueckzahlung-grid,
+  .awb-vereinbarung__auszahlung-fields {
+    grid-template-columns: 1fr;
+  }
+}

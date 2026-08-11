@@ -1,0 +1,198 @@
+.awb-review__object {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 5rem;
+}
+
+/* UI5 section shell is full-width; letterboxing lives in .awb-review__main (like wizard main). */
+.awb-review__object [data-component-name='ObjectPageSection'] {
+  padding-inline: 0;
+}
+
+.awb-review__object [data-component-name='ObjectPageSectionContent'],
+.awb-review__object [data-component-name='ObjectPageSectionContentInner'] {
+  padding: 0;
+}
+
+.awb-review__main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  padding-block: 1rem 1.25rem;
+  box-sizing: border-box;
+}
+
+.awb-review__title-row {
+  gap: 0.75rem;
+}
+
+.awb-review__header-actions {
+  gap: 0.5rem;
+}
+
+/* ObjectPageTitle keeps title + actions in one row by default; stack on narrow screens (Fiori mobile). */
+@media (max-width: 600px) {
+  .awb-review__object [data-component-name='ObjectPageTitleMiddleSection'] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .awb-review__object
+    [data-component-name='ObjectPageTitleMiddleSection']
+    > [class*='toolbar'] {
+    align-self: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    padding-top: 0.5rem;
+  }
+
+  .awb-review__header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.awb-review__facets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1rem 2rem;
+  width: 100%;
+}
+
+.awb-review__header-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  padding-block: 0.25rem 0.5rem;
+}
+
+.awb-review__header-banner {
+  width: 100%;
+}
+
+.awb-review__content-banner {
+  width: 100%;
+}
+
+.awb-review__process-band {
+  width: 100%;
+  box-sizing: border-box;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--sapGroup_TitleBorderColor);
+}
+
+.awb-review__panel {
+  width: 100%;
+}
+
+.awb-review__panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.awb-review__panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.awb-review__comment-input {
+  width: 100%;
+}
+
+.awb-review__two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
+}
+
+.awb-review__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.awb-review__group-title {
+  font-weight: bold;
+  color: var(--sapGroup_TitleTextColor);
+}
+
+.awb-review__info {
+  width: 100%;
+}
+
+.awb-review__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.awb-review__field-header {
+  gap: 0.375rem;
+}
+
+.awb-review__field-changed-hint {
+  font-size: var(--sapFontSmallSize, 0.75rem);
+  color: var(--sapContent_LabelColor);
+  font-style: italic;
+}
+
+.awb-review__field--changed {
+  box-sizing: border-box;
+  padding: 0.25rem 0.5rem 0.25rem 0.625rem;
+  margin-inline-start: -0.125rem;
+  border-radius: var(--sapElement_BorderCornerRadius, 0.25rem);
+  border-inline-start: 0.125rem solid
+    color-mix(in srgb, var(--sapInformationColor, #0070f2) 55%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--sapInformationColor, #0070f2) 6%,
+    transparent
+  );
+}
+
+.awb-review__dokumente--changed {
+  box-sizing: border-box;
+  padding: 0.375rem 0.5rem 0.375rem 0.625rem;
+  border-radius: var(--sapElement_BorderCornerRadius, 0.25rem);
+  border-inline-start: 0.125rem solid
+    color-mix(in srgb, var(--sapInformationColor, #0070f2) 55%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--sapInformationColor, #0070f2) 6%,
+    transparent
+  );
+}
+
+.awb-review__dokumente-busy {
+  display: block;
+  width: 100%;
+}
+
+.awb-review__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+}
+
+.awb-review__footer-actions {
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .awb-review__two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .awb-review__facets {
+    grid-template-columns: 1fr 1fr;
+  }
+}

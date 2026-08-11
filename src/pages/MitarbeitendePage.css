@@ -1,46 +1,26 @@
-.mitarbeitende-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: var(--sapBackgroundColor);
-}
-
-.mitarbeitende-page__page-shell {
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding-inline: 5rem;
-}
-
-.mitarbeitende-page__page-shell--content {
-  padding-block: 1rem 5rem;
-}
-
-.mitarbeitende-page__page-column {
-  width: 100%;
-  max-width: 80rem;
-}
-
-.mitarbeitende-page__nav {
-  background: var(--sapPageHeader_Background);
-  box-shadow: var(--sapContent_HeaderShadow);
+.mitarbeitende-page__sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .mitarbeitende-page__nav-row {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 0.625rem;
   width: 100%;
+  padding-block: 0;
 }
 
 .mitarbeitende-page__edit-tab-btn {
   flex-shrink: 0;
+  align-self: center;
 }
 
 .mitarbeitende-page__tabs {
   flex: 1;
   min-width: 0;
+  align-self: stretch;
   --sapContent_Space_Medium: 2rem;
 }
 
@@ -50,12 +30,6 @@
 
 .mitarbeitende-page__home-tab {
   color: var(--sapTab_Selected_TextColor);
-}
-
-.mitarbeitende-page__content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .mitarbeitende-page__content-inner {
@@ -85,10 +59,4 @@
 
 .tile-section__grid {
   gap: 1rem;
-}
-
-@media (max-width: 1024px) {
-  .mitarbeitende-page__page-shell {
-    padding-inline: 1.5rem;
-  }
 }

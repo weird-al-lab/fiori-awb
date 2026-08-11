@@ -1,0 +1,147 @@
+/* Micro Process Flow — Fiori dependent-steps pattern (compact, connected nodes). */
+
+.micro-process-flow {
+  --mpf-step-width: 4.75rem;
+  --mpf-connector-width: 0.625rem;
+
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.micro-process-flow__track {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+  padding-block: 0.125rem;
+}
+
+.micro-process-flow__step {
+  display: flex;
+  flex: 0 0 var(--mpf-step-width);
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: var(--mpf-step-width);
+  min-width: var(--mpf-step-width);
+  max-width: var(--mpf-step-width);
+}
+
+.micro-process-flow__node {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 0.125rem solid var(--sapContent_NonInteractiveIconColor);
+  background: var(--sapGroup_ContentBackground, var(--sapBackgroundColor));
+}
+
+.micro-process-flow__node--completed {
+  border-color: var(--sapPositiveColor);
+  background: var(--sapPositiveColor);
+  color: var(--sapContent_ContrastTextColor, #fff);
+}
+
+.micro-process-flow__node--inProgress {
+  border-color: var(--sapContent_Selected_ForegroundColor, var(--sapLinkColor));
+  background: var(--sapGroup_ContentBackground, var(--sapBackgroundColor));
+}
+
+.micro-process-flow__node--planned {
+  border-color: var(--sapContent_NonInteractiveIconColor);
+  background: transparent;
+  opacity: 0.85;
+}
+
+.micro-process-flow__node--rejected {
+  border-color: var(--sapNegativeColor);
+  background: var(--sapNegativeColor);
+  color: var(--sapContent_ContrastTextColor, #fff);
+}
+
+.micro-process-flow__node-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: inherit;
+}
+
+.micro-process-flow__node-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--sapContent_Selected_ForegroundColor, var(--sapLinkColor));
+}
+
+.micro-process-flow__connector {
+  flex: 0 0 var(--mpf-connector-width);
+  align-self: flex-start;
+  width: var(--mpf-connector-width);
+  min-width: var(--mpf-connector-width);
+  height: 0;
+  margin-top: 0.6875rem;
+  border-top-width: 0.125rem;
+  border-top-style: solid;
+  border-top-color: var(--sapContent_NonInteractiveIconColor);
+}
+
+.micro-process-flow__connector--solid {
+  border-top-color: var(--sapPositiveColor);
+}
+
+.micro-process-flow__connector--dashed {
+  border-top-style: dashed;
+  border-top-color: var(--sapContent_NonInteractiveIconColor);
+}
+
+.micro-process-flow__connector--rejected {
+  border-top-color: var(--sapNegativeColor);
+}
+
+.micro-process-flow__label {
+  width: 100%;
+  padding-inline: 0;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: var(--sapFontSmallSize);
+  line-height: 1.2;
+  color: var(--sapContent_LabelColor);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.micro-process-flow__label--inProgress {
+  color: var(--sapContent_Selected_ForegroundColor, var(--sapLinkColor));
+  font-weight: 700;
+}
+
+.micro-process-flow__label--planned {
+  opacity: 0.85;
+}
+
+.micro-process-flow__label--rejected {
+  color: var(--sapNegativeColor);
+}
+
+@media (max-width: 23.4375rem) {
+  .micro-process-flow {
+    --mpf-step-width: 4.25rem;
+    --mpf-connector-width: 0.5rem;
+  }
+}
+
+@media (max-width: 35.99rem) {
+  .micro-process-flow__track {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+}

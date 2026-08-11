@@ -1,0 +1,58 @@
+.awb-ausbildung {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.awb-ausbildung__banner {
+  width: 100%;
+}
+
+.awb-ausbildung__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+}
+
+.awb-ausbildung__col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.awb-ausbildung__group-title {
+  font-weight: bold;
+  color: var(--sapShell_GroupTitleTextColor);
+}
+
+.awb-ausbildung__radios {
+  gap: 0.5rem;
+}
+
+.awb-ausbildung__follow-up {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.awb-ausbildung__dates {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.awb-ausbildung__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+@media (max-width: 47.99rem) {
+  .awb-ausbildung__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}

@@ -1,16 +1,13 @@
-import { Avatar } from '@ui5/webcomponents-react/Avatar'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@ui5/webcomponents-react/Button'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
-import { ShellBar } from '@ui5/webcomponents-react/ShellBar'
-import { ShellBarBranding } from '@ui5/webcomponents-react/ShellBarBranding'
-import { ShellBarItem } from '@ui5/webcomponents-react/ShellBarItem'
-import { ShellBarSearch } from '@ui5/webcomponents-react/ShellBarSearch'
 import { Tab } from '@ui5/webcomponents-react/Tab'
 import { TabContainer } from '@ui5/webcomponents-react/TabContainer'
 import { TabSeparator } from '@ui5/webcomponents-react/TabSeparator'
 import { Title } from '@ui5/webcomponents-react/Title'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
 import { FlexBoxWrap } from '@ui5/webcomponents-react/enums/FlexBoxWrap'
+import { AppShellBar } from '../components/AppShellBar'
 import { LaunchpadTile } from '../components/LaunchpadTile'
 import './MitarbeitendePage.css'
 
@@ -34,6 +31,7 @@ type LaunchpadTileData = {
   valueColor?: 'Critical' | 'Neutral'
   footer?: string
   tcode?: string
+  to?: string
 }
 
 type TileSection = {
@@ -100,7 +98,12 @@ const TILE_SECTIONS: TileSection[] = [
       { title: 'Entwicklungsziele', icon: 'pdf-attachment', tcode: 'SFSF' },
       { title: 'Leistungsziele', icon: 'pdf-attachment', tcode: 'SFSF' },
       { title: 'Zwischenzeugnis bestellen', icon: 'pdf-attachment', tcode: 'zeugnis.ch' },
-      { title: 'Weiterbildung beantragen', icon: 'pdf-attachment', tcode: 'ERP35020' },
+      {
+        title: 'Weiterbildung beantragen',
+        icon: 'pdf-attachment',
+        tcode: 'ERP35020',
+        to: '/weiterbildung',
+      },
       {
         title: 'Lernangebote',
         subtitle: 'Intern/Extern',
@@ -111,43 +114,11 @@ const TILE_SECTIONS: TileSection[] = [
   },
 ]
 
-function PageShellBar() {
-  return (
-    <ShellBar
-      showSearchField
-      searchField={<ShellBarSearch placeholder="Search" />}
-      startButton={
-        <Button slot="startButton" icon="nav-back" design="Transparent" accessibleName="Back" />
-      }
-      branding={
-        <ShellBarBranding
-          slot="branding"
-          logo={
-            <img
-              src="https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg"
-              alt="SAP"
-              height={30}
-            />
-          }
-        />
-      }
-      profile={<Avatar slot="profile" initials="JD" />}
-    >
-      <Button slot="content" design="Transparent" endIcon="slim-arrow-down">
-        Home
-      </Button>
-      <ShellBarItem icon="iphone" text="Notifications" />
-      <ShellBarItem icon="sys-help" text="Help" />
-    </ShellBar>
-  )
-}
-
 function RoleTabBar() {
   return (
-    <header className="mitarbeitende-page__nav" aria-label="Rollen und Bereiche">
-      <div className="mitarbeitende-page__page-shell">
-        <div className="mitarbeitende-page__page-column">
-          <div className="mitarbeitende-page__nav-row">
+    <header className="page-header page-header--nav" aria-label="Rollen und Bereiche">
+      <div className="page-content-column">
+        <div className="mitarbeitende-page__nav-row">
             <Button
               design="Default"
               icon="edit"
@@ -167,21 +138,30 @@ function RoleTabBar() {
               ))}
             </TabContainer>
           </div>
-        </div>
       </div>
     </header>
   )
 }
 
-function TileSectionView({ section }: { section: TileSection }) {
+function TileSectionView({
+  section,
+  onNavigate,
+}: {
+  section: TileSection
+  onNavigate: (path: string) => void
+}) {
   return (
     <section className="tile-section" aria-labelledby={`section-${section.title}`}>
       <Title id={`section-${section.title}`} level="H2" size="H4" className="tile-section__title">
         {section.title}
       </Title>
       <FlexBox wrap={FlexBoxWrap.Wrap} className="tile-section__grid">
-        {section.tiles.map((tile) => (
-          <LaunchpadTile key={tile.title} {...tile} />
+        {section.tiles.map(({ to, ...tile }) => (
+          <LaunchpadTile
+            key={tile.title}
+            {...tile}
+            onClick={to ? () => onNavigate(to) : undefined}
+          />
         ))}
       </FlexBox>
     </section>
@@ -189,24 +169,30 @@ function TileSectionView({ section }: { section: TileSection }) {
 }
 
 export function MitarbeitendePage() {
-  return (
-    <div className="mitarbeitende-page">
-      <PageShellBar />
-      <RoleTabBar />
+  const navigate = useNavigate()
 
-      <main className="mitarbeitende-page__content">
-        <div className="mitarbeitende-page__page-shell mitarbeitende-page__page-shell--content">
-          <div className="mitarbeitende-page__page-column mitarbeitende-page__content-inner">
+  return (
+    <div className="mitarbeitende-page app-page">
+      <div className="mitarbeitende-page__sticky-header">
+        <AppShellBar appTitle="Home" />
+        <RoleTabBar />
+      </div>
+
+      <main className="page-content-column page-content-column--main mitarbeitende-page__content">
+        <div className="mitarbeitende-page__content-inner">
             <Title level="H1" size="H3" className="mitarbeitende-page__page-title">
               {ACTIVE_ROLE_TAB}
             </Title>
 
             <FlexBox direction={FlexBoxDirection.Column} className="mitarbeitende-page__sections">
               {TILE_SECTIONS.map((section) => (
-                <TileSectionView key={section.title} section={section} />
+                <TileSectionView
+                  key={section.title}
+                  section={section}
+                  onNavigate={navigate}
+                />
               ))}
             </FlexBox>
-          </div>
         </div>
       </main>
     </div>
