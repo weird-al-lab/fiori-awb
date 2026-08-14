@@ -6,6 +6,8 @@ import {
   AusbildungAntragWizardRedirect,
 } from './pages/AusbildungAntragWizardPage'
 import { MitarbeitendePage } from './pages/MitarbeitendePage'
+import { ThemeLabCategoryPage } from './pages/theme-lab/ThemeLabCategoryPage'
+import { ThemeLabIndexPage } from './pages/theme-lab/ThemeLabIndexPage'
 import { WeiterbildungEmployeeListPage } from './pages/WeiterbildungEmployeeListPage'
 import { WeiterbildungEmployeeObjectPage } from './pages/WeiterbildungEmployeeObjectPage'
 
@@ -40,6 +42,8 @@ function App() {
           path="/weiterbildung/:employeeId/antrag/:antragId"
           element={<AusbildungAntragReviewPage />}
         />
+        <Route path="/theme-lab" element={<ThemeLabIndexPage />} />
+        <Route path="/theme-lab/:category" element={<ThemeLabCategoryPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       </PrototypePersonaProvider>

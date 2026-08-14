@@ -8,10 +8,10 @@ import { ShellBarBranding } from '@ui5/webcomponents-react/ShellBarBranding'
 import { ShellBarItem } from '@ui5/webcomponents-react/ShellBarItem'
 import { ShellBarSearch } from '@ui5/webcomponents-react/ShellBarSearch'
 import { usePrototypePersona } from '../context/PrototypePersonaContext'
+import { usePrototypeTheme } from '../context/PrototypeThemeContext'
 import { PROTOTYPE_PERSONAS, roleLabel } from '../data/personas'
 
-const SAP_LOGO =
-  'https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg'
+const COMPANY_LOGO = '/post_logo.svg'
 
 export type AppShellBarProps = {
   appTitle: string
@@ -26,6 +26,7 @@ export function AppShellBar({
   onPersonaChange,
 }: AppShellBarProps) {
   const { persona, setPersonaId } = usePrototypePersona()
+  const { isCustomTheme, toggleTheme } = usePrototypeTheme()
   const [menuOpen, setMenuOpen] = useState(false)
   const avatarRef = useRef<HTMLElement | null>(null)
 
@@ -47,12 +48,13 @@ export function AppShellBar({
         branding={
           <ShellBarBranding
             slot="branding"
-            logo={<img src={SAP_LOGO} alt="SAP" height={30} />}
+            logo={<img src={COMPANY_LOGO} alt="Die Post" height={32} />}
           />
         }
         profile={
           <Avatar
             slot="profile"
+            colorScheme='Accent10'
             initials={persona.initials}
             ref={(node) => {
               avatarRef.current = node
@@ -71,6 +73,11 @@ export function AppShellBar({
           {appTitle}
         </Button>
         <ShellBarItem icon="iphone" text="Benachrichtigungen" />
+        <ShellBarItem
+          icon={isCustomTheme ? 'palette' : 'color-fill'}
+          text={isCustomTheme ? 'Standard-Theme' : 'Custom-Theme'}
+          onClick={toggleTheme}
+        />
         <ShellBarItem icon="sys-help" text="Hilfe" />
       </ShellBar>
 

@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build:theme": "node src/scripts/build-theme.cjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@sap-theming/theming-base-content": "^11.36.5",
     "@ui5/webcomponents": "^2.24.0",
     "@ui5/webcomponents-fiori": "^2.24.0",
     "@ui5/webcomponents-react": "^2.24.1",
@@ -22,6 +24,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "less": "^4.8.1",
     "oxlint": "^1.71.0",
     "typescript": "~6.0.2",
     "vite": "^8.1.1"

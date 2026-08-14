@@ -41,6 +41,17 @@ type TileSection = {
 
 const TILE_SECTIONS: TileSection[] = [
   {
+    title: 'Prototyp',
+    tiles: [
+      {
+        title: 'Theme Lab',
+        subtitle: 'UI5 theme cascade',
+        icon: 'palette',
+        to: '/theme-lab',
+      },
+    ],
+  },
+  {
     title: 'Allgemein',
     tiles: [
       {

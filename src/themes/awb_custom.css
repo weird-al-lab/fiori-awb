@@ -1,0 +1,2141 @@
+.sapThemeMetaData-Base-baseLib {
+  background-image: url('data:text/plain;utf-8, { "Path": "Base.baseLib.awb_custom.css_variables", "Extends": ["sap_horizon","baseTheme"]}');
+}
+/**
+* Copyright (c) 2012-2025 SAP SE or an SAP affiliate company and Theming Base Content contributors. Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+* Theming Engine 17.0.47
+* data:{"sModified":"2026-07-29T12:42:35Z"}
+*/
+/**
+* Copyright (c) 2012-2025 SAP SE or an SAP affiliate company and Theming Base Content contributors. Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+* Theming Engine 17.0.47
+* data:{"sModified":"2026-07-29T12:42:34Z"}
+*/
+/**
+* Copyright (c) 2012-2025 SAP SE or an SAP affiliate company and Theming Base Content contributors. Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+* Theming Engine 17.0.47
+* data:{"sModified":"2026-07-29T12:42:34Z"}
+*/
+/******************* FILE /Base/baseLib/baseTheme/base.less (Version 11.36.5) *******************/
+/*!SAP_POSTPROCESS_REDUCE_START*/
+@font-face {
+  font-family: 'SAP-icons';
+  src: url(../sap_horizon/fonts/SAP-icons.woff2) format('woff2'), url(../sap_horizon/fonts/SAP-icons.woff) format('woff'), url(../sap_horizon/fonts/SAP-icons.ttf) format('truetype'), local('SAP-icons');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SAP-icons-TNT';
+  src: url(../sap_horizon/fonts/SAP-icons-TNT.woff2) format('woff2'), url(../sap_horizon/fonts/SAP-icons-TNT.woff) format('woff'), url(../sap_horizon/fonts/SAP-icons-TNT.ttf) format('truetype'), local('SAP-icons-TNT');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SAP-icons-Business-Suite';
+  src: url(../sap_horizon/fonts/BusinessSuiteInAppSymbols.woff2) format('woff2'), url(../sap_horizon/fonts/BusinessSuiteInAppSymbols.woff) format('woff'), url(../sap_horizon/fonts/BusinessSuiteInAppSymbols.ttf) format('truetype'), local('SAP-icons-Business-Suite_woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../baseTheme/fonts/72-Regular.woff2) format('woff2'), url(../baseTheme/fonts/72-Regular.woff) format('woff'), local('72');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72full';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../baseTheme/fonts/72-Regular-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Regular-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72-Bold';
+  src: url(../baseTheme/fonts/72-Bold.woff2) format('woff2'), url(../baseTheme/fonts/72-Bold.woff) format('woff'), local('72-Bold');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 700;
+  src: url(../baseTheme/fonts/72-Bold.woff2) format('woff2'), url(../baseTheme/fonts/72-Bold.woff) format('woff'), local('72-Bold');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72-Boldfull';
+  src: url(../baseTheme/fonts/72-Bold-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Bold-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72full';
+  font-style: normal;
+  font-weight: 700;
+  src: url(../baseTheme/fonts/72-Bold-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Bold-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72-Semibold';
+  src: url(../baseTheme/fonts/72-Semibold.woff2) format('woff2'), url(../baseTheme/fonts/72-Semibold.woff) format('woff'), local('72-Semibold');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 600;
+  src: url(../baseTheme/fonts/72-Semibold.woff2) format('woff2'), url(../baseTheme/fonts/72-Semibold.woff) format('woff'), local('72-Semibold');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72-Semiboldfull';
+  src: url(../baseTheme/fonts/72-Semibold-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Semibold-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72full';
+  font-style: normal;
+  font-weight: 600;
+  src: url(../baseTheme/fonts/72-Semibold-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Semibold-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72-SemiboldDuplex';
+  src: url(../baseTheme/fonts/72-SemiboldDuplex.woff2) format('woff2'), url(../baseTheme/fonts/72-SemiboldDuplex.woff) format('woff'), local('72-SemiboldDuplex');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72-SemiboldDuplexfull';
+  src: url(../baseTheme/fonts/72-SemiboldDuplex-full.woff2) format('woff2'), url(../baseTheme/fonts/72-SemiboldDuplex-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72-Light';
+  src: url(../baseTheme/fonts/72-Light.woff2) format('woff2'), url(../baseTheme/fonts/72-Light.woff) format('woff'), local('72-Light');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 300;
+  src: url(../baseTheme/fonts/72-Light.woff2) format('woff2'), url(../baseTheme/fonts/72-Light.woff) format('woff'), local('72-Light');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72-Lightfull';
+  src: url(../baseTheme/fonts/72-Light-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Light-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72full';
+  font-style: normal;
+  font-weight: 300;
+  src: url(../baseTheme/fonts/72-Light-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Light-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72Black';
+  src: url(../baseTheme/fonts/72-Black.woff2) format('woff2'), url(../baseTheme/fonts/72-Black.woff) format('woff'), local('72Black');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+160-161, U+178, U+17D-17E, U+192, U+237, U+2C6-2C7, U+2DC, U+3BC, U+1E0E, U+2013-2014, U+2018-2019, U+201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 900;
+  src: url(../baseTheme/fonts/72-Black.woff2) format('woff2'), url(../baseTheme/fonts/72-Black.woff) format('woff'), local('72Black');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+160-161, U+178, U+17D-17E, U+192, U+237, U+2C6-2C7, U+2DC, U+3BC, U+1E0E, U+2013-2014, U+2018-2019, U+201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72Blackfull';
+  src: url(../baseTheme/fonts/72-Black-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Black-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72full';
+  font-style: normal;
+  font-weight: 900;
+  src: url(../baseTheme/fonts/72-Black-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Black-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72-BoldItalic';
+  src: url(../baseTheme/fonts/72-BoldItalic.woff2) format('woff2'), url(../baseTheme/fonts/72-BoldItalic.woff) format('woff'), local('72-BoldItalic');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: italic;
+  font-weight: 700;
+  src: url(../baseTheme/fonts/72-BoldItalic.woff2) format('woff2'), url(../baseTheme/fonts/72-BoldItalic.woff) format('woff'), local('72-BoldItalic');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72full';
+  font-style: italic;
+  font-weight: 700;
+  src: url(../baseTheme/fonts/72-BoldItalic-full.woff2) format('woff2'), url(../baseTheme/fonts/72-BoldItalic-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72-Condensed';
+  src: url(../baseTheme/fonts/72-Condensed.woff2) format('woff2'), url(../baseTheme/fonts/72-Condensed.woff) format('woff'), local('72-Condensed');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: condensed;
+  src: url(../baseTheme/fonts/72-Condensed.woff2) format('woff2'), url(../baseTheme/fonts/72-Condensed.woff) format('woff'), local('72-Condensed');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: condensed;
+  src: url(../baseTheme/fonts/72-Condensed-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Condensed-full.woff) format('woff');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72-CondensedBold';
+  src: url(../baseTheme/fonts/72-CondensedBold.woff2) format('woff2'), url(../baseTheme/fonts/72-CondensedBold.woff) format('woff'), local('72-CondensedBold');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: condensed;
+  src: url(../baseTheme/fonts/72-CondensedBold.woff2) format('woff2'), url(../baseTheme/fonts/72-CondensedBold.woff) format('woff'), local('72-CondensedBold');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72full';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: condensed;
+  src: url(../baseTheme/fonts/72-CondensedBold-full.woff2) format('woff2'), url(../baseTheme/fonts/72-CondensedBold-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72-Italic';
+  src: url(../baseTheme/fonts/72-Italic.woff2) format('woff2'), url(../baseTheme/fonts/72-Italic.woff) format('woff'), local('72-Italic');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72';
+  font-style: italic;
+  font-weight: 400;
+  src: url(../baseTheme/fonts/72-Italic.woff2) format('woff2'), url(../baseTheme/fonts/72-Italic.woff) format('woff'), local('72-Italic');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72full';
+  font-style: italic;
+  font-weight: 400;
+  src: url(../baseTheme/fonts/72-Italic-full.woff2) format('woff2'), url(../baseTheme/fonts/72-Italic-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72Mono';
+  src: url(../baseTheme/fonts/72Mono-Regular.woff2) format('woff2'), url(../baseTheme/fonts/72Mono-Regular.woff) format('woff'), local('72Mono');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72Monofull';
+  src: url(../baseTheme/fonts/72Mono-Regular-full.woff2) format('woff2'), url(../baseTheme/fonts/72Mono-Regular-full.woff) format('woff');
+}
+@font-face {
+  font-family: '72Mono-Bold';
+  src: url(../baseTheme/fonts/72Mono-Bold.woff2) format('woff2'), url(../baseTheme/fonts/72Mono-Bold.woff) format('woff'), local('72Mono-Bold');
+  unicode-range: U+00, U+0D, U+20-7E, U+A0-FF, U+131, U+152-153, U+161, U+178, U+17D-17E, U+192, U+237, U+2C6, U+2DC, U+3BC, U+1E9E, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122;
+}
+@font-face {
+  font-family: '72Mono-Boldfull';
+  src: url(../baseTheme/fonts/72Mono-Bold-full.woff2) format('woff2'), url(../baseTheme/fonts/72Mono-Bold-full.woff) format('woff');
+}
+/*!SAP_POSTPROCESS_REDUCE_END*/
+/**
+* Copyright (c) 2012-2025 SAP SE or an SAP affiliate company and Theming Base Content contributors. Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+* Theming Engine 17.0.47
+* data:{"sModified":"2026-07-29T12:42:34Z"}
+*/
+/******************* FILE /Base/baseLib/baseTheme/skeleton.less (Version 11.36.5) *******************/
+/*!SAP_POSTPROCESS_REDUCE_START*/
+/*<SAP_FREETEXT_LESS>*/
+@property --sapCompanyLogo {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFavicon {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapBackgroundImage {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapShell_BackgroundImage {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapShell_Favicon {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapShell_HeroBanner_BackgroundImage {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapAssistant_BackgroundGradient {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons_ttf {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons-TNT_ttf {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons-TNT_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons-TNT_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons-Business-Suite_ttf {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons-Business-Suite_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_SAP-icons-Business-Suite_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Regular_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Regular_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Regular_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Regular_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Bold_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Bold_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Bold_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Bold_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Semibold_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Semibold_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Semibold_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Semibold_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_SemiboldDuplex_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_SemiboldDuplex_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_SemiboldDuplex_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_SemiboldDuplex_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Light_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Light_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Light_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Light_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Black_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Black_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Black_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Black_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_BoldItalic_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_BoldItalic_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_BoldItalic_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_BoldItalic_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Condensed_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Condensed_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Condensed_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Condensed_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_CondensedBold_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_CondensedBold_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_CondensedBold_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_CondensedBold_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Italic_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Italic_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Italic_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72_Italic_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Regular_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Regular_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Regular_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Regular_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Bold_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Bold_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Bold_full_woff2 {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapFontUrl_72Mono_Bold_full_woff {
+  syntax: "<url>";
+  initial-value: url("data:,");
+  inherits: true;
+}
+@property --sapShell_BackgroundGradient {
+  syntax: "<image> | none";
+  initial-value: url("data:,");
+  inherits: true;
+}
+/*</SAP_FREETEXT_LESS>*/
+:root {
+  --sapBrandColor: #050400;
+  --sapHighlightColor: #050400;
+  --sapBaseColor: #ffffff;
+  --sapShellColor: #ffcc00;
+  --sapBackgroundColor: #FAFAFA;
+  --sapFontFamily: "72", "72full", Arial, Helvetica, sans-serif;
+  --sapFontSize: 0.875rem;
+  --sapTextColor: #050400;
+  --sapLinkColor: #050400;
+  --sapCompanyLogo: none;
+  --sapFavicon: none;
+  --sapBackgroundImage: none;
+  --sapBackgroundImageOpacity: 1;
+  --sapBackgroundImageRepeat: false;
+  --sapSelectedColor: #050400;
+  --sapHoverColor: #CDCCC8;
+  --sapActiveColor: #e6e6e6;
+  --sapTitleColor: #050400;
+  --sapNegativeColor: #EBBFBF;
+  --sapCriticalColor: #F5CEBF;
+  --sapPositiveColor: #C3DDBF;
+  --sapInformativeColor: #BFD3E7;
+  --sapNeutralColor: #696864;
+  --sapNegativeElementColor: #B20000;
+  --sapCriticalElementColor: #D93D00;
+  --sapPositiveElementColor: #107800;
+  --sapInformativeElementColor: #0050A1;
+  --sapNeutralElementColor: #696864;
+  --sapNegativeTextColor: #bd3b3b;
+  --sapCriticalTextColor: #dd5825;
+  --sapPositiveTextColor: #518848;
+  --sapInformativeTextColor: #acc6e0;
+  --sapNeutralTextColor: #050400;
+  --sapErrorColor: #B20000;
+  --sapWarningColor: #D93D00;
+  --sapSuccessColor: #107800;
+  --sapInformationColor: #BFD3E7;
+  --sapErrorBackground: #f2d6d6;
+  --sapWarningBackground: #f9e2d9;
+  --sapSuccessBackground: #d6e8d3;
+  --sapInformationBackground: #d5e2ef;
+  --sapNeutralBackground: #FAFAFA;
+  --sapErrorBorderColor: #B20000;
+  --sapWarningBorderColor: #D93D00;
+  --sapSuccessBorderColor: #107800;
+  --sapInformationBorderColor: #0050A1;
+  --sapNeutralBorderColor: #696864;
+  --sapElement_LineHeight: 2.75rem;
+  --sapElement_Height: 2.25rem;
+  --sapElement_BorderWidth: 0.0625rem;
+  --sapElement_BorderCornerRadius: 0.75rem;
+  --sapElement_Compact_LineHeight: 2rem;
+  --sapElement_Compact_Height: 1.625rem;
+  --sapElement_Condensed_LineHeight: 1.5rem;
+  --sapElement_Condensed_Height: 1.375rem;
+  --sapContent_LineHeight: 1.5;
+  --sapContent_IconHeight: 1rem;
+  --sapContent_IconColor: #050400;
+  --sapContent_ContrastIconColor: #ffffff;
+  --sapContent_NonInteractiveIconColor: #050400;
+  --sapContent_MarkerIconColor: #5d36ff;
+  --sapContent_MarkerTextColor: #046c7a;
+  --sapContent_MeasureIndicatorColor: #050400;
+  --sapContent_Selected_MeasureIndicatorColor: #050400;
+  --sapContent_Placeholderloading_Background: #cccccc;
+  --sapContent_Placeholderloading_Gradient: linear-gradient(to right, #cccccc 0%, #cccccc 20%, #999999 50%, #cccccc 80%, #cccccc 100%);
+  --sapContent_ImagePlaceholderBackground: #eaecee;
+  --sapContent_ImagePlaceholderForegroundColor: #556b82;
+  --sapContent_RatedColor: #d27700;
+  --sapContent_UnratedColor: #050400;
+  --sapContent_BusyColor: #050400;
+  --sapContent_FocusColor: #050400;
+  --sapContent_FocusStyle: solid;
+  --sapContent_FocusWidth: 0.125rem;
+  --sapContent_ContrastFocusColor: #fff;
+  --sapContent_ShadowColor: #223548;
+  --sapContent_ContrastShadowColor: #fff;
+  --sapContent_Shadow0: 0 0 0.125rem 0 rgba(34, 53, 72, 0.2), 0 0.125rem 0.25rem 0 rgba(34, 53, 72, 0.2);
+  --sapContent_Shadow1: 0 0 0 0.0625rem rgba(34, 53, 72, 0.48), 0 0.125rem 0.5rem 0 rgba(34, 53, 72, 0.3);
+  --sapContent_Shadow2: 0 0 0 0.0625rem rgba(34, 53, 72, 0.48), 0 0.625rem 1.875rem 0 rgba(34, 53, 72, 0.25);
+  --sapContent_Shadow3: 0 0 0 0.0625rem rgba(34, 53, 72, 0.48), 0 1.25rem 5rem 0 rgba(34, 53, 72, 0.25);
+  --sapContent_TextShadow: 0 0 0.125rem #fff;
+  --sapContent_ContrastTextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapContent_HeaderShadow: 0 0.125rem 0.125rem 0 rgba(34, 53, 72, 0.05), inset 0 -0.0625rem 0 0 #d9d9d9;
+  --sapContent_Interaction_Shadow: inset 0 0 0 0.0625rem rgba(5, 4, 0, 0.25);
+  --sapContent_Selected_Shadow: inset 0 0 0 0.0625rem rgba(122, 98, 0, 0.5);
+  --sapContent_Negative_Shadow: inset 0 0 0 0.0625rem rgba(213, 121, 121, 0.45);
+  --sapContent_Critical_Shadow: inset 0 0 0 0.0625rem rgba(201, 78, 31, 0.4);
+  --sapContent_Positive_Shadow: inset 0 0 0 0.0625rem rgba(16, 120, 0, 0.18);
+  --sapContent_Informative_Shadow: inset 0 0 0 0.0625rem rgba(23, 138, 255, 0.5);
+  --sapContent_Neutral_Shadow: inset 0 0 0 0.0625rem rgba(105, 104, 100, 0.3);
+  --sapContent_SearchHighlightColor: #dafdf5;
+  --sapContent_HelpColor: #188918;
+  --sapContent_LabelColor: #696864;
+  --sapContent_MonospaceFontFamily: "72Mono", "72Monofull", lucida console, monospace;
+  --sapContent_MonospaceBoldFontFamily: "72Mono-Bold", "72Mono-Boldfull", lucida console, monospace;
+  --sapContent_IconFontFamily: "SAP-icons";
+  --sapContent_DisabledTextColor: rgba(5, 4, 0, 0.6);
+  --sapContent_DisabledOpacity: 0.4;
+  --sapContent_ContrastTextThreshold: 0.65;
+  --sapContent_ContrastTextColor: #ffffff;
+  --sapContent_ForegroundColor: #efefef;
+  --sapContent_ForegroundBorderColor: #050400;
+  --sapContent_ForegroundTextColor: #050400;
+  --sapContent_BadgeBackground: #aa0808;
+  --sapContent_BadgeTextColor: #ffffff;
+  --sapContent_BadgeBorderColor: #ffffff;
+  --sapContent_DragAndDropActiveColor: #050400;
+  --sapContent_Selected_TextColor: #050400;
+  --sapContent_Selected_Background: #ffffff;
+  --sapContent_Selected_Hover_Background: #504F4B;
+  --sapContent_Selected_ForegroundColor: #050400;
+  --sapContent_ForcedColorAdjust: none;
+  --sapContent_Lite_Shadow: none;
+  --sapContent_Illustrative_Color1: #9b015d;
+  --sapContent_Illustrative_Color2: #56bdff;
+  --sapContent_Illustrative_Color3: #ff7f4c;
+  --sapContent_Illustrative_Color4: #00144a;
+  --sapContent_Illustrative_Color5: #a9b4be;
+  --sapContent_Illustrative_Color6: #d5dadd;
+  --sapContent_Illustrative_Color7: #dbf1ff;
+  --sapContent_Illustrative_Color8: #fff;
+  --sapContent_Illustrative_Color9: #0899a7;
+  --sapContent_Illustrative_Color10: #dbf1ff;
+  --sapContent_Illustrative_Color11: #df1278;
+  --sapContent_Illustrative_Color12: #00a800;
+  --sapContent_Illustrative_Color13: #0070f2;
+  --sapContent_Illustrative_Color14: #0040b0;
+  --sapContent_Illustrative_Color15: #c35500;
+  --sapContent_Illustrative_Color16: #8d2a00;
+  --sapContent_Illustrative_Color17: #046c7c;
+  --sapContent_Illustrative_Color18: #bce5ff;
+  --sapContent_Illustrative_Color19: #a3dbff;
+  --sapContent_Illustrative_Color20: #89d1ff;
+  --sapContent_Illustrative_Color21: #1b90ff;
+  --sapContent_Illustrative_Color22: #00144a;
+  --sapContent_Illustrative_Color23: #d20a0a;
+  --sapContent_Illustrative_Color24: #ffb2d2;
+  --sapContent_Illustrative_Color25: #ffeaf4;
+  --sapContent_Illustrative_Color26: #ffdf72;
+  --sapContent_Illustrative_Color27: #fff8d6;
+  --sapContent_Illustrative_Color28: #a93e00;
+  --sapContent_Illustrative_Color29: #450b00;
+  --sapContent_Illustrative_Color30: #340800;
+  --sapContent_Illustrative_Color31: #ffab92;
+  --sapContent_Space_S: 1rem;
+  --sapContent_Space_M: 2rem;
+  --sapContent_Space_L: 2rem;
+  --sapContent_Space_XL: 3rem;
+  --sapContent_Space_Tiny: 0.5rem;
+  --sapContent_Space_Small: 1rem;
+  --sapContent_Space_Medium: 2rem;
+  --sapContent_Space_Large: 3rem;
+  --sapContent_Margin_Tiny: 0 0 1rem;
+  --sapContent_Margin_Small: 1rem;
+  --sapContent_Margin_Medium: 1rem 2rem;
+  --sapContent_Margin_Large: 1rem 3rem;
+  --sapContent_Margin_S: 0 0 1rem;
+  --sapContent_Margin_M: 1rem;
+  --sapContent_Margin_L: 1rem 2rem;
+  --sapContent_Margin_XL: 1rem 3rem;
+  --sapContent_Padding_S: 0rem;
+  --sapContent_Padding_M: 2rem;
+  --sapContent_Padding_L: 2rem;
+  --sapContent_Padding_XL: 3rem;
+  --sapContent_Gap: 1rem;
+  --sapContent_Success_HeaderShadow: 0 0.125rem 0.125rem 0 rgba(34, 53, 72, 0.05), inset 0 -0.0625rem 0 0 #107800;
+  --sapContent_Warning_HeaderShadow: 0 0.125rem 0.125rem 0 rgba(34, 53, 72, 0.05), inset 0 -0.0625rem 0 0 #D93D00;
+  --sapContent_Error_HeaderShadow: 0 0.125rem 0.125rem 0 rgba(34, 53, 72, 0.05), inset 0 -0.0625rem 0 0 #B20000;
+  --sapContent_Information_HeaderShadow: 0 0.125rem 0.125rem 0 rgba(34, 53, 72, 0.05), inset 0 -0.0625rem 0 0 #0050A1;
+  --sapFontLightFamily: "72-Light", "72-Lightfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapFontBoldFamily: "72-Bold", "72-Boldfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapFontSemiboldFamily: "72-Semibold", "72-Semiboldfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapFontSemiboldDuplexFamily: "72-SemiboldDuplex", "72-SemiboldDuplexfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapFontBlackFamily: "72Black", "72Blackfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapFontHeaderFamily: "72Black", "72Blackfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapFontSmallSize: 0.75rem;
+  --sapFontLargeSize: 1rem;
+  --sapFontHeader1Size: 3rem;
+  --sapFontHeader2Size: 2rem;
+  --sapFontHeader3Size: 1.5rem;
+  --sapFontHeader4Size: 1.25rem;
+  --sapFontHeader5Size: 1rem;
+  --sapFontHeader6Size: 0.875rem;
+  --sapLink_TextDecoration: none;
+  --sapLink_Hover_Color: #504F4B;
+  --sapLink_Hover_TextDecoration: underline;
+  --sapLink_Active_Color: #050400;
+  --sapLink_Active_TextDecoration: none;
+  --sapLink_Visited_Color: #050400;
+  --sapLink_InvertedColor: #d1a700;
+  --sapLink_SubtleColor: #050400;
+  --sapShell_Background: #FAFAFA;
+  --sapShell_BackgroundImage: linear-gradient(to bottom, #FAFAFA, #FAFAFA);
+  --sapShell_BackgroundImageOpacity: 1;
+  --sapShell_BackgroundImageRepeat: false;
+  --sapShell_BorderColor: #b38f00;
+  --sapShell_TextColor: #050400;
+  --sapShell_InteractiveBackground: #FAFAFA;
+  --sapShell_InteractiveTextColor: #050400;
+  --sapShell_InteractiveBorderColor: #050400;
+  --sapShell_GroupTitleTextColor: #050400;
+  --sapShell_GroupTitleTextShadow: 0 0 0.125rem #fff;
+  --sapShell_Hover_Background: transparent;
+  --sapShell_Active_Background: transparent;
+  --sapShell_Active_TextColor: #050400;
+  --sapShell_Selected_Background: #ffcc00;
+  --sapShell_Selected_TextColor: #050400;
+  --sapShell_Selected_Hover_Background: #ffcc00;
+  --sapShell_Favicon: none;
+  --sapShell_Navigation_Background: #ffcc00;
+  --sapShell_Navigation_Hover_Background: transparent;
+  --sapShell_Navigation_SelectedColor: #ffffff;
+  --sapShell_Navigation_Selected_TextColor: #ffffff;
+  --sapShell_Navigation_TextColor: #050400;
+  --sapShell_Navigation_Active_TextColor: #050400;
+  --sapShell_Navigation_Active_Background: transparent;
+  --sapShell_Shadow: 0 0.125rem 0.125rem 0 rgba(34, 53, 72, 0.15), inset 0 -0.0625rem 0 0 rgba(34, 53, 72, 0.2);
+  --sapShell_NegativeColor: #bd3b3b;
+  --sapShell_CriticalColor: #dd5825;
+  --sapShell_PositiveColor: #518848;
+  --sapShell_InformativeColor: #acc6e0;
+  --sapShell_NeutralColor: #050400;
+  --sapShell_Assistant_ForegroundColor: #5d36ff;
+  --sapShell_SubBrand_TextColor: #050400;
+  --sapShell_HeroBanner_Background: #0070f2;
+  --sapShell_HeroBanner_BackgroundImage: linear-gradient(135deg, transparent 45%, rgba(0, 0, 0, 0.45) 75%);
+  --sapShell_HeroBanner_TextColor: #ffffff;
+  --sapShell_Category_1_Background: #0057d2;
+  --sapShell_Category_1_BorderColor: #0057d2;
+  --sapShell_Category_1_TextColor: #ffffff;
+  --sapShell_Category_1_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_2_Background: #df1278;
+  --sapShell_Category_2_BorderColor: #df1278;
+  --sapShell_Category_2_TextColor: #ffffff;
+  --sapShell_Category_2_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_3_Background: #e76500;
+  --sapShell_Category_3_BorderColor: #e76500;
+  --sapShell_Category_3_TextColor: #ffffff;
+  --sapShell_Category_3_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_4_Background: #7800a4;
+  --sapShell_Category_4_BorderColor: #7800a4;
+  --sapShell_Category_4_TextColor: #ffffff;
+  --sapShell_Category_4_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_5_Background: #aa2608;
+  --sapShell_Category_5_BorderColor: #aa2608;
+  --sapShell_Category_5_TextColor: #ffffff;
+  --sapShell_Category_5_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_6_Background: #07838f;
+  --sapShell_Category_6_BorderColor: #07838f;
+  --sapShell_Category_6_TextColor: #ffffff;
+  --sapShell_Category_6_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_7_Background: #f31ded;
+  --sapShell_Category_7_BorderColor: #f31ded;
+  --sapShell_Category_7_TextColor: #ffffff;
+  --sapShell_Category_7_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_8_Background: #188918;
+  --sapShell_Category_8_BorderColor: #188918;
+  --sapShell_Category_8_TextColor: #ffffff;
+  --sapShell_Category_8_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_9_Background: #002a86;
+  --sapShell_Category_9_BorderColor: #002a86;
+  --sapShell_Category_9_TextColor: #ffffff;
+  --sapShell_Category_9_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_10_Background: #5b738b;
+  --sapShell_Category_10_BorderColor: #5b738b;
+  --sapShell_Category_10_TextColor: #ffffff;
+  --sapShell_Category_10_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_11_Background: #d20a0a;
+  --sapShell_Category_11_BorderColor: #d20a0a;
+  --sapShell_Category_11_TextColor: #ffffff;
+  --sapShell_Category_11_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_12_Background: #7858ff;
+  --sapShell_Category_12_BorderColor: #7858ff;
+  --sapShell_Category_12_TextColor: #ffffff;
+  --sapShell_Category_12_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_13_Background: #a00875;
+  --sapShell_Category_13_BorderColor: #a00875;
+  --sapShell_Category_13_TextColor: #ffffff;
+  --sapShell_Category_13_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_14_Background: #14565b;
+  --sapShell_Category_14_BorderColor: #14565b;
+  --sapShell_Category_14_TextColor: #ffffff;
+  --sapShell_Category_14_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_15_Background: #223548;
+  --sapShell_Category_15_BorderColor: #223548;
+  --sapShell_Category_15_TextColor: #ffffff;
+  --sapShell_Category_15_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Category_16_Background: #1e592f;
+  --sapShell_Category_16_BorderColor: #1e592f;
+  --sapShell_Category_16_TextColor: #ffffff;
+  --sapShell_Category_16_TextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapShell_Space_S: 0.5rem;
+  --sapShell_Space_M: 2rem;
+  --sapShell_Space_L: 2rem;
+  --sapShell_Space_XL: 3rem;
+  --sapShell_Gap_S: 0.5rem;
+  --sapShell_Gap_M: 1rem;
+  --sapShell_Gap_L: 1rem;
+  --sapShell_Gap_XL: 1rem;
+  --sapShell_GroupGap_S: 2rem;
+  --sapShell_GroupGap_M: 3rem;
+  --sapShell_GroupGap_L: 3rem;
+  --sapShell_GroupGap_XL: 3rem;
+  --sapAssistant_Color1: #5d36ff;
+  --sapAssistant_Color2: #a100c2;
+  --sapAssistant_BackgroundGradient: linear-gradient(#5d36ff, #a100c2);
+  --sapAssistant_Background: #5d36ff;
+  --sapAssistant_BorderColor: #5d36ff;
+  --sapAssistant_TextColor: #ffffff;
+  --sapAssistant_Hover_Background: #2800cf;
+  --sapAssistant_Hover_BorderColor: #2800cf;
+  --sapAssistant_Hover_TextColor: #ffffff;
+  --sapAssistant_Active_Background: #ffffff;
+  --sapAssistant_Active_BorderColor: #5d36ff;
+  --sapAssistant_Active_TextColor: #5d36ff;
+  --sapAssistant_Question_Background: #eae5ff;
+  --sapAssistant_Question_BorderColor: #eae5ff;
+  --sapAssistant_Question_TextColor: #050400;
+  --sapAssistant_Answer_Background: #FAFAFA;
+  --sapAssistant_Answer_BorderColor: #FAFAFA;
+  --sapAssistant_Answer_TextColor: #050400;
+  --sapAvatar_1_Background: #fff3b8;
+  --sapAvatar_1_BorderColor: #fff3b8;
+  --sapAvatar_1_TextColor: #a45d00;
+  --sapAvatar_1_Hover_Background: #fff3b8;
+  --sapAvatar_2_Background: #ffd0e7;
+  --sapAvatar_2_BorderColor: #ffd0e7;
+  --sapAvatar_2_TextColor: #aa0808;
+  --sapAvatar_2_Hover_Background: #ffd0e7;
+  --sapAvatar_3_Background: #ffdbe7;
+  --sapAvatar_3_BorderColor: #ffdbe7;
+  --sapAvatar_3_TextColor: #ba066c;
+  --sapAvatar_3_Hover_Background: #ffdbe7;
+  --sapAvatar_4_Background: #ffdcf3;
+  --sapAvatar_4_BorderColor: #ffdcf3;
+  --sapAvatar_4_TextColor: #a100c2;
+  --sapAvatar_4_Hover_Background: #ffdcf3;
+  --sapAvatar_5_Background: #ded3ff;
+  --sapAvatar_5_BorderColor: #ded3ff;
+  --sapAvatar_5_TextColor: #552cff;
+  --sapAvatar_5_Hover_Background: #ded3ff;
+  --sapAvatar_6_Background: #d1efff;
+  --sapAvatar_6_BorderColor: #d1efff;
+  --sapAvatar_6_TextColor: #0057d2;
+  --sapAvatar_6_Hover_Background: #d1efff;
+  --sapAvatar_7_Background: #c2fcee;
+  --sapAvatar_7_BorderColor: #c2fcee;
+  --sapAvatar_7_TextColor: #046c7a;
+  --sapAvatar_7_Hover_Background: #c2fcee;
+  --sapAvatar_8_Background: #ebf5cb;
+  --sapAvatar_8_BorderColor: #ebf5cb;
+  --sapAvatar_8_TextColor: #256f3a;
+  --sapAvatar_8_Hover_Background: #ebf5cb;
+  --sapAvatar_9_Background: #ddccf0;
+  --sapAvatar_9_BorderColor: #ddccf0;
+  --sapAvatar_9_TextColor: #ffffff;
+  --sapAvatar_9_Hover_Background: #ddccf0;
+  --sapAvatar_10_Background: #050400;
+  --sapAvatar_10_BorderColor: #050400;
+  --sapAvatar_10_TextColor: #ffffff;
+  --sapAvatar_10_Hover_Background: #050400;
+  --sapAvatar_Lite_BorderColor: transparent;
+  --sapAvatar_Lite_Background: transparent;
+  --sapAvatar_Hover_BorderColor: rgba(5, 4, 0, 0.25);
+  --sapButton_Background: #ffffff;
+  --sapButton_BorderColor: #050400;
+  --sapButton_BorderWidth: 0.0625rem;
+  --sapButton_BorderCornerRadius: 1.5rem;
+  --sapButton_TextColor: #050400;
+  --sapButton_FontFamily: "72-SemiboldDuplex", "72-SemiboldDuplexfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapButton_Hover_Background: #ffffff;
+  --sapButton_Hover_BorderColor: #504F4B;
+  --sapButton_Hover_TextColor: #504F4B;
+  --sapButton_IconColor: #050400;
+  --sapButton_Active_Background: #ffffff;
+  --sapButton_Active_BorderColor: #050400;
+  --sapButton_Active_TextColor: #050400;
+  --sapButton_Emphasized_Background: #050400;
+  --sapButton_Emphasized_BorderColor: #050400;
+  --sapButton_Emphasized_BorderWidth: 0.0625rem;
+  --sapButton_Emphasized_TextColor: #ffffff;
+  --sapButton_Emphasized_FontFamily: "72-Bold", "72-Boldfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapButton_Emphasized_Hover_Background: #504F4B;
+  --sapButton_Emphasized_Hover_BorderColor: #504F4B;
+  --sapButton_Emphasized_Hover_TextColor: #ffffff;
+  --sapButton_Emphasized_Active_Background: #050400;
+  --sapButton_Emphasized_Active_BorderColor: #050400;
+  --sapButton_Emphasized_Active_TextColor: #ffffff;
+  --sapButton_Emphasized_TextShadow: transparent;
+  --sapButton_Reject_Background: #B20000;
+  --sapButton_Reject_BorderColor: #B20000;
+  --sapButton_Reject_TextColor: #ffffff;
+  --sapButton_Reject_Hover_Background: #990000;
+  --sapButton_Reject_Hover_BorderColor: #990000;
+  --sapButton_Reject_Hover_TextColor: #ffffff;
+  --sapButton_Reject_Active_Background: #ffffff;
+  --sapButton_Reject_Active_BorderColor: #B20000;
+  --sapButton_Reject_Active_TextColor: #bd3b3b;
+  --sapButton_Reject_Selected_Background: #ffffff;
+  --sapButton_Reject_Selected_BorderColor: #B20000;
+  --sapButton_Reject_Selected_TextColor: #bd3b3b;
+  --sapButton_Reject_Selected_Hover_Background: #990000;
+  --sapButton_Reject_Selected_Hover_BorderColor: #B20000;
+  --sapButton_Accept_Background: #107800;
+  --sapButton_Accept_BorderColor: #107800;
+  --sapButton_Accept_TextColor: #ffffff;
+  --sapButton_Accept_Hover_Background: #0d5f00;
+  --sapButton_Accept_Hover_BorderColor: #0d5f00;
+  --sapButton_Accept_Hover_TextColor: #ffffff;
+  --sapButton_Accept_Active_Background: #ffffff;
+  --sapButton_Accept_Active_BorderColor: #107800;
+  --sapButton_Accept_Active_TextColor: #518848;
+  --sapButton_Accept_Selected_Background: #ffffff;
+  --sapButton_Accept_Selected_BorderColor: #107800;
+  --sapButton_Accept_Selected_TextColor: #518848;
+  --sapButton_Accept_Selected_Hover_Background: #0d5f00;
+  --sapButton_Accept_Selected_Hover_BorderColor: #107800;
+  --sapButton_Lite_Background: transparent;
+  --sapButton_Lite_BorderColor: transparent;
+  --sapButton_Lite_TextColor: #050400;
+  --sapButton_Lite_Hover_Background: transparent;
+  --sapButton_Lite_Hover_BorderColor: transparent;
+  --sapButton_Lite_Hover_TextColor: #504F4B;
+  --sapButton_Lite_Active_Background: transparent;
+  --sapButton_Lite_Active_BorderColor: #050400;
+  --sapButton_Selected_Background: #050400;
+  --sapButton_Selected_BorderColor: #050400;
+  --sapButton_Selected_TextColor: #ffffff;
+  --sapButton_Selected_Hover_Background: #504F4B;
+  --sapButton_Selected_Hover_BorderColor: #504F4B;
+  --sapButton_Attention_Background: #D93D00;
+  --sapButton_Attention_BorderColor: #D93D00;
+  --sapButton_Attention_TextColor: #ffffff;
+  --sapButton_Attention_Hover_Background: #c03600;
+  --sapButton_Attention_Hover_BorderColor: #c03600;
+  --sapButton_Attention_Hover_TextColor: #ffffff;
+  --sapButton_Attention_Active_Background: #ffffff;
+  --sapButton_Attention_Active_BorderColor: #D93D00;
+  --sapButton_Attention_Active_TextColor: #dd5825;
+  --sapButton_Attention_Selected_Background: #ffffff;
+  --sapButton_Attention_Selected_BorderColor: #D93D00;
+  --sapButton_Attention_Selected_TextColor: #dd5825;
+  --sapButton_Attention_Selected_Hover_Background: #c03600;
+  --sapButton_Attention_Selected_Hover_BorderColor: #D93D00;
+  --sapButton_Negative_Background: #B20000;
+  --sapButton_Negative_BorderColor: #B20000;
+  --sapButton_Negative_TextColor: #ffffff;
+  --sapButton_Negative_Hover_Background: #7f0000;
+  --sapButton_Negative_Hover_BorderColor: #7f0000;
+  --sapButton_Negative_Hover_TextColor: #ffffff;
+  --sapButton_Negative_Active_Background: #ffffff;
+  --sapButton_Negative_Active_BorderColor: #B20000;
+  --sapButton_Negative_Active_TextColor: #bd3b3b;
+  --sapButton_Critical_Background: #D93D00;
+  --sapButton_Critical_BorderColor: #D93D00;
+  --sapButton_Critical_TextColor: #ffffff;
+  --sapButton_Critical_Hover_Background: #cf3a00;
+  --sapButton_Critical_Hover_BorderColor: #cf3a00;
+  --sapButton_Critical_Hover_TextColor: #ffffff;
+  --sapButton_Critical_Active_Background: #ffffff;
+  --sapButton_Critical_Active_BorderColor: #cf3a00;
+  --sapButton_Critical_Active_TextColor: #dd5825;
+  --sapButton_Success_Background: #107800;
+  --sapButton_Success_BorderColor: #107800;
+  --sapButton_Success_TextColor: #ffffff;
+  --sapButton_Success_Hover_Background: #0e6900;
+  --sapButton_Success_Hover_BorderColor: #0e6900;
+  --sapButton_Success_Hover_TextColor: #ffffff;
+  --sapButton_Success_Active_Background: #ffffff;
+  --sapButton_Success_Active_BorderColor: #107800;
+  --sapButton_Success_Active_TextColor: #518848;
+  --sapButton_Information_Background: #ffffff;
+  --sapButton_Information_BorderColor: #e6e6e6;
+  --sapButton_Information_TextColor: #acc6e0;
+  --sapButton_Information_Hover_Background: #f5f5f5;
+  --sapButton_Information_Hover_BorderColor: #e6e6e6;
+  --sapButton_Information_Hover_TextColor: #acc6e0;
+  --sapButton_Information_Active_Background: #ffffff;
+  --sapButton_Information_Active_BorderColor: #050400;
+  --sapButton_Information_Active_TextColor: #050400;
+  --sapButton_Neutral_Background: #ffffff;
+  --sapButton_Neutral_BorderColor: #e6e6e6;
+  --sapButton_Neutral_TextColor: #acc6e0;
+  --sapButton_Neutral_Hover_Background: #f5f5f5;
+  --sapButton_Neutral_Hover_BorderColor: #e6e6e6;
+  --sapButton_Neutral_Hover_TextColor: #acc6e0;
+  --sapButton_Neutral_Active_Background: #ffffff;
+  --sapButton_Neutral_Active_BorderColor: #050400;
+  --sapButton_Neutral_Active_TextColor: #050400;
+  --sapButton_Track_Background: #050400;
+  --sapButton_Track_BorderColor: #050400;
+  --sapButton_Track_TextColor: #ffffff;
+  --sapButton_Track_Hover_Background: #504F4B;
+  --sapButton_Track_Hover_BorderColor: #504F4B;
+  --sapButton_Track_Selected_Background: #107800;
+  --sapButton_Track_Selected_BorderColor: #107800;
+  --sapButton_Track_Selected_TextColor: #ffffff;
+  --sapButton_Track_Selected_Hover_Background: #0d5f00;
+  --sapButton_Track_Selected_Hover_BorderColor: #0d5f00;
+  --sapButton_Handle_Background: #ffffff;
+  --sapButton_Handle_BorderColor: #ffffff;
+  --sapButton_Handle_TextColor: #050400;
+  --sapButton_Handle_Hover_Background: #ffffff;
+  --sapButton_Handle_Hover_BorderColor: rgba(255, 255, 255, 0.5);
+  --sapButton_Handle_Selected_Background: #ffffff;
+  --sapButton_Handle_Selected_BorderColor: #ffffff;
+  --sapButton_Handle_Selected_TextColor: #107800;
+  --sapButton_Handle_Selected_Hover_Background: #ffffff;
+  --sapButton_Handle_Selected_Hover_BorderColor: rgba(255, 255, 255, 0.5);
+  --sapButton_Track_Negative_Background: #B20000;
+  --sapButton_Track_Negative_BorderColor: #B20000;
+  --sapButton_Track_Negative_TextColor: #ffffff;
+  --sapButton_Track_Negative_Hover_Background: #7f0000;
+  --sapButton_Track_Negative_Hover_BorderColor: #7f0000;
+  --sapButton_Handle_Negative_Background: #ffffff;
+  --sapButton_Handle_Negative_BorderColor: #ffffff;
+  --sapButton_Handle_Negative_TextColor: #bd3b3b;
+  --sapButton_Handle_Negative_Hover_Background: #ffffff;
+  --sapButton_Handle_Negative_Hover_BorderColor: rgba(255, 255, 255, 0.5);
+  --sapButton_Track_Positive_Background: #107800;
+  --sapButton_Track_Positive_BorderColor: #107800;
+  --sapButton_Track_Positive_TextColor: #ffffff;
+  --sapButton_Track_Positive_Hover_Background: #0e6900;
+  --sapButton_Track_Positive_Hover_BorderColor: #0e6900;
+  --sapButton_Handle_Positive_Background: #ffffff;
+  --sapButton_Handle_Positive_BorderColor: #ffffff;
+  --sapButton_Handle_Positive_TextColor: #518848;
+  --sapButton_Handle_Positive_Hover_Background: #ffffff;
+  --sapButton_Handle_Positive_Hover_BorderColor: rgba(255, 255, 255, 0.5);
+  --sapButton_TokenBackground: #ffffff;
+  --sapButton_TokenBorderColor: #050400;
+  --sapButton_TokenBorderCornerRadius: 1.5rem;
+  --sapButton_Selected_TokenBorderWidth: 0.0625rem;
+  --sapButton_ReadOnly_TokenBackground: #ffffff;
+  --sapButton_Segment_BorderCornerRadius: 0;
+  --sapField_Background: #ffffff;
+  --sapField_BackgroundStyle: 0 100% / 100% 0.0625rem no-repeat linear-gradient(0deg, #050400, #050400) border-box;
+  --sapField_TextColor: #050400;
+  --sapField_PlaceholderTextColor: #696864;
+  --sapField_BorderColor: #050400;
+  --sapField_HelpBackground: #ffffff;
+  --sapField_BorderWidth: 0.0625rem;
+  --sapField_BorderStyle: none;
+  --sapField_BorderCornerRadius: 0.25rem;
+  --sapField_Shadow: inset 0 0 0 0.0625rem rgba(5, 4, 0, 0.25);
+  --sapField_Hover_Background: #ffffff;
+  --sapField_Hover_BackgroundStyle: 0 100% / 100% 0.0625rem no-repeat linear-gradient(0deg, #050400, #050400) border-box;
+  --sapField_Hover_BorderColor: #050400;
+  --sapField_Hover_HelpBackground: #CDCCC8;
+  --sapField_Hover_Shadow: inset 0 0 0 0.0625rem rgba(122, 98, 0, 0.5);
+  --sapField_Hover_InvalidShadow: inset 0 0 0 0.0625rem rgba(213, 121, 121, 0.45);
+  --sapField_Hover_WarningShadow: inset 0 0 0 0.0625rem rgba(201, 78, 31, 0.4);
+  --sapField_Hover_SuccessShadow: inset 0 0 0 0.0625rem rgba(16, 120, 0, 0.18);
+  --sapField_Hover_InformationShadow: inset 0 0 0 0.0625rem rgba(23, 138, 255, 0.5);
+  --sapField_Active_BorderColor: #050400;
+  --sapField_Focus_Background: #ffffff;
+  --sapField_Focus_BorderColor: #050400;
+  --sapField_Focus_HelpBackground: #ffffff;
+  --sapField_ReadOnly_Background: #FAFAFA;
+  --sapField_ReadOnly_BackgroundStyle: 0 100% / 0.375rem 0.0625rem repeat-x linear-gradient(90deg, #dbdbdb 0, #dbdbdb 0.25rem, transparent 0.25rem) border-box;
+  --sapField_ReadOnly_BorderColor: #dbdbdb;
+  --sapField_ReadOnly_BorderStyle: none;
+  --sapField_ReadOnly_HelpBackground: #FAFAFA;
+  --sapField_RequiredColor: #ba066c;
+  --sapField_InvalidColor: #B20000;
+  --sapField_InvalidBackground: #EBBFBF;
+  --sapField_InvalidBackgroundStyle: 0 100% / 100% 0.125rem no-repeat linear-gradient(0deg, #B20000, #B20000) border-box;
+  --sapField_InvalidBorderWidth: 0.125rem;
+  --sapField_InvalidBorderStyle: none;
+  --sapField_InvalidShadow: inset 0 0 0 0.0625rem rgba(213, 121, 121, 0.45);
+  --sapField_WarningColor: #D93D00;
+  --sapField_WarningBackground: #F5CEBF;
+  --sapField_WarningBackgroundStyle: 0 100% / 100% 0.125rem no-repeat linear-gradient(0deg, #D93D00, #D93D00) border-box;
+  --sapField_WarningBorderWidth: 0.125rem;
+  --sapField_WarningBorderStyle: none;
+  --sapField_WarningShadow: inset 0 0 0 0.0625rem rgba(201, 78, 31, 0.4);
+  --sapField_SuccessColor: #107800;
+  --sapField_SuccessBackground: #C3DDBF;
+  --sapField_SuccessBackgroundStyle: 0 100% / 100% 0.0625rem no-repeat linear-gradient(0deg, #107800, #107800) border-box;
+  --sapField_SuccessBorderWidth: 0.0625rem;
+  --sapField_SuccessBorderStyle: none;
+  --sapField_SuccessShadow: inset 0 0 0 0.0625rem rgba(16, 120, 0, 0.18);
+  --sapField_InformationColor: #0050A1;
+  --sapField_InformationBackground: #BFD3E7;
+  --sapField_InformationBackgroundStyle: 0 100% / 100% 0.125rem no-repeat linear-gradient(0deg, #0050A1, #0050A1) border-box;
+  --sapField_InformationBorderWidth: 0.125rem;
+  --sapField_InformationBorderStyle: none;
+  --sapField_InformationShadow: inset 0 0 0 0.0625rem rgba(23, 138, 255, 0.5);
+  --sapField_Selector_Hover_Background: #ffffff;
+  --sapField_Selector_Hover_InvalidBackground: #ffffff;
+  --sapField_Selector_Hover_WarningBackground: #ffffff;
+  --sapField_Selector_Hover_SuccessBackground: #ffffff;
+  --sapField_Selector_Hover_InformationBackground: #ffffff;
+  --sapField_Picker_BorderColor: #050400;
+  --sapField_Picker_BorderWidth: 0.0625rem;
+  --sapField_Selector_BorderStyle: solid;
+  --sapField_Selector_ReadOnly_BorderStyle: dashed;
+  --sapField_Selector_InvalidBorderStyle: solid;
+  --sapField_Selector_WarningBorderStyle: solid;
+  --sapField_Selector_SuccessBorderStyle: solid;
+  --sapField_Selector_InformationBorderStyle: solid;
+  --sapGroup_TitleBorderWidth: 0.0625rem;
+  --sapGroup_TitleBackground: #ffffff;
+  --sapGroup_TitleBorderColor: #B4B3AF;
+  --sapGroup_TitleTextColor: #050400;
+  --sapGroup_Title_FontSize: 1rem;
+  --sapGroup_ContentBackground: #ffffff;
+  --sapGroup_ContentAlternatingBackground: #f0f0f0;
+  --sapGroup_ContentBorderColor: #B4B3AF;
+  --sapGroup_BorderWidth: 0.0625rem;
+  --sapGroup_BorderCornerRadius: 0.75rem;
+  --sapGroup_FooterBackground: transparent;
+  --sapToolbar_Background: #ffffff;
+  --sapToolbar_SeparatorColor: #d9d9d9;
+  --sapList_HeaderBackground: #FAFAFA;
+  --sapList_HeaderBorderColor: #B4B3AF;
+  --sapList_HeaderTextColor: #050400;
+  --sapList_BorderColor: #dbdbdb;
+  --sapList_BorderWidth: 0.0625rem;
+  --sapList_TextColor: #050400;
+  --sapList_Active_TextColor: #ffffff;
+  --sapList_Active_Background: #050400;
+  --sapList_SelectionBackgroundColor: #050400;
+  --sapList_SelectionBorderColor: #050400;
+  --sapList_Hover_SelectionBackground: #504F4B;
+  --sapList_Background: #ffffff;
+  --sapList_Hover_Background: #504F4B;
+  --sapList_AlternatingBackground: #FAFAFA;
+  --sapList_GroupHeaderBackground: #ffffff;
+  --sapList_GroupHeaderBorderColor: #B4B3AF;
+  --sapList_GroupHeaderTextColor: #050400;
+  --sapList_TableGroupHeaderBackground: #f5f5f5;
+  --sapList_TableGroupHeaderBorderColor: #B4B3AF;
+  --sapList_TableGroupHeaderTextColor: #050400;
+  --sapList_FooterBackground: #ffffff;
+  --sapList_FooterTextColor: #050400;
+  --sapList_TableFooterBorder: #B4B3AF;
+  --sapList_TableFixedBorderColor: #828282;
+  --sapList_TableFixedColumnBorderWidth: 0.0625rem;
+  --sapList_TableFixedRowBorderWidth: 0.125rem;
+  --sapMessage_BorderWidth: 0.0625rem;
+  --sapMessage_ErrorBorderColor: #B20000;
+  --sapMessage_WarningBorderColor: #D93D00;
+  --sapMessage_SuccessBorderColor: #107800;
+  --sapMessage_InformationBorderColor: #0050A1;
+  --sapMessage_Button_Hover_Background: rgba(0, 0, 0, 0.2);
+  --sapPopover_BorderCornerRadius: 0.5rem;
+  --sapProgress_Background: #e6e6e6;
+  --sapProgress_BorderColor: #e6e6e6;
+  --sapProgress_TextColor: #050400;
+  --sapProgress_FontSize: 0.875rem;
+  --sapProgress_NegativeBackground: #efcbcb;
+  --sapProgress_NegativeBorderColor: #efcbcb;
+  --sapProgress_NegativeTextColor: #050400;
+  --sapProgress_CriticalBackground: #f6d1c3;
+  --sapProgress_CriticalBorderColor: #f6d1c3;
+  --sapProgress_CriticalTextColor: #050400;
+  --sapProgress_PositiveBackground: #b7d6b2;
+  --sapProgress_PositiveBorderColor: #b7d6b2;
+  --sapProgress_PositiveTextColor: #050400;
+  --sapProgress_InformationBackground: #c6d8ea;
+  --sapProgress_InformationBorderColor: #c6d8ea;
+  --sapProgress_InformationTextColor: #050400;
+  --sapProgress_Value_Background: #050400;
+  --sapProgress_Value_BorderColor: #050400;
+  --sapProgress_Value_TextColor: #696864;
+  --sapProgress_Value_NegativeBackground: #B20000;
+  --sapProgress_Value_NegativeBorderColor: #B20000;
+  --sapProgress_Value_NegativeTextColor: #B20000;
+  --sapProgress_Value_CriticalBackground: #D93D00;
+  --sapProgress_Value_CriticalBorderColor: #D93D00;
+  --sapProgress_Value_CriticalTextColor: #D93D00;
+  --sapProgress_Value_PositiveBackground: #107800;
+  --sapProgress_Value_PositiveBorderColor: #107800;
+  --sapProgress_Value_PositiveTextColor: #107800;
+  --sapProgress_Value_InformationBackground: #0050A1;
+  --sapProgress_Value_InformationBorderColor: #0050A1;
+  --sapProgress_Value_InformationTextColor: #0050A1;
+  --sapScrollBar_FaceColor: #0f0c00;
+  --sapScrollBar_TrackColor: #ffffff;
+  --sapScrollBar_BorderColor: #0f0c00;
+  --sapScrollBar_SymbolColor: #050400;
+  --sapScrollBar_Dimension: 0.75rem;
+  --sapScrollBar_Hover_FaceColor: #000000;
+  --sapSlider_Background: #e3e3e3;
+  --sapSlider_BorderColor: #e3e3e3;
+  --sapSlider_Selected_Background: #050400;
+  --sapSlider_Selected_BorderColor: #050400;
+  --sapSlider_Selected_Dimension: 0.125rem;
+  --sapSlider_HandleBackground: #ffffff;
+  --sapSlider_HandleBorderColor: #050400;
+  --sapSlider_RangeHandleBackground: #ffffff;
+  --sapSlider_Hover_HandleBackground: #ffffff;
+  --sapSlider_Hover_HandleBorderColor: #050400;
+  --sapSlider_Hover_RangeHandleBackground: #ffffff;
+  --sapSlider_Active_HandleBackground: #ffffff;
+  --sapSlider_Active_HandleBorderColor: #050400;
+  --sapSlider_Active_RangeHandleBackground: transparent;
+  --sapPageHeader_Background: #ffffff;
+  --sapPageHeader_BorderColor: #d9d9d9;
+  --sapPageHeader_TextColor: #050400;
+  --sapPageFooter_Background: #ffffff;
+  --sapPageFooter_BorderColor: #d9d9d9;
+  --sapPageFooter_TextColor: #050400;
+  --sapInfobar_Background: #c2fcee;
+  --sapInfobar_Hover_Background: #ffffff;
+  --sapInfobar_Active_Background: #ffffff;
+  --sapInfobar_NonInteractive_Background: #FAFAFA;
+  --sapInfobar_TextColor: #046c7a;
+  --sapObjectHeader_Background: #ffffff;
+  --sapObjectHeader_Hover_Background: #CDCCC8;
+  --sapObjectHeader_BorderColor: #d9d9d9;
+  --sapObjectHeader_Title_TextColor: #050400;
+  --sapObjectHeader_Title_FontSize: 1.5rem;
+  --sapObjectHeader_Title_SnappedFontSize: 1.25rem;
+  --sapObjectHeader_Title_FontFamily: "72Black", "72Blackfull", "72", "72full", Arial, Helvetica, sans-serif;
+  --sapObjectHeader_Subtitle_TextColor: #696864;
+  --sapBlockLayer_Background: #000;
+  --sapBlockLayer_Opacity: 0.2;
+  --sapTab_TextColor: #050400;
+  --sapTab_ForegroundColor: #050400;
+  --sapTab_IconColor: #050400;
+  --sapTab_Background: #ffffff;
+  --sapTab_Selected_TextColor: #050400;
+  --sapTab_Selected_IconColor: #ffffff;
+  --sapTab_Selected_Background: #050400;
+  --sapTab_Selected_Indicator_Dimension: 0.1875rem;
+  --sapTab_Positive_TextColor: #518848;
+  --sapTab_Positive_ForegroundColor: #107800;
+  --sapTab_Positive_IconColor: #107800;
+  --sapTab_Positive_Selected_TextColor: #518848;
+  --sapTab_Positive_Selected_IconColor: #ffffff;
+  --sapTab_Positive_Selected_Background: #107800;
+  --sapTab_Negative_TextColor: #bd3b3b;
+  --sapTab_Negative_ForegroundColor: #B20000;
+  --sapTab_Negative_IconColor: #B20000;
+  --sapTab_Negative_Selected_TextColor: #bd3b3b;
+  --sapTab_Negative_Selected_IconColor: #ffffff;
+  --sapTab_Negative_Selected_Background: #B20000;
+  --sapTab_Critical_TextColor: #dd5825;
+  --sapTab_Critical_ForegroundColor: #D93D00;
+  --sapTab_Critical_IconColor: #D93D00;
+  --sapTab_Critical_Selected_TextColor: #dd5825;
+  --sapTab_Critical_Selected_IconColor: #ffffff;
+  --sapTab_Critical_Selected_Background: #D93D00;
+  --sapTab_Neutral_TextColor: #050400;
+  --sapTab_Neutral_ForegroundColor: #696864;
+  --sapTab_Neutral_IconColor: #696864;
+  --sapTab_Neutral_Selected_TextColor: #050400;
+  --sapTab_Neutral_Selected_IconColor: #ffffff;
+  --sapTab_Neutral_Selected_Background: #696864;
+  --sapTile_Background: #ffffff;
+  --sapTile_Hover_Background: #CDCCC8;
+  --sapTile_Active_Background: #e6e6e6;
+  --sapTile_BorderColor: transparent;
+  --sapTile_BorderCornerRadius: 1rem;
+  --sapTile_TitleTextColor: #050400;
+  --sapTile_TextColor: #696864;
+  --sapTile_IconColor: #696864;
+  --sapTile_SeparatorColor: transparent;
+  --sapTile_Interactive_BorderColor: #b3b3b3;
+  --sapTile_OverlayBackground: #ffffff;
+  --sapTile_OverlayForegroundColor: #050400;
+  --sapTile_Hover_ContentBackground: #ffffff;
+  --sapTile_Active_ContentBackground: #ffffff;
+  --sapAccentColor1: #d27700;
+  --sapAccentColor2: #aa0808;
+  --sapAccentColor3: #ba066c;
+  --sapAccentColor4: #a100c2;
+  --sapAccentColor5: #5d36ff;
+  --sapAccentColor6: #0057d2;
+  --sapAccentColor7: #046c7a;
+  --sapAccentColor8: #256f3a;
+  --sapAccentColor9: #6c32a9;
+  --sapAccentColor10: #5b738b;
+  --sapAccentBackgroundColor1: #fff3b8;
+  --sapAccentBackgroundColor2: #ffd0e7;
+  --sapAccentBackgroundColor3: #ffdbe7;
+  --sapAccentBackgroundColor4: #ffdcf3;
+  --sapAccentBackgroundColor5: #ded3ff;
+  --sapAccentBackgroundColor6: #d1efff;
+  --sapAccentBackgroundColor7: #c2fcee;
+  --sapAccentBackgroundColor8: #ebf5cb;
+  --sapAccentBackgroundColor9: #ddccf0;
+  --sapAccentBackgroundColor10: #eaecee;
+  --sapIndicationColor_1: #840606;
+  --sapIndicationColor_1_Background: #840606;
+  --sapIndicationColor_1_BorderColor: #840606;
+  --sapIndicationColor_1_TextColor: #ffffff;
+  --sapIndicationColor_1_Hover_Background: #6c0505;
+  --sapIndicationColor_1_Active_Background: #ffffff;
+  --sapIndicationColor_1_Active_BorderColor: #fb9d9d;
+  --sapIndicationColor_1_Active_TextColor: #840606;
+  --sapIndicationColor_1_Selected_Background: #ffffff;
+  --sapIndicationColor_1_Selected_BorderColor: #fb9d9d;
+  --sapIndicationColor_1_Selected_TextColor: #840606;
+  --sapIndicationColor_1b: #fb9d9d;
+  --sapIndicationColor_1b_TextColor: #840606;
+  --sapIndicationColor_1b_Background: #fb9d9d;
+  --sapIndicationColor_1b_BorderColor: #fb9d9d;
+  --sapIndicationColor_1b_Hover_Background: #fa8585;
+  --sapIndicationColor_2: #aa0808;
+  --sapIndicationColor_2_Background: #aa0808;
+  --sapIndicationColor_2_BorderColor: #aa0808;
+  --sapIndicationColor_2_TextColor: #ffffff;
+  --sapIndicationColor_2_Hover_Background: #920707;
+  --sapIndicationColor_2_Active_Background: #ffffff;
+  --sapIndicationColor_2_Active_BorderColor: #fcc4c4;
+  --sapIndicationColor_2_Active_TextColor: #aa0808;
+  --sapIndicationColor_2_Selected_Background: #ffffff;
+  --sapIndicationColor_2_Selected_BorderColor: #fcc4c4;
+  --sapIndicationColor_2_Selected_TextColor: #aa0808;
+  --sapIndicationColor_2b: #fcc4c4;
+  --sapIndicationColor_2b_TextColor: #aa0808;
+  --sapIndicationColor_2b_Background: #fcc4c4;
+  --sapIndicationColor_2b_BorderColor: #fcc4c4;
+  --sapIndicationColor_2b_Hover_Background: #fbacac;
+  --sapIndicationColor_3: #b95100;
+  --sapIndicationColor_3_Background: #e76500;
+  --sapIndicationColor_3_BorderColor: #e76500;
+  --sapIndicationColor_3_TextColor: #ffffff;
+  --sapIndicationColor_3_Hover_Background: #d85e00;
+  --sapIndicationColor_3_Active_Background: #ffffff;
+  --sapIndicationColor_3_Active_BorderColor: #ffdfc3;
+  --sapIndicationColor_3_Active_TextColor: #b95100;
+  --sapIndicationColor_3_Selected_Background: #ffffff;
+  --sapIndicationColor_3_Selected_BorderColor: #ffdfc3;
+  --sapIndicationColor_3_Selected_TextColor: #b95100;
+  --sapIndicationColor_3b: #ffdfc3;
+  --sapIndicationColor_3b_TextColor: #a44d00;
+  --sapIndicationColor_3b_Background: #ffdfc3;
+  --sapIndicationColor_3b_BorderColor: #ffdfc3;
+  --sapIndicationColor_3b_Hover_Background: #ffd1a9;
+  --sapIndicationColor_4: #256f3a;
+  --sapIndicationColor_4_Background: #256f3a;
+  --sapIndicationColor_4_BorderColor: #256f3a;
+  --sapIndicationColor_4_TextColor: #ffffff;
+  --sapIndicationColor_4_Hover_Background: #1f5c30;
+  --sapIndicationColor_4_Active_Background: #ffffff;
+  --sapIndicationColor_4_Active_BorderColor: #bae8bc;
+  --sapIndicationColor_4_Active_TextColor: #256f3a;
+  --sapIndicationColor_4_Selected_Background: #ffffff;
+  --sapIndicationColor_4_Selected_BorderColor: #bae8bc;
+  --sapIndicationColor_4_Selected_TextColor: #256f3a;
+  --sapIndicationColor_4b: #bae8bc;
+  --sapIndicationColor_4b_TextColor: #256f28;
+  --sapIndicationColor_4b_Background: #bae8bc;
+  --sapIndicationColor_4b_BorderColor: #bae8bc;
+  --sapIndicationColor_4b_Hover_Background: #a7e2a9;
+  --sapIndicationColor_5: #0070f2;
+  --sapIndicationColor_5_Background: #0070f2;
+  --sapIndicationColor_5_BorderColor: #0070f2;
+  --sapIndicationColor_5_TextColor: #ffffff;
+  --sapIndicationColor_5_Hover_Background: #0064d9;
+  --sapIndicationColor_5_Active_Background: #ffffff;
+  --sapIndicationColor_5_Active_BorderColor: #d9ebff;
+  --sapIndicationColor_5_Active_TextColor: #0070f2;
+  --sapIndicationColor_5_Selected_Background: #ffffff;
+  --sapIndicationColor_5_Selected_BorderColor: #d9ebff;
+  --sapIndicationColor_5_Selected_TextColor: #0070f2;
+  --sapIndicationColor_5b: #d9ebff;
+  --sapIndicationColor_5b_TextColor: #0067d9;
+  --sapIndicationColor_5b_Background: #d9ebff;
+  --sapIndicationColor_5b_BorderColor: #d9ebff;
+  --sapIndicationColor_5b_Hover_Background: #c0deff;
+  --sapIndicationColor_6: #046c7a;
+  --sapIndicationColor_6_Background: #046c7a;
+  --sapIndicationColor_6_BorderColor: #046c7a;
+  --sapIndicationColor_6_TextColor: #ffffff;
+  --sapIndicationColor_6_Hover_Background: #035661;
+  --sapIndicationColor_6_Active_Background: #ffffff;
+  --sapIndicationColor_6_Active_BorderColor: #cdf5ec;
+  --sapIndicationColor_6_Active_TextColor: #046c7a;
+  --sapIndicationColor_6_Selected_Background: #ffffff;
+  --sapIndicationColor_6_Selected_BorderColor: #cdf5ec;
+  --sapIndicationColor_6_Selected_TextColor: #046c7a;
+  --sapIndicationColor_6b: #cdf5ec;
+  --sapIndicationColor_6b_TextColor: #156b58;
+  --sapIndicationColor_6b_Background: #cdf5ec;
+  --sapIndicationColor_6b_BorderColor: #cdf5ec;
+  --sapIndicationColor_6b_Hover_Background: #b8f1e4;
+  --sapIndicationColor_7: #5d36ff;
+  --sapIndicationColor_7_Background: #5d36ff;
+  --sapIndicationColor_7_BorderColor: #5d36ff;
+  --sapIndicationColor_7_TextColor: #ffffff;
+  --sapIndicationColor_7_Hover_Background: #481cff;
+  --sapIndicationColor_7_Active_Background: #ffffff;
+  --sapIndicationColor_7_Active_BorderColor: #e2dbff;
+  --sapIndicationColor_7_Active_TextColor: #5d36ff;
+  --sapIndicationColor_7_Selected_Background: #ffffff;
+  --sapIndicationColor_7_Selected_BorderColor: #e2dbff;
+  --sapIndicationColor_7_Selected_TextColor: #5d36ff;
+  --sapIndicationColor_7b: #e2dbff;
+  --sapIndicationColor_7b_TextColor: #5f38ff;
+  --sapIndicationColor_7b_Background: #e2dbff;
+  --sapIndicationColor_7b_BorderColor: #e2dbff;
+  --sapIndicationColor_7b_Hover_Background: #cdc2ff;
+  --sapIndicationColor_8: #a100c2;
+  --sapIndicationColor_8_Background: #a100c2;
+  --sapIndicationColor_8_BorderColor: #a100c2;
+  --sapIndicationColor_8_TextColor: #ffffff;
+  --sapIndicationColor_8_Hover_Background: #8c00a9;
+  --sapIndicationColor_8_Active_Background: #ffffff;
+  --sapIndicationColor_8_Active_BorderColor: #f8d6ff;
+  --sapIndicationColor_8_Active_TextColor: #a100c2;
+  --sapIndicationColor_8_Selected_Background: #ffffff;
+  --sapIndicationColor_8_Selected_BorderColor: #f8d6ff;
+  --sapIndicationColor_8_Selected_TextColor: #a100c2;
+  --sapIndicationColor_8b: #f8d6ff;
+  --sapIndicationColor_8b_TextColor: #a100c2;
+  --sapIndicationColor_8b_Background: #f8d6ff;
+  --sapIndicationColor_8b_BorderColor: #f8d6ff;
+  --sapIndicationColor_8b_Hover_Background: #f4bdff;
+  --sapIndicationColor_9: #1d2d3e;
+  --sapIndicationColor_9_Background: #1d2d3e;
+  --sapIndicationColor_9_BorderColor: #1d2d3e;
+  --sapIndicationColor_9_TextColor: #ffffff;
+  --sapIndicationColor_9_Hover_Background: #15202d;
+  --sapIndicationColor_9_Active_Background: #ffffff;
+  --sapIndicationColor_9_Active_BorderColor: #d9d9d9;
+  --sapIndicationColor_9_Active_TextColor: #1d2d3e;
+  --sapIndicationColor_9_Selected_Background: #ffffff;
+  --sapIndicationColor_9_Selected_BorderColor: #d9d9d9;
+  --sapIndicationColor_9_Selected_TextColor: #1d2d3e;
+  --sapIndicationColor_9b: #fff;
+  --sapIndicationColor_9b_TextColor: #2e2e2e;
+  --sapIndicationColor_9b_Background: #fff;
+  --sapIndicationColor_9b_BorderColor: #d9d9d9;
+  --sapIndicationColor_9b_Hover_Background: #f2f2f2;
+  --sapIndicationColor_10: #45484a;
+  --sapIndicationColor_10_Background: #83888b;
+  --sapIndicationColor_10_BorderColor: #83888b;
+  --sapIndicationColor_10_TextColor: #ffffff;
+  --sapIndicationColor_10_Hover_Background: #767b7f;
+  --sapIndicationColor_10_Active_Background: #ffffff;
+  --sapIndicationColor_10_Active_BorderColor: #eaecee;
+  --sapIndicationColor_10_Active_TextColor: #45484a;
+  --sapIndicationColor_10_Selected_Background: #ffffff;
+  --sapIndicationColor_10_Selected_BorderColor: #eaecee;
+  --sapIndicationColor_10_Selected_TextColor: #45484a;
+  --sapIndicationColor_10b: #eaecee;
+  --sapIndicationColor_10b_TextColor: #444648;
+  --sapIndicationColor_10b_Background: #eaecee;
+  --sapIndicationColor_10b_BorderColor: #eaecee;
+  --sapIndicationColor_10b_Hover_Background: #dcdfe3;
+  --sapLegend_WorkingBackground: #ffffff;
+  --sapLegend_NonWorkingBackground: #ebebeb;
+  --sapLegend_CurrentDateTime: #a100c2;
+  --sapLegendColor1: #c35500;
+  --sapLegendColor2: #d23a0a;
+  --sapLegendColor3: #df1278;
+  --sapLegendColor4: #840606;
+  --sapLegendColor5: #cc00dc;
+  --sapLegendColor6: #0057d2;
+  --sapLegendColor7: #07838f;
+  --sapLegendColor8: #188918;
+  --sapLegendColor9: #5b738b;
+  --sapLegendColor10: #7800a4;
+  --sapLegendColor11: #a93e00;
+  --sapLegendColor12: #aa2608;
+  --sapLegendColor13: #ba066c;
+  --sapLegendColor14: #8d2a00;
+  --sapLegendColor15: #4e247a;
+  --sapLegendColor16: #002a86;
+  --sapLegendColor17: #035663;
+  --sapLegendColor18: #1e592f;
+  --sapLegendColor19: #1a4796;
+  --sapLegendColor20: #470ced;
+  --sapLegendBackgroundColor1: #ffef9f;
+  --sapLegendBackgroundColor2: #feeae1;
+  --sapLegendBackgroundColor3: #fbf6f8;
+  --sapLegendBackgroundColor4: #fbebeb;
+  --sapLegendBackgroundColor5: #ffe5fe;
+  --sapLegendBackgroundColor6: #d1efff;
+  --sapLegendBackgroundColor7: #c2fcee;
+  --sapLegendBackgroundColor8: #f5fae5;
+  --sapLegendBackgroundColor9: #f5f6f7;
+  --sapLegendBackgroundColor10: #fff0fa;
+  --sapLegendBackgroundColor11: #fff8d6;
+  --sapLegendBackgroundColor12: #fff6f6;
+  --sapLegendBackgroundColor13: #f7ebef;
+  --sapLegendBackgroundColor14: #f1ecd5;
+  --sapLegendBackgroundColor15: #f0e7f8;
+  --sapLegendBackgroundColor16: #ebf8ff;
+  --sapLegendBackgroundColor17: #dafdf5;
+  --sapLegendBackgroundColor18: #ebf5cb;
+  --sapLegendBackgroundColor19: #fafdff;
+  --sapLegendBackgroundColor20: #eceeff;
+  --sapChart_Background: #ffffff;
+  --sapChart_ContrastTextShadow: 0 0 0.0625rem rgba(0, 0, 0, 0.7);
+  --sapChart_ContrastShadowColor: #fff;
+  --sapChart_ContrastLineColor: #ffffff;
+  --sapChart_LineColor_1: #b89300;
+  --sapChart_LineColor_2: #050400;
+  --sapChart_LineColor_3: #000000;
+  --sapChart_Choropleth_Background: #edf0f3;
+  --sapChart_ChoroplethRegion_Background: #758ca4;
+  --sapChart_ChoroplethRegion_BorderColor: #edf0f3;
+  --sapChart_Data_TextColor: #000000;
+  --sapChart_Data_ContrastTextColor: #ffffff;
+  --sapChart_Data_InteractiveColor: #000000;
+  --sapChart_Data_Active_Background: #e6e6e6;
+  --sapChart_IBCS_Actual: #233549;
+  --sapChart_IBCS_Previous: #758ca4;
+  --sapChart_IBCS_Good: #0c5900;
+  --sapChart_IBCS_Bad: #660000;
+  --sapChart_OrderedColor_1: #2B145C;
+  --sapChart_OrderedColor_2: #986BF7;
+  --sapChart_OrderedColor_3: #EFE2FE;
+  --sapChart_OrderedColor_4: #7E55D0;
+  --sapChart_OrderedColor_5: #D1BCFA;
+  --sapChart_OrderedColor_6: #442A82;
+  --sapChart_OrderedColor_7: #A984F5;
+  --sapChart_OrderedColor_8: #FFCC00;
+  --sapChart_OrderedColor_9: #083D85;
+  --sapChart_OrderedColor_10: #3F91F9;
+  --sapChart_OrderedColor_11: #062E67;
+  --sapChart_OrderedColor_12: #327BDA;
+  --sapChart_Bad: #B20000;
+  --sapChart_Critical: #D93D00;
+  --sapChart_Good: #107800;
+  --sapChart_Neutral: #758ca4;
+  --sapChart_Sequence_1_Plus3: #5829bc;
+  --sapChart_Sequence_1_Plus3_TextColor: #ffffff;
+  --sapChart_Sequence_1_Plus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1_Plus2: #48229b;
+  --sapChart_Sequence_1_Plus2_TextColor: #ffffff;
+  --sapChart_Sequence_1_Plus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1_Plus1: #3b1b7e;
+  --sapChart_Sequence_1_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_1_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1: #2B145C;
+  --sapChart_Sequence_1_TextColor: #ffffff;
+  --sapChart_Sequence_1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1_BorderColor: #170b32;
+  --sapChart_Sequence_1_Minus1: #170b32;
+  --sapChart_Sequence_1_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_1_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1_Minus2: #0c0519;
+  --sapChart_Sequence_1_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_1_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1_Minus3: #000000;
+  --sapChart_Sequence_1_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_1_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1_Minus4: #000000;
+  --sapChart_Sequence_1_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_1_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_1_Minus5: #000000;
+  --sapChart_Sequence_1_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_1_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_2_Plus3: #fdfcff;
+  --sapChart_Sequence_2_Plus3_TextColor: #000000;
+  --sapChart_Sequence_2_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_2_Plus2: #ddd1f7;
+  --sapChart_Sequence_2_Plus2_TextColor: #000000;
+  --sapChart_Sequence_2_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_2_Plus1: #bda6ef;
+  --sapChart_Sequence_2_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_2_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_2: #986BF7;
+  --sapChart_Sequence_2_TextColor: #ffffff;
+  --sapChart_Sequence_2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_2_BorderColor: #7d44f5;
+  --sapChart_Sequence_2_Minus1: #7d44f5;
+  --sapChart_Sequence_2_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_2_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_2_Minus2: #6522f3;
+  --sapChart_Sequence_2_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_2_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_2_Minus3: #560def;
+  --sapChart_Sequence_2_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_2_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_2_Minus4: #4d0cd7;
+  --sapChart_Sequence_2_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_2_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_2_Minus5: #440abf;
+  --sapChart_Sequence_2_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_2_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_3_Plus3: #ffffff;
+  --sapChart_Sequence_3_Plus3_TextColor: #000000;
+  --sapChart_Sequence_3_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_3_Plus2: #ffffff;
+  --sapChart_Sequence_3_Plus2_TextColor: #000000;
+  --sapChart_Sequence_3_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_3_Plus1: #ffffff;
+  --sapChart_Sequence_3_Plus1_TextColor: #000000;
+  --sapChart_Sequence_3_Plus1_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_3: #EFE2FE;
+  --sapChart_Sequence_3_TextColor: #000000;
+  --sapChart_Sequence_3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_3_BorderColor: #d9bbfd;
+  --sapChart_Sequence_3_Minus1: #d9bbfd;
+  --sapChart_Sequence_3_Minus1_TextColor: #000000;
+  --sapChart_Sequence_3_Minus1_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_3_Minus2: #c698fb;
+  --sapChart_Sequence_3_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_3_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_3_Minus3: #b97ffb;
+  --sapChart_Sequence_3_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_3_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_3_Minus4: #b071fa;
+  --sapChart_Sequence_3_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_3_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_3_Minus5: #a862fa;
+  --sapChart_Sequence_3_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_3_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_4_Plus3: #c4b1e9;
+  --sapChart_Sequence_4_Plus3_TextColor: #000000;
+  --sapChart_Sequence_4_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_4_Plus2: #ab91e1;
+  --sapChart_Sequence_4_Plus2_TextColor: #000000;
+  --sapChart_Sequence_4_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_4_Plus1: #9371d8;
+  --sapChart_Sequence_4_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_4_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_4: #7E55D0;
+  --sapChart_Sequence_4_TextColor: #ffffff;
+  --sapChart_Sequence_4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_4_BorderColor: #7E55D0;
+  --sapChart_Sequence_4_Minus1: #6637c6;
+  --sapChart_Sequence_4_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_4_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_4_Minus2: #562ea6;
+  --sapChart_Sequence_4_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_4_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_4_Minus3: #49278e;
+  --sapChart_Sequence_4_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_4_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_4_Minus4: #391e6e;
+  --sapChart_Sequence_4_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_4_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_4_Minus5: #2e195a;
+  --sapChart_Sequence_4_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_4_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_5_Plus3: #ffffff;
+  --sapChart_Sequence_5_Plus3_TextColor: #000000;
+  --sapChart_Sequence_5_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_5_Plus2: #ffffff;
+  --sapChart_Sequence_5_Plus2_TextColor: #000000;
+  --sapChart_Sequence_5_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_5_Plus1: #f2ecfd;
+  --sapChart_Sequence_5_Plus1_TextColor: #000000;
+  --sapChart_Sequence_5_Plus1_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_5: #D1BCFA;
+  --sapChart_Sequence_5_TextColor: #000000;
+  --sapChart_Sequence_5_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_5_BorderColor: #D1BCFA;
+  --sapChart_Sequence_5_Minus1: #b293f0;
+  --sapChart_Sequence_5_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_5_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_5_Minus2: #996feb;
+  --sapChart_Sequence_5_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_5_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_5_Minus3: #8958e8;
+  --sapChart_Sequence_5_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_5_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_5_Minus4: #7942e5;
+  --sapChart_Sequence_5_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_5_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_5_Minus5: #5f16ee;
+  --sapChart_Sequence_5_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_5_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_Plus3: #a190ca;
+  --sapChart_Sequence_6_Plus3_TextColor: #ffffff;
+  --sapChart_Sequence_6_Plus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_Plus2: #7d69ae;
+  --sapChart_Sequence_6_Plus2_TextColor: #ffffff;
+  --sapChart_Sequence_6_Plus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_Plus1: #5434a1;
+  --sapChart_Sequence_6_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_6_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6: #442A82;
+  --sapChart_Sequence_6_TextColor: #ffffff;
+  --sapChart_Sequence_6_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_BorderColor: #5434a1;
+  --sapChart_Sequence_6_Minus1: #37206d;
+  --sapChart_Sequence_6_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_6_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_Minus2: #2b1857;
+  --sapChart_Sequence_6_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_6_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_Minus3: #231447;
+  --sapChart_Sequence_6_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_6_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_Minus4: #1b0f37;
+  --sapChart_Sequence_6_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_6_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_6_Minus5: #110a23;
+  --sapChart_Sequence_6_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_6_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_7_Plus3: #f5f0fe;
+  --sapChart_Sequence_7_Plus3_TextColor: #000000;
+  --sapChart_Sequence_7_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_7_Plus2: #dacbfb;
+  --sapChart_Sequence_7_Plus2_TextColor: #000000;
+  --sapChart_Sequence_7_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_7_Plus1: #c3aaf8;
+  --sapChart_Sequence_7_Plus1_TextColor: #000000;
+  --sapChart_Sequence_7_Plus1_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_7: #A984F5;
+  --sapChart_Sequence_7_TextColor: #ffffff;
+  --sapChart_Sequence_7_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_7_BorderColor: #A984F5;
+  --sapChart_Sequence_7_Minus1: #9568f3;
+  --sapChart_Sequence_7_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_7_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_7_Minus2: #814bf0;
+  --sapChart_Sequence_7_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_7_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_7_Minus3: #6726ed;
+  --sapChart_Sequence_7_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_7_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_7_Minus4: #4c10c6;
+  --sapChart_Sequence_7_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_7_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_7_Minus5: #440fb3;
+  --sapChart_Sequence_7_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_7_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_8_Plus3: #ffe785;
+  --sapChart_Sequence_8_Plus3_TextColor: #000000;
+  --sapChart_Sequence_8_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_8_Plus2: #ffdd57;
+  --sapChart_Sequence_8_Plus2_TextColor: #000000;
+  --sapChart_Sequence_8_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_8_Plus1: #ffd52e;
+  --sapChart_Sequence_8_Plus1_TextColor: #000000;
+  --sapChart_Sequence_8_Plus1_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_8: #FFCC00;
+  --sapChart_Sequence_8_TextColor: #000000;
+  --sapChart_Sequence_8_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_8_BorderColor: #FFCC00;
+  --sapChart_Sequence_8_Minus1: #d6ab00;
+  --sapChart_Sequence_8_Minus1_TextColor: #000000;
+  --sapChart_Sequence_8_Minus1_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_8_Minus2: #ad8b00;
+  --sapChart_Sequence_8_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_8_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_8_Minus3: #997a00;
+  --sapChart_Sequence_8_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_8_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_8_Minus4: #806600;
+  --sapChart_Sequence_8_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_8_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_8_Minus5: #5c4900;
+  --sapChart_Sequence_8_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_8_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_Plus3: #1b76f1;
+  --sapChart_Sequence_9_Plus3_TextColor: #ffffff;
+  --sapChart_Sequence_9_Plus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_Plus2: #0e6eef;
+  --sapChart_Sequence_9_Plus2_TextColor: #ffffff;
+  --sapChart_Sequence_9_Plus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_Plus1: #0b55ba;
+  --sapChart_Sequence_9_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_9_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9: #083D85;
+  --sapChart_Sequence_9_TextColor: #ffffff;
+  --sapChart_Sequence_9_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_BorderColor: #083D85;
+  --sapChart_Sequence_9_Minus1: #062b5f;
+  --sapChart_Sequence_9_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_9_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_Minus2: #031a38;
+  --sapChart_Sequence_9_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_9_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_Minus3: #010812;
+  --sapChart_Sequence_9_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_9_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_Minus4: #000000;
+  --sapChart_Sequence_9_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_9_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_9_Minus5: #000000;
+  --sapChart_Sequence_9_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_9_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_10_Plus3: #accffc;
+  --sapChart_Sequence_10_Plus3_TextColor: #000000;
+  --sapChart_Sequence_10_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_10_Plus2: #8ebefb;
+  --sapChart_Sequence_10_Plus2_TextColor: #000000;
+  --sapChart_Sequence_10_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_10_Plus1: #67a8fa;
+  --sapChart_Sequence_10_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_10_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_10: #3F91F9;
+  --sapChart_Sequence_10_TextColor: #ffffff;
+  --sapChart_Sequence_10_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_10_BorderColor: #2275de;
+  --sapChart_Sequence_10_Minus1: #2275de;
+  --sapChart_Sequence_10_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_10_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_10_Minus2: #1b60b7;
+  --sapChart_Sequence_10_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_10_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_10_Minus3: #164d93;
+  --sapChart_Sequence_10_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_10_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_10_Minus4: #113d74;
+  --sapChart_Sequence_10_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_10_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_10_Minus5: #0e315e;
+  --sapChart_Sequence_10_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_10_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_Plus3: #0d62db;
+  --sapChart_Sequence_11_Plus3_TextColor: #ffffff;
+  --sapChart_Sequence_11_Plus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_Plus2: #0a4eaf;
+  --sapChart_Sequence_11_Plus2_TextColor: #ffffff;
+  --sapChart_Sequence_11_Plus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_Plus1: #094497;
+  --sapChart_Sequence_11_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_11_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11: #062E67;
+  --sapChart_Sequence_11_TextColor: #ffffff;
+  --sapChart_Sequence_11_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_BorderColor: #062E67;
+  --sapChart_Sequence_11_Minus1: #0b1e3a;
+  --sapChart_Sequence_11_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_11_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_Minus2: #040c17;
+  --sapChart_Sequence_11_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_11_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_Minus3: #000000;
+  --sapChart_Sequence_11_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_11_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_Minus4: #000000;
+  --sapChart_Sequence_11_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_11_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_11_Minus5: #000000;
+  --sapChart_Sequence_11_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_11_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_12_Plus3: #cadcf5;
+  --sapChart_Sequence_12_Plus3_TextColor: #000000;
+  --sapChart_Sequence_12_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_12_Plus2: #b0ccf0;
+  --sapChart_Sequence_12_Plus2_TextColor: #000000;
+  --sapChart_Sequence_12_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_12_Plus1: #7baae7;
+  --sapChart_Sequence_12_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_12_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_12: #327BDA;
+  --sapChart_Sequence_12_TextColor: #ffffff;
+  --sapChart_Sequence_12_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_12_BorderColor: #327BDA;
+  --sapChart_Sequence_12_Minus1: #2367c0;
+  --sapChart_Sequence_12_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_12_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_12_Minus2: #1e59a7;
+  --sapChart_Sequence_12_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_12_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_12_Minus3: #184784;
+  --sapChart_Sequence_12_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_12_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_12_Minus4: #123461;
+  --sapChart_Sequence_12_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_12_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_12_Minus5: #0d2647;
+  --sapChart_Sequence_12_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_12_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_Plus3: #ff5656;
+  --sapChart_Sequence_Bad_Plus3_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Plus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_Plus2: #ff2323;
+  --sapChart_Sequence_Bad_Plus2_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Plus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_Plus1: #ef0000;
+  --sapChart_Sequence_Bad_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad: #B20000;
+  --sapChart_Sequence_Bad_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_BorderColor: #B20000;
+  --sapChart_Sequence_Bad_Minus1: #660000;
+  --sapChart_Sequence_Bad_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_Minus2: #3d0000;
+  --sapChart_Sequence_Bad_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_Minus3: #140000;
+  --sapChart_Sequence_Bad_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_Minus4: #000000;
+  --sapChart_Sequence_Bad_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Bad_Minus5: #000000;
+  --sapChart_Sequence_Bad_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_Bad_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical_Plus3: #ff9e78;
+  --sapChart_Sequence_Critical_Plus3_TextColor: #000000;
+  --sapChart_Sequence_Critical_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_Critical_Plus2: #ff6e36;
+  --sapChart_Sequence_Critical_Plus2_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_Plus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical_Plus1: #ff4a03;
+  --sapChart_Sequence_Critical_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical: #D93D00;
+  --sapChart_Sequence_Critical_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical_BorderColor: #D93D00;
+  --sapChart_Sequence_Critical_Minus1: #ba3400;
+  --sapChart_Sequence_Critical_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical_Minus2: #a12d00;
+  --sapChart_Sequence_Critical_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical_Minus3: #872600;
+  --sapChart_Sequence_Critical_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical_Minus4: #641c00;
+  --sapChart_Sequence_Critical_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Critical_Minus5: #401200;
+  --sapChart_Sequence_Critical_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_Critical_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Good_Plus3: #36ff17;
+  --sapChart_Sequence_Good_Plus3_TextColor: #000000;
+  --sapChart_Sequence_Good_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_Good_Plus2: #1cd400;
+  --sapChart_Sequence_Good_Plus2_TextColor: #000000;
+  --sapChart_Sequence_Good_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_Good_Plus1: #15a100;
+  --sapChart_Sequence_Good_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_Good_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Good: #107800;
+  --sapChart_Sequence_Good_TextColor: #ffffff;
+  --sapChart_Sequence_Good_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Good_BorderColor: #107800;
+  --sapChart_Sequence_Good_Minus1: #0c5900;
+  --sapChart_Sequence_Good_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_Good_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Good_Minus2: #094000;
+  --sapChart_Sequence_Good_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_Good_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Good_Minus3: #052600;
+  --sapChart_Sequence_Good_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_Good_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Good_Minus4: #000300;
+  --sapChart_Sequence_Good_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_Good_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Good_Minus5: #000000;
+  --sapChart_Sequence_Good_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_Good_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Neutral_Plus3: #edf0f3;
+  --sapChart_Sequence_Neutral_Plus3_TextColor: #000000;
+  --sapChart_Sequence_Neutral_Plus3_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_Neutral_Plus2: #c2ccd7;
+  --sapChart_Sequence_Neutral_Plus2_TextColor: #000000;
+  --sapChart_Sequence_Neutral_Plus2_TextShadow: 0 0 0.125rem #fff;
+  --sapChart_Sequence_Neutral_Plus1: #9aabbc;
+  --sapChart_Sequence_Neutral_Plus1_TextColor: #ffffff;
+  --sapChart_Sequence_Neutral_Plus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Neutral: #758ca4;
+  --sapChart_Sequence_Neutral_TextColor: #ffffff;
+  --sapChart_Sequence_Neutral_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Neutral_BorderColor: #758ca4;
+  --sapChart_Sequence_Neutral_Minus1: #5b728b;
+  --sapChart_Sequence_Neutral_Minus1_TextColor: #ffffff;
+  --sapChart_Sequence_Neutral_Minus1_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Neutral_Minus2: #485e75;
+  --sapChart_Sequence_Neutral_Minus2_TextColor: #ffffff;
+  --sapChart_Sequence_Neutral_Minus2_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Neutral_Minus3: #364a5f;
+  --sapChart_Sequence_Neutral_Minus3_TextColor: #ffffff;
+  --sapChart_Sequence_Neutral_Minus3_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Neutral_Minus4: #233549;
+  --sapChart_Sequence_Neutral_Minus4_TextColor: #ffffff;
+  --sapChart_Sequence_Neutral_Minus4_TextShadow: 0 0 0.125rem #223548;
+  --sapChart_Sequence_Neutral_Minus5: #1a2633;
+  --sapChart_Sequence_Neutral_Minus5_TextColor: #ffffff;
+  --sapChart_Sequence_Neutral_Minus5_TextShadow: 0 0 0.125rem #223548;
+  --sapBreakpoint_S_Min: 0;
+  --sapBreakpoint_M_Min: 600px;
+  --sapBreakpoint_L_Min: 1024px;
+  --sapBreakpoint_XL_Min: 1440px;
+  --sapFontUrl_SAP-icons_ttf: url(../sap_horizon/fonts/SAP-icons.ttf);
+  --sapFontUrl_SAP-icons_woff: url(../sap_horizon/fonts/SAP-icons.woff);
+  --sapFontUrl_SAP-icons_woff2: url(../sap_horizon/fonts/SAP-icons.woff2);
+  --sapFontUrl_SAP-icons-TNT_ttf: url(../sap_horizon/fonts/SAP-icons-TNT.ttf);
+  --sapFontUrl_SAP-icons-TNT_woff: url(../sap_horizon/fonts/SAP-icons-TNT.woff);
+  --sapFontUrl_SAP-icons-TNT_woff2: url(../sap_horizon/fonts/SAP-icons-TNT.woff2);
+  --sapFontUrl_SAP-icons-Business-Suite_ttf: url(../sap_horizon/fonts/BusinessSuiteInAppSymbols.ttf);
+  --sapFontUrl_SAP-icons-Business-Suite_woff: url(../sap_horizon/fonts/BusinessSuiteInAppSymbols.woff);
+  --sapFontUrl_SAP-icons-Business-Suite_woff2: url(../sap_horizon/fonts/BusinessSuiteInAppSymbols.woff2);
+  --sapFontUrl_72_Regular_woff2: url(../baseTheme/fonts/72-Regular.woff2);
+  --sapFontUrl_72_Regular_woff: url(../baseTheme/fonts/72-Regular.woff);
+  --sapFontUrl_72_Regular_full_woff2: url(../baseTheme/fonts/72-Regular-full.woff2);
+  --sapFontUrl_72_Regular_full_woff: url(../baseTheme/fonts/72-Regular-full.woff);
+  --sapFontUrl_72_Bold_woff2: url(../baseTheme/fonts/72-Bold.woff2);
+  --sapFontUrl_72_Bold_woff: url(../baseTheme/fonts/72-Bold.woff);
+  --sapFontUrl_72_Bold_full_woff2: url(../baseTheme/fonts/72-Bold-full.woff2);
+  --sapFontUrl_72_Bold_full_woff: url(../baseTheme/fonts/72-Bold-full.woff);
+  --sapFontUrl_72_Semibold_woff2: url(../baseTheme/fonts/72-Semibold.woff2);
+  --sapFontUrl_72_Semibold_woff: url(../baseTheme/fonts/72-Semibold.woff);
+  --sapFontUrl_72_Semibold_full_woff2: url(../baseTheme/fonts/72-Semibold-full.woff2);
+  --sapFontUrl_72_Semibold_full_woff: url(../baseTheme/fonts/72-Semibold-full.woff);
+  --sapFontUrl_72_SemiboldDuplex_woff2: url(../baseTheme/fonts/72-SemiboldDuplex.woff2);
+  --sapFontUrl_72_SemiboldDuplex_woff: url(../baseTheme/fonts/72-SemiboldDuplex.woff);
+  --sapFontUrl_72_SemiboldDuplex_full_woff2: url(../baseTheme/fonts/72-SemiboldDuplex-full.woff2);
+  --sapFontUrl_72_SemiboldDuplex_full_woff: url(../baseTheme/fonts/72-SemiboldDuplex-full.woff);
+  --sapFontUrl_72_Light_woff2: url(../baseTheme/fonts/72-Light.woff2);
+  --sapFontUrl_72_Light_woff: url(../baseTheme/fonts/72-Light.woff);
+  --sapFontUrl_72_Light_full_woff2: url(../baseTheme/fonts/72-Light-full.woff2);
+  --sapFontUrl_72_Light_full_woff: url(../baseTheme/fonts/72-Light-full.woff);
+  --sapFontUrl_72_Black_woff2: url(../baseTheme/fonts/72-Black.woff2);
+  --sapFontUrl_72_Black_woff: url(../baseTheme/fonts/72-Black.woff);
+  --sapFontUrl_72_Black_full_woff2: url(../baseTheme/fonts/72-Black-full.woff2);
+  --sapFontUrl_72_Black_full_woff: url(../baseTheme/fonts/72-Black-full.woff);
+  --sapFontUrl_72_BoldItalic_woff2: url(../baseTheme/fonts/72-BoldItalic.woff2);
+  --sapFontUrl_72_BoldItalic_woff: url(../baseTheme/fonts/72-BoldItalic.woff);
+  --sapFontUrl_72_BoldItalic_full_woff2: url(../baseTheme/fonts/72-BoldItalic-full.woff2);
+  --sapFontUrl_72_BoldItalic_full_woff: url(../baseTheme/fonts/72-BoldItalic-full.woff);
+  --sapFontUrl_72_Condensed_woff2: url(../baseTheme/fonts/72-Condensed.woff2);
+  --sapFontUrl_72_Condensed_woff: url(../baseTheme/fonts/72-Condensed.woff);
+  --sapFontUrl_72_Condensed_full_woff2: url(../baseTheme/fonts/72-Condensed-full.woff2);
+  --sapFontUrl_72_Condensed_full_woff: url(../baseTheme/fonts/72-Condensed-full.woff);
+  --sapFontUrl_72_CondensedBold_woff2: url(../baseTheme/fonts/72-CondensedBold.woff2);
+  --sapFontUrl_72_CondensedBold_woff: url(../baseTheme/fonts/72-CondensedBold.woff);
+  --sapFontUrl_72_CondensedBold_full_woff2: url(../baseTheme/fonts/72-CondensedBold-full.woff2);
+  --sapFontUrl_72_CondensedBold_full_woff: url(../baseTheme/fonts/72-CondensedBold-full.woff);
+  --sapFontUrl_72_Italic_woff2: url(../baseTheme/fonts/72-Italic.woff2);
+  --sapFontUrl_72_Italic_woff: url(../baseTheme/fonts/72-Italic.woff);
+  --sapFontUrl_72_Italic_full_woff2: url(../baseTheme/fonts/72-Italic-full.woff2);
+  --sapFontUrl_72_Italic_full_woff: url(../baseTheme/fonts/72-Italic-full.woff);
+  --sapFontUrl_72Mono_Regular_woff2: url(../baseTheme/fonts/72Mono-Regular.woff2);
+  --sapFontUrl_72Mono_Regular_woff: url(../baseTheme/fonts/72Mono-Regular.woff);
+  --sapFontUrl_72Mono_Regular_full_woff2: url(../baseTheme/fonts/72Mono-Regular-full.woff2);
+  --sapFontUrl_72Mono_Regular_full_woff: url(../baseTheme/fonts/72Mono-Regular-full.woff);
+  --sapFontUrl_72Mono_Bold_woff2: url(../baseTheme/fonts/72Mono-Bold.woff2);
+  --sapFontUrl_72Mono_Bold_woff: url(../baseTheme/fonts/72Mono-Bold.woff);
+  --sapFontUrl_72Mono_Bold_full_woff2: url(../baseTheme/fonts/72Mono-Bold-full.woff2);
+  --sapFontUrl_72Mono_Bold_full_woff: url(../baseTheme/fonts/72Mono-Bold-full.woff);
+  --sapSapThemeId: sap_horizon;
+  --sapHighlightTextColor: #ffffff;
+  --sapButton_Emphasized_FontWeight: bold;
+  --sapShell_BackgroundGradient: linear-gradient(to bottom, #FAFAFA, #FAFAFA);
+  --sapAt: @;
+}
+/*<SAP_FREETEXT_LESS>*/
+.background-image--sapCompanyLogo {
+  background-image: var(--sapCompanyLogo);
+}
+.background-image--sapBackgroundImage {
+  background-image: var(--sapBackgroundImage);
+}
+.background-image--sapShell_BackgroundImage {
+  background-image: var(--sapShell_BackgroundImage);
+}
+/*</SAP_FREETEXT_LESS>*/
+/*!SAP_POSTPROCESS_REDUCE_END*/
+/******************* FILE /Base/baseLib/baseTheme/css_variables.less (Version 11.36.5) *******************/
+/**
+* Copyright (c) 2012-2025 SAP SE or an SAP affiliate company and Theming Base Content contributors. Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+* Theming Engine 17.0.47
+* data:{"sModified":"2026-07-29T12:42:35Z"}
+*/
+/******************* FILE /Base/baseLib/sap_horizon/base.less (Version 11.36.5) *******************/
+/******************* FILE /Base/baseLib/sap_horizon/css_variables.less (Version 11.36.5) *******************/
+:root {
+  --awbButton_Disabled_BorderStyle: dashed;
+  --awbDayPicker_Item_BorderRadius: 50%;
+}

@@ -1,0 +1,387 @@
+// =============================================================================
+// AWB Custom Theme — extends Morning Horizon (sap_horizon)
+// After edits: npm run build:theme
+// Verify cascade in /theme-lab (toggle Custom-Theme in ShellBar)
+// =============================================================================
+
+@import "@sap-theming/theming-base-content/content/Base/baseLib/sap_horizon/css_variables.less";
+
+// -----------------------------------------------------------------------------
+// 1. PRIMARY PALETTE — change these first; most UI derives from them
+// -----------------------------------------------------------------------------
+@sapPrimary1: #FAFAFA; // was Horizon ice-blue #ebf8ff
+@sapPrimary2: #050400;
+@sapPrimary3: #ffffff;
+@sapPrimary4: #FAFAFA;
+@sapPrimary5: #050400;
+@sapPrimary6: #050400;
+@sapPrimary7: #696864;
+
+// Semantic accent colors — borders, icons, value-state indicators (MessageStrip, fields, tags, icons)
+@awbSemanticInformationAccent: #0050A1;
+@awbSemanticPositiveAccent: #107800;
+@awbSemanticCriticalAccent: #D93D00;
+@awbSemanticNegativeAccent: #B20000;
+
+// Shared interactive mid-gray (buttons, lists, selected hover)
+@awbInteractiveHoverBackground: #504F4B;
+// Light surface hover (generic sapHoverColor, tiles)
+@awbSurfaceHoverBackground: #CDCCC8;
+
+// -----------------------------------------------------------------------------
+// 2. BRAND & CORE SURFACES
+// -----------------------------------------------------------------------------
+@sapBrandColor: @sapPrimary2;
+@sapHighlightColor: @sapPrimary2;
+@sapBaseColor: @sapPrimary3;
+@sapShellColor: #ffcc00;
+@sapBackgroundColor: @sapPrimary4;
+@sapShell_Background: @sapPrimary4;
+@sapHoverColor: @awbSurfaceHoverBackground; // was lighten(#050400,55) → #ffd21f
+@sapSelectedColor: @sapHighlightColor;
+@sapContent_Selected_Hover_Background: @awbInteractiveHoverBackground; // was lighten(selected,52) → #ffcf0f
+
+// -----------------------------------------------------------------------------
+// 3. TYPOGRAPHY / CONTENT
+// -----------------------------------------------------------------------------
+@sapFontFamily: "72", "72full", Arial, Helvetica, sans-serif;
+@sapFontHeaderFamily: @sapFontBlackFamily;
+// Breadcrumbs current page (label) — breadcrumbs-overrides.ts uses sapFontBoldFamily
+@sapFontSize: 0.875rem;
+@sapFontSmallSize: 0.75rem;
+@sapFontHeader2Size: 2rem;
+@sapTextColor: @sapPrimary6;
+@sapTitleColor: @sapPrimary6;
+@sapContent_LineHeight: 1.5;
+@sapContent_LabelColor: @sapPrimary7;
+@sapContent_ContrastTextColor: @sapPrimary3;
+
+// -----------------------------------------------------------------------------
+// 4. SHELL BAR
+// -----------------------------------------------------------------------------
+@sapShell_TextColor: @sapTextColor;
+@sapShell_Active_TextColor: @sapTextColor;
+@sapShell_Selected_TextColor: @sapTextColor;
+@sapShell_Navigation_TextColor: @sapTextColor;
+@sapShell_Navigation_Active_TextColor: @sapHighlightColor;
+@sapShell_SubBrand_TextColor: @sapShell_TextColor; // branding title on yellow bar
+@awbShellItemHoverBackground: transparent;
+@sapShell_InteractiveTextColor: @sapHighlightColor;
+@sapShell_Hover_Background: @awbShellItemHoverBackground;
+@sapShell_Active_Background: transparent;
+@sapShell_GroupTitleTextColor: @sapTitleColor;
+
+// ShellBar profile avatar (Accent10); hover for Interactive + addCustomCSS wrapper
+@sapAvatar_10_Background: #050400;
+@sapAvatar_10_TextColor: #ffffff;
+@sapAvatar_10_BorderColor: #050400;
+@sapAvatar_10_Hover_Background: @sapHighlightColor;
+
+// -----------------------------------------------------------------------------
+// 5. BUTTONS — Emphasized / Accept / Reject / Lite (+ hover / active)
+// -----------------------------------------------------------------------------
+@sapButton_BorderCornerRadius: 1.5rem; // focus rings: see button-radius-overrides.ts
+@sapButton_Segment_BorderCornerRadius: 0; // inner segment corners square; pill ends via first/last-child only
+@sapButton_TokenBorderCornerRadius: @sapButton_BorderCornerRadius; // Token: see token-overrides.ts
+@sapButton_Lite_Hover_BorderColor: transparent;
+
+// Default button (design=Default): white fill; text/icon/border by state
+// Disabled Default: not emitted as CSS — see button-radius-overrides.ts
+@sapButton_Background: @sapBaseColor; // #ffffff
+@sapButton_BorderColor: @sapTextColor; // #050400
+@sapButton_TextColor: @sapTextColor; // #050400 (icons inherit)
+@sapButton_Hover_Background: @sapBaseColor;
+@sapButton_Hover_BorderColor: @awbInteractiveHoverBackground;
+@sapButton_Hover_TextColor: @awbInteractiveHoverBackground;
+@sapButton_Active_Background: @sapBaseColor;
+@sapButton_Active_BorderColor: @sapTextColor;
+@sapButton_Active_TextColor: @sapTextColor;
+
+@sapButton_Emphasized_Background: @sapHighlightColor;
+@sapButton_Emphasized_BorderColor: @sapHighlightColor;
+@sapButton_Emphasized_TextColor: @sapContent_ContrastTextColor;
+@sapButton_Emphasized_Hover_Background: @awbInteractiveHoverBackground;
+@sapButton_Emphasized_Hover_BorderColor: @awbInteractiveHoverBackground;
+@sapButton_Emphasized_Hover_TextColor: @sapContent_ContrastTextColor;
+// Clamp active — darken(#050400, n) collapses to #000000
+@sapButton_Emphasized_Active_Background: @sapHighlightColor;
+@sapButton_Emphasized_Active_BorderColor: @sapHighlightColor;
+
+// Toggle pressed / Segmented selected — match Emphasized
+@sapButton_Selected_Background: @sapButton_Emphasized_Background;
+@sapButton_Selected_BorderColor: @sapButton_Emphasized_BorderColor;
+@sapButton_Selected_TextColor: @sapButton_Emphasized_TextColor;
+@sapButton_Selected_Hover_Background: @sapButton_Emphasized_Hover_Background;
+@sapButton_Selected_Hover_BorderColor: @sapButton_Emphasized_Hover_BorderColor;
+@sapButton_Selected_Hover_TextColor: @sapButton_Emphasized_Hover_TextColor;
+@sapButton_Accept_Background: @awbSemanticPositiveAccent;
+@sapButton_Accept_BorderColor: @awbSemanticPositiveAccent;
+@sapButton_Accept_TextColor: @sapContent_ContrastTextColor;
+@sapButton_Reject_Background: @awbSemanticNegativeAccent;
+@sapButton_Reject_BorderColor: @awbSemanticNegativeAccent;
+@sapButton_Reject_TextColor: @sapContent_ContrastTextColor;
+@sapButton_Attention_Background: @awbSemanticCriticalAccent;
+@sapButton_Attention_BorderColor: @awbSemanticCriticalAccent;
+@sapButton_Attention_TextColor: @sapContent_ContrastTextColor;
+@sapButton_Attention_Hover_Background: darken(@awbSemanticCriticalAccent, 5);
+@sapButton_Attention_Hover_BorderColor: darken(@awbSemanticCriticalAccent, 5);
+@sapButton_Attention_Hover_TextColor: @sapContent_ContrastTextColor;
+
+// Positive / Negative / Attention designs + Tag aliases
+@sapButton_Success_Background: @sapButton_Accept_Background;
+@sapButton_Success_BorderColor: @sapButton_Accept_BorderColor;
+@sapButton_Success_TextColor: @sapButton_Accept_TextColor;
+@sapButton_Negative_Background: @sapButton_Reject_Background;
+@sapButton_Negative_BorderColor: @sapButton_Reject_BorderColor;
+@sapButton_Negative_TextColor: @sapButton_Reject_TextColor;
+@sapButton_Critical_Background: @sapButton_Attention_Background;
+@sapButton_Critical_BorderColor: @sapButton_Attention_BorderColor;
+@sapButton_Critical_TextColor: @sapButton_Attention_TextColor;
+
+// Transparent (Lite) — transparent fill (MessageStrip close, toolbar icons, etc.)
+@sapButton_Lite_Background: transparent;
+@sapButton_Lite_BorderColor: transparent;
+@sapButton_Lite_TextColor: @sapButton_TextColor;
+@sapButton_Lite_Hover_Background: transparent;
+@sapButton_Lite_Hover_TextColor: @sapButton_Hover_TextColor;
+@sapButton_Lite_Active_Background: transparent;
+@sapButton_Lite_Active_TextColor: @sapButton_Active_TextColor;
+
+// -----------------------------------------------------------------------------
+// 6. FIELDS — Input / Select / Combo / DatePicker cascade
+// -----------------------------------------------------------------------------
+@sapField_Background: @sapBaseColor;
+@sapField_BorderColor: @sapPrimary5;
+@sapField_TextColor: @sapTextColor;
+@sapField_PlaceholderTextColor: @sapContent_LabelColor;
+@sapField_BorderCornerRadius: 0.25rem;
+@sapField_Hover_Background: @sapBaseColor;
+@sapField_Hover_BorderColor: @sapHighlightColor;
+@sapField_Hover_HelpBackground: @sapHoverColor;
+@sapField_Focus_Background: @sapBaseColor;
+@sapField_Focus_BorderColor: @sapContent_FocusColor;
+@sapField_InvalidColor: @awbSemanticNegativeAccent;
+@sapField_InvalidBackground: @sapNegativeColor;
+@sapField_WarningColor: @awbSemanticCriticalAccent;
+@sapField_WarningBackground: @sapCriticalColor;
+@sapField_SuccessColor: @awbSemanticPositiveAccent;
+@sapField_SuccessBackground: @sapPositiveColor;
+@sapField_InformationColor: @awbSemanticInformationAccent;
+@sapField_InformationBackground: @sapInformativeColor;
+@sapField_ReadOnly_Background: @sapPrimary4;
+@sapField_ReadOnly_BorderColor: darken(@sapPrimary4, 12);
+// Checkbox / radio hover fill — UI5 maps --_ui5_checkbox_hover_background and
+// --_ui5_radio_button_hover_fill to this token (checked and unchecked).
+@sapField_Selector_Hover_Background: @sapButton_Hover_Background;
+// Disabled field dashed border — see field-disabled-overrides.ts (--awbButton_Disabled_BorderStyle)
+
+// -----------------------------------------------------------------------------
+// 7. LINKS, FOCUS, ICONS, SELECTION
+// -----------------------------------------------------------------------------
+@sapLinkColor: @sapHighlightColor;
+// Clamp — darken(#050400, n) collapses to #000000
+@sapLink_Hover_Color: @awbInteractiveHoverBackground;
+@sapLink_Active_Color: @sapHighlightColor;
+@sapContent_IconColor: @sapTextColor;
+@sapContent_NonInteractiveIconColor: @sapPrimary5;
+@sapContent_Selected_ForegroundColor: @sapSelectedColor;
+@sapContent_FocusColor: #050400;
+@sapContent_FocusStyle: solid;
+@sapContent_FocusWidth: 0.125rem;
+
+// -----------------------------------------------------------------------------
+// 8. SEMANTIC / MESSAGES — pastel backgrounds; accent borders/icons via @awbSemantic*Accent
+// -----------------------------------------------------------------------------
+@sapNegativeColor: #EBBFBF;
+@sapCriticalColor: #F5CEBF;
+@sapPositiveColor: #C3DDBF;
+@sapInformativeColor: #BFD3E7;
+@sapNeutralColor: @sapPrimary7; // was Horizon #788fa6
+@sapNegativeTextColor: darken(@sapNegativeColor, 35);
+@sapCriticalTextColor: darken(@sapCriticalColor, 35);
+@sapPositiveTextColor: darken(@sapPositiveColor, 40);
+@sapNeutralTextColor: @sapTextColor;
+@sapInformationColor: @sapInformativeColor;
+@sapNeutralBackground: @sapPrimary4; // was Horizon #eff1f2
+@sapNegativeBackground: lighten(@sapNegativeColor, 6);
+@sapCriticalBackground: lighten(@sapCriticalColor, 6);
+@sapPositiveBackground: lighten(@sapPositiveColor, 6);
+@sapInformativeBackground: lighten(@sapInformativeColor, 6);
+// MessageStrip / toast consumers use Error/Warning/Success/Information* (not only Negative*)
+@sapErrorBackground: @sapNegativeBackground;
+@sapWarningBackground: @sapCriticalBackground;
+@sapSuccessBackground: @sapPositiveBackground;
+@sapInformationBackground: @sapInformativeBackground;
+@sapErrorColor: @awbSemanticNegativeAccent;
+@sapWarningColor: @awbSemanticCriticalAccent;
+@sapSuccessColor: @awbSemanticPositiveAccent;
+@sapErrorBorderColor: @awbSemanticNegativeAccent;
+@sapWarningBorderColor: @awbSemanticCriticalAccent;
+@sapSuccessBorderColor: @awbSemanticPositiveAccent;
+@sapInformationBorderColor: @awbSemanticInformationAccent;
+@sapNegativeElementColor: @awbSemanticNegativeAccent;
+@sapCriticalElementColor: @awbSemanticCriticalAccent;
+@sapPositiveElementColor: @awbSemanticPositiveAccent;
+@sapInformativeElementColor: @awbSemanticInformationAccent;
+@sapMessage_InformationBorderColor: @awbSemanticInformationAccent;
+@sapMessage_SuccessBorderColor: @awbSemanticPositiveAccent;
+@sapMessage_WarningBorderColor: @awbSemanticCriticalAccent;
+@sapMessage_ErrorBorderColor: @awbSemanticNegativeAccent;
+
+// -----------------------------------------------------------------------------
+// 9. SHADOWS & SPACING
+// -----------------------------------------------------------------------------
+@sapContent_Shadow0: 0 0 0.125rem 0 fade(@sapContent_ShadowColor, 20),
+  0 0.125rem 0.25rem 0 fade(@sapContent_ShadowColor, 20);
+@sapContent_HeaderShadow: 0 0.125rem 0.125rem 0 fade(@sapContent_ShadowColor, 5),
+  inset 0 -0.0625rem 0 0 @sapObjectHeader_BorderColor;
+@sapContent_Space_Medium: 2rem;
+
+// -----------------------------------------------------------------------------
+// 10. PAGE / OBJECT HEADER
+// -----------------------------------------------------------------------------
+@sapPageHeader_Background: @sapBaseColor;
+@sapObjectHeader_Background: @sapBaseColor;
+@sapObjectHeader_BorderColor: darken(@sapObjectHeader_Background, 15);
+
+// -----------------------------------------------------------------------------
+// 11. GROUPS / PANELS / CARDS
+// Panel outer border — panel-overrides.ts (uses tokens below)
+// -----------------------------------------------------------------------------
+@sapGroup_ContentBackground: @sapBaseColor;
+@sapGroup_ContentBorderColor: @sapGroup_TitleBorderColor;
+@sapGroup_TitleBackground: @sapGroup_ContentBackground;
+@sapGroup_TitleBorderColor: #B4B3AF;
+@sapGroup_TitleBorderWidth: @sapElement_BorderWidth;
+@sapGroup_TitleTextColor: contrast(
+  @sapGroup_TitleBackground,
+  @sapTitleColor,
+  @sapContent_ContrastTextColor,
+  @sapContent_ContrastTextThreshold
+);
+
+// -----------------------------------------------------------------------------
+// 12. TILES (Launchpad)
+// -----------------------------------------------------------------------------
+@sapTile_Background: @sapBaseColor;
+@sapTile_Hover_Background: @awbSurfaceHoverBackground;
+@sapTile_BorderCornerRadius: 1rem;
+@sapTile_TitleTextColor: contrast(
+  @sapTile_Background,
+  @sapTitleColor,
+  @sapContent_ContrastTextColor,
+  @sapContent_ContrastTextThreshold
+);
+@sapTile_TextColor: contrast(
+  @sapTile_Background,
+  @sapContent_LabelColor,
+  @sapContent_ContrastTextColor,
+  @sapContent_ContrastTextThreshold
+);
+
+// -----------------------------------------------------------------------------
+// 13. LISTS & TABLES — hover #504F4B, selected #050400; text inversion in selection-invert-overrides.ts
+// -----------------------------------------------------------------------------
+@sapList_Background: @sapBaseColor;
+@sapList_AlternatingBackground: @sapPrimary4;
+@sapList_Hover_Background: @awbInteractiveHoverBackground;
+@sapList_SelectionBackgroundColor: @sapHighlightColor;
+@sapList_Hover_SelectionBackground: @awbInteractiveHoverBackground;
+@sapList_SelectionBorderColor: @sapHighlightColor;
+@sapList_Active_Background: @sapHighlightColor;
+@sapList_Active_TextColor: @sapContent_ContrastTextColor;
+@sapList_TextColor: @sapTextColor;
+@sapList_TableGroupHeaderBackground: darken(@sapPrimary4, 2);
+@sapList_TableGroupHeaderTextColor: contrast(
+  @sapList_TableGroupHeaderBackground,
+  @sapTextColor,
+  @sapContent_ContrastTextColor,
+  @sapContent_ContrastTextThreshold
+);
+@sapList_BorderColor: darken(@sapPrimary4, 12);
+@sapList_HeaderBackground: @sapPrimary4;
+
+// -----------------------------------------------------------------------------
+// 14. TABS, PROGRESS, BUSY, ELEMENTS, CHARTS
+// -----------------------------------------------------------------------------
+@sapTab_Selected_TextColor: @sapContent_Selected_ForegroundColor;
+@sapElement_BorderCornerRadius: 0.75rem;
+@sapInfobar_NonInteractive_Background: @sapPrimary4;
+@sapProgress_Background: darken(@sapPrimary4, 8);
+@sapProgress_Value_Background: @sapHighlightColor;
+@sapProgress_Value_PositiveBackground: @awbSemanticPositiveAccent;
+@sapProgress_Value_CriticalBackground: @awbSemanticCriticalAccent;
+@sapProgress_Value_NegativeBackground: @awbSemanticNegativeAccent;
+@sapProgress_Value_InformationBackground: @awbSemanticInformationAccent;
+@sapProgress_Value_PositiveTextColor: @awbSemanticPositiveAccent;
+@sapProgress_Value_CriticalTextColor: @awbSemanticCriticalAccent;
+@sapProgress_Value_NegativeTextColor: @awbSemanticNegativeAccent;
+@sapProgress_Value_InformationTextColor: @awbSemanticInformationAccent;
+@sapContent_BusyColor: @sapHighlightColor;
+// Chart series — AWB ordered palette + semantic chart colors
+@sapChart_OrderedColor_1: #2B145C;
+@sapChart_OrderedColor_2: #986BF7;
+@sapChart_OrderedColor_3: #EFE2FE;
+@sapChart_OrderedColor_4: #7E55D0;
+@sapChart_OrderedColor_5: #D1BCFA;
+@sapChart_OrderedColor_6: #442A82;
+@sapChart_OrderedColor_7: #A984F5;
+@sapChart_OrderedColor_8: #FFCC00;
+@sapChart_OrderedColor_9: #083D85;
+@sapChart_OrderedColor_10: #3F91F9;
+@sapChart_OrderedColor_11: #062E67;
+@sapChart_OrderedColor_12: #327BDA;
+@sapChart_Good: @awbSemanticPositiveAccent;
+@sapChart_Critical: @awbSemanticCriticalAccent;
+@sapChart_Bad: @awbSemanticNegativeAccent;
+// @sapChart_Neutral — Horizon default (unchanged)
+
+// -----------------------------------------------------------------------------
+// 15. SLIDER — handle border matches default field inputs
+// -----------------------------------------------------------------------------
+@sapSlider_HandleBorderColor: @sapField_BorderColor;
+@sapSlider_Hover_HandleBorderColor: @sapField_Hover_BorderColor;
+@sapSlider_Active_HandleBorderColor: @sapField_Active_BorderColor;
+@sapSlider_Hover_HandleBackground: @sapField_Hover_Background;
+@sapSlider_Hover_RangeHandleBackground: @sapField_Hover_Background;
+
+// -----------------------------------------------------------------------------
+// 16. SWITCH — OFF = Emphasized, ON = Positive (ui5-switch Track/Handle tokens)
+// -----------------------------------------------------------------------------
+@sapButton_Track_Background: @sapButton_Emphasized_Background;
+@sapButton_Track_BorderColor: @sapButton_Emphasized_BorderColor;
+@sapButton_Track_TextColor: @sapButton_Emphasized_TextColor;
+@sapButton_Track_Hover_Background: @sapButton_Emphasized_Hover_Background;
+@sapButton_Track_Hover_BorderColor: @sapButton_Emphasized_Hover_BorderColor;
+
+@sapButton_Handle_Background: @sapBaseColor;
+@sapButton_Handle_BorderColor: @sapBaseColor;
+@sapButton_Handle_TextColor: @sapButton_Emphasized_Background;
+@sapButton_Handle_Hover_Background: @sapBaseColor;
+@sapButton_Handle_Hover_BorderColor: fade(@sapBaseColor, 50);
+
+@sapButton_Track_Selected_Background: @awbSemanticPositiveAccent;
+@sapButton_Track_Selected_BorderColor: @awbSemanticPositiveAccent;
+@sapButton_Track_Selected_TextColor: @sapContent_ContrastTextColor;
+@sapButton_Track_Selected_Hover_Background: darken(@awbSemanticPositiveAccent, 5);
+@sapButton_Track_Selected_Hover_BorderColor: darken(@awbSemanticPositiveAccent, 5);
+
+@sapButton_Handle_Selected_Background: @sapBaseColor;
+@sapButton_Handle_Selected_BorderColor: @sapBaseColor;
+@sapButton_Handle_Selected_TextColor: @awbSemanticPositiveAccent;
+@sapButton_Handle_Selected_Hover_Background: @sapBaseColor;
+@sapButton_Handle_Selected_Hover_BorderColor: fade(@sapBaseColor, 50);
+
+// -----------------------------------------------------------------------------
+// 17. CALENDAR / DATE PICKER — DayPicker radius + range look in calendar-overrides.ts
+// -----------------------------------------------------------------------------
+// Month/year selected states already use @sapButton_Selected_* (= Emphasized).
+// Range: black circular start/end + shell-yellow mid bar (see calendar-overrides.ts).
+
+// -----------------------------------------------------------------------------
+// AWB custom CSS variables — consumed by addCustomCSS (shadow DOM)
+// -----------------------------------------------------------------------------
+:root {
+  --awbButton_Disabled_BorderStyle: dashed;
+  --awbDayPicker_Item_BorderRadius: 50%; // fully rounded day/month/year cells
+}

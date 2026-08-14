@@ -513,11 +513,11 @@ export function AusbildungAntragWizardPage() {
               </Text>
             </div>
             <FlexBox className="awb-wizard__header-actions" wrap={FlexBoxWrap.Wrap}>
-              <Button design="Default" onClick={handleSave}>
-                Speichern und schliessen
-              </Button>
               <Button design="Transparent" icon="delete" onClick={() => setDeleteOpen(true)}>
                 Löschen
+              </Button>
+              <Button design="Default" onClick={handleSave}>
+                Speichern und schliessen
               </Button>
             </FlexBox>
           </div>

@@ -1,4 +1,5 @@
-/* Micro Process Flow — Fiori dependent-steps pattern (compact, connected nodes). */
+/* Micro Process Flow — Fiori dependent-steps pattern (compact, connected nodes).
+ * Step colors use semantic element tokens (= @awbSemantic*Accent in awb_custom). */
 
 .micro-process-flow {
   --mpf-step-width: 4.75rem;
@@ -44,14 +45,15 @@
 }
 
 .micro-process-flow__node--completed {
-  border-color: var(--sapPositiveColor);
-  background: var(--sapPositiveColor);
+  border-color: var(--sapPositiveElementColor);
+  background: var(--sapPositiveElementColor);
   color: var(--sapContent_ContrastTextColor, #fff);
 }
 
 .micro-process-flow__node--inProgress {
-  border-color: var(--sapContent_Selected_ForegroundColor, var(--sapLinkColor));
-  background: var(--sapGroup_ContentBackground, var(--sapBackgroundColor));
+  border-color: var(--sapInformativeElementColor);
+  background: var(--sapInformativeElementColor);
+  color: var(--sapContent_ContrastTextColor, #fff);
 }
 
 .micro-process-flow__node--planned {
@@ -61,8 +63,8 @@
 }
 
 .micro-process-flow__node--rejected {
-  border-color: var(--sapNegativeColor);
-  background: var(--sapNegativeColor);
+  border-color: var(--sapNegativeElementColor);
+  background: var(--sapNegativeElementColor);
   color: var(--sapContent_ContrastTextColor, #fff);
 }
 
@@ -76,7 +78,7 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background: var(--sapContent_Selected_ForegroundColor, var(--sapLinkColor));
+  background: var(--sapContent_ContrastTextColor, #fff);
 }
 
 .micro-process-flow__connector {
@@ -92,7 +94,7 @@
 }
 
 .micro-process-flow__connector--solid {
-  border-top-color: var(--sapPositiveColor);
+  border-top-color: var(--sapPositiveElementColor);
 }
 
 .micro-process-flow__connector--dashed {
@@ -101,7 +103,7 @@
 }
 
 .micro-process-flow__connector--rejected {
-  border-top-color: var(--sapNegativeColor);
+  border-top-color: var(--sapNegativeElementColor);
 }
 
 .micro-process-flow__label {
@@ -118,7 +120,7 @@
 }
 
 .micro-process-flow__label--inProgress {
-  color: var(--sapContent_Selected_ForegroundColor, var(--sapLinkColor));
+  color: var(--sapInformativeElementColor);
   font-weight: 700;
 }
 
@@ -127,7 +129,7 @@
 }
 
 .micro-process-flow__label--rejected {
-  color: var(--sapNegativeColor);
+  color: var(--sapNegativeElementColor);
 }
 
 @media (max-width: 23.4375rem) {
