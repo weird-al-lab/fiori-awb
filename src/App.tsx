@@ -13,7 +13,7 @@ import { WeiterbildungEmployeeObjectPage } from './pages/WeiterbildungEmployeeOb
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
       <PrototypePersonaProvider>
       <Routes>
         <Route path="/" element={<MitarbeitendePage />} />
