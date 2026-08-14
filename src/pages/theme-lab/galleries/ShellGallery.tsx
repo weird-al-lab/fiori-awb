@@ -31,7 +31,11 @@ export function ShellGallery() {
               <ShellBarBranding
                 slot="branding"
                 logo={
-                  <img src="/post_logo.svg" alt="Die Post" height={32} />
+                  <img
+                    src={`${import.meta.env.BASE_URL}post_logo.svg`}
+                    alt="Die Post"
+                    height={32}
+                  />
                 }
               >
                 Theme Lab

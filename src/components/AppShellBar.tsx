@@ -11,7 +11,7 @@ import { usePrototypePersona } from '../context/PrototypePersonaContext'
 import { usePrototypeTheme } from '../context/PrototypeThemeContext'
 import { PROTOTYPE_PERSONAS, roleLabel } from '../data/personas'
 
-const COMPANY_LOGO = '/post_logo.svg'
+const COMPANY_LOGO = `${import.meta.env.BASE_URL}post_logo.svg`
 
 export type AppShellBarProps = {
   appTitle: string
