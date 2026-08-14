@@ -35,6 +35,8 @@ jobs:
 
       - name: Build app
         run: npm run build
+        env:
+          VITE_PROTOTYPE_GATE_PASSWORD: ${{ secrets.PROTOTYPE_GATE_PASSWORD }}
 
       - name: SPA fallback for client-side routes
         run: cp dist/index.html dist/404.html

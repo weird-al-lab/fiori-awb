@@ -19,6 +19,7 @@ import './index.css'
 import './layout/page-layout.css'
 import './layout/dialog-content.css'
 import { PrototypeThemeProvider } from './context/PrototypeThemeContext'
+import { PrototypeGate } from './components/PrototypeGate'
 import { ensureDemoAntraege } from './data/antrag/demoSeed'
 import App from './App.tsx'
 
@@ -27,9 +28,11 @@ ensureDemoAntraege()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <PrototypeThemeProvider>
-        <App />
-      </PrototypeThemeProvider>
+      <PrototypeGate>
+        <PrototypeThemeProvider>
+          <App />
+        </PrototypeThemeProvider>
+      </PrototypeGate>
     </ThemeProvider>
   </StrictMode>,
 )
