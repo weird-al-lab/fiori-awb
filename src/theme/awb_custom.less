@@ -197,16 +197,16 @@
 @sapPositiveColor: #C3DDBF;
 @sapInformativeColor: #BFD3E7;
 @sapNeutralColor: @sapPrimary7; // was Horizon #788fa6
-@sapNegativeTextColor: darken(@sapNegativeColor, 35);
-@sapCriticalTextColor: darken(@sapCriticalColor, 35);
-@sapPositiveTextColor: darken(@sapPositiveColor, 40);
+@sapNegativeTextColor: @sapTextColor;
+@sapCriticalTextColor: @sapTextColor;
+@sapPositiveTextColor: @sapTextColor;
 @sapNeutralTextColor: @sapTextColor;
 @sapInformationColor: @sapInformativeColor;
 @sapNeutralBackground: @sapPrimary4; // was Horizon #eff1f2
-@sapNegativeBackground: lighten(@sapNegativeColor, 6);
-@sapCriticalBackground: lighten(@sapCriticalColor, 6);
-@sapPositiveBackground: lighten(@sapPositiveColor, 6);
-@sapInformativeBackground: lighten(@sapInformativeColor, 6);
+@sapNegativeBackground: #EBBFBF;
+@sapCriticalBackground: #F5CEBF;
+@sapPositiveBackground: #C3DDBF;
+@sapInformativeBackground: #BFD3E7;
 // MessageStrip / toast consumers use Error/Warning/Success/Information* (not only Negative*)
 @sapErrorBackground: @sapNegativeBackground;
 @sapWarningBackground: @sapCriticalBackground;

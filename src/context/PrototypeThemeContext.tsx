@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { syncDocumentThemeAttr } from '../theme/custom-theme-scope'
+import { syncCalendarOverrides } from '../theme/calendar-overrides'
 
 export const THEME_STORAGE_KEY = 'awb-prototype-theme'
 export const HORIZON_THEME = Theme.sap_horizon
@@ -46,6 +47,7 @@ function readStoredThemeId(): PrototypeThemeId {
 async function applyTheme(themeId: PrototypeThemeId) {
   syncDocumentThemeAttr(themeId)
   await setTheme(themeId)
+  await syncCalendarOverrides(themeId)
 }
 
 export function PrototypeThemeProvider({ children }: { children: ReactNode }) {

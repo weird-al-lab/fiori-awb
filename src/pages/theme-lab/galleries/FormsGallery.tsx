@@ -123,13 +123,26 @@ export function FormsGallery() {
       <GalleryPanel title="Date / Time">
         <DemoGrid>
           <DemoBlock label="DatePicker" wide>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker
+              style={{ width: '100%' }}
+              formatPattern="dd.MM.yyyy"
+              value="14.08.2026"
+            />
           </DemoBlock>
           <DemoBlock label="DateRangePicker" wide>
-            <DateRangePicker style={{ width: '100%' }} />
+            <DateRangePicker
+              style={{ width: '100%' }}
+              formatPattern="dd.MM.yyyy"
+              delimiter=" - "
+              value="10.08.2026 - 20.08.2026"
+            />
           </DemoBlock>
           <DemoBlock label="DateTimePicker" wide>
-            <DateTimePicker style={{ width: '100%' }} />
+            <DateTimePicker
+              style={{ width: '100%' }}
+              formatPattern="dd.MM.yyyy"
+              value="14.08.2026"
+            />
           </DemoBlock>
           <DemoBlock label="TimePicker" wide>
             <TimePicker style={{ width: '100%' }} />
