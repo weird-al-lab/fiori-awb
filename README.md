@@ -53,6 +53,37 @@ See **[HANDOVER.md](./HANDOVER.md)** for:
 | `npm run lint` | Oxlint |
 | `npm run preview` | Preview production build |
 
+## Deploy (GitHub Pages + Vercel)
+
+Both platforms build from the same repo. Vite picks the asset base path automatically:
+
+| Platform | URL pattern | Production `base` |
+|---|---|---|
+| **GitHub Pages** | `https://<user>.github.io/fiori-awb/` | `/fiori-awb/` |
+| **Vercel** | `https://<project>.vercel.app/` | `/` |
+
+Vercel sets `VERCEL` during its build. GitHub Actions does not, so Pages keeps the subpath.
+
+**GitHub Pages** — workflow: `.github/workflows/deploy-pages.yml`  
+Build: `npm run build:theme && npm run build` · Gate secret: `PROTOTYPE_GATE_PASSWORD`
+
+**Vercel** — import repo, same build command, output `dist`  
+Gate env var: `VITE_PROTOTYPE_GATE_PASSWORD` · SPA routing: `vercel.json`
+
+**Preview a GitHub Pages build locally**
+
+```bash
+npm run build:theme && npm run build && npm run preview
+# open http://localhost:4173/fiori-awb/
+```
+
+**Preview a Vercel build locally**
+
+```bash
+npm run build:theme && VERCEL=1 npm run build && npm run preview
+# open http://localhost:4173/
+```
+
 ## GitHub Pages + password gate
 
 The published prototype can show a **client-side password screen** before the app loads. This keeps casual visitors and most crawlers out; it is **not** cryptographic security (the bundle can be inspected).
