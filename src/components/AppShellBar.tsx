@@ -10,8 +10,7 @@ import { ShellBarSearch } from '@ui5/webcomponents-react/ShellBarSearch'
 import { usePrototypePersona } from '../context/PrototypePersonaContext'
 import { usePrototypeTheme } from '../context/PrototypeThemeContext'
 import { PROTOTYPE_PERSONAS, roleLabel } from '../data/personas'
-
-const COMPANY_LOGO = `${import.meta.env.BASE_URL}post_logo.svg`
+import { PostLogo } from './PostLogo'
 
 export type AppShellBarProps = {
   appTitle: string
@@ -48,7 +47,7 @@ export function AppShellBar({
         branding={
           <ShellBarBranding
             slot="branding"
-            logo={<img src={COMPANY_LOGO} alt="Die Post" height={32} />}
+            logo={<PostLogo height={32} />}
           />
         }
         profile={

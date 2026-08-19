@@ -8,6 +8,7 @@ import { ShellBarBranding } from '@ui5/webcomponents-react/ShellBarBranding'
 import { ShellBarItem } from '@ui5/webcomponents-react/ShellBarItem'
 import { ShellBarSearch } from '@ui5/webcomponents-react/ShellBarSearch'
 import { Text } from '@ui5/webcomponents-react/Text'
+import { PostLogo } from '../../../components/PostLogo'
 import { DemoBlock, DemoGrid } from '../DemoBlock'
 import { GalleryPanel } from '../GalleryPanel'
 
@@ -30,13 +31,7 @@ export function ShellGallery() {
             branding={
               <ShellBarBranding
                 slot="branding"
-                logo={
-                  <img
-                    src={`${import.meta.env.BASE_URL}post_logo.svg`}
-                    alt="Die Post"
-                    height={32}
-                  />
-                }
+                logo={<PostLogo height={32} />}
               >
                 Theme Lab
               </ShellBarBranding>
