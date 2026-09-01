@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "componentName": "FilterDialog",
+    "filePath": "node_modules/@ui5/webcomponents-react/dist/components/FilterBar/FilterDialog.js"
+  },
+  "codeProperties": {
+    "open": {
+      "type": "boolean",
+      "name": "Open"
+    },
+    "showRestoreButton": {
+      "type": "boolean",
+      "name": "Show Restore Button"
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "pointAndEdit": {
+    "priorityPaths": {
+      "prefer": [
+        "src/pages/**/*.{tsx,jsx,ts,js}",
+        "src/pages/**/*.css",
+        "src/components/**/*.{tsx,jsx,ts,js}",
+        "src/components/**/*.css"
+      ],
+      "deprioritize": [
+        "src/context/**/*.{tsx,jsx,ts,js}",
+        "src/layout/**/*.{ts,js}",
+        "src/layout/**/*.css",
+        "src/theme/**/*.{ts,js}",
+        "src/themes/**/*.css",
+        "src/data/**/*.{ts,js}",
+        "src/index.css",
+        "src/App.css",
+        "src/App.tsx",
+        "src/main.tsx"
+      ],
+      "exclude": [
+        "src/scripts/**",
+        "src/assets/**",
+        "public/**",
+        "node_modules/**",
+        "dist/**",
+        "**/*.figma.ts",
+        "**/*.figma.tsx",
+        "**/*.figma.js",
+        "**/*.figma.jsx",
+        "**/*.figma.template.*",
+        "**/*.test.{ts,tsx,js,jsx}",
+        "**/*.spec.{ts,tsx,js,jsx}",
+        "vite.config.*",
+        "tsconfig*.json",
+        ".cursor/**",
+        ".git/**"
+      ]
+    },
+    "libraryPaths": {
+      "local": [],
+      "external": [
+        "node_modules/@ui5/webcomponents-react/**",
+        "node_modules/@ui5/webcomponents/**",
+        "node_modules/@ui5/webcomponents-fiori/**"
+      ]
+    },
+    "pathClassification": {
+      "classifier": "sonnet"
+    },
+    "exclusions": [
+      {
+        "glob": "src/scripts/**",
+        "reason": "Build-time tooling (e.g., build-theme.cjs) — not a UI rendering source."
+      },
+      {
+        "glob": "src/assets/**",
+        "reason": "Static binary and data-URI assets; not renderable component source."
+      },
+      {
+        "glob": "public/**",
+        "reason": "Static public assets served as-is; no component logic or JSX."
+      },
+      {
+        "glob": "node_modules/**",
+        "reason": "Third-party package code; not an editable source anchor for point-and-edit."
+      },
+      {
+        "glob": "dist/**",
+        "reason": "Build output; generated and not the source of truth."
+      },
+      {
+        "glob": "**/*.figma.ts",
+        "reason": "Figma mapping files must not be selected as point-and-edit source anchors per classification rules."
+      },
+      {
+        "glob": "**/*.figma.tsx",
+        "reason": "Figma mapping files must not be selected as point-and-edit source anchors per classification rules."
+      },
+      {
+        "glob": "**/*.figma.js",
+        "reason": "Figma mapping files must not be selected as point-and-edit source anchors per classification rules."
+      },
+      {
+        "glob": "**/*.figma.jsx",
+        "reason": "Figma mapping files must not be selected as point-and-edit source anchors per classification rules."
+      },
+      {
+        "glob": "**/*.figma.template.*",
+        "reason": "Figma mapping template files must not be selected as point-and-edit source anchors per classification rules."
+      },
+      {
+        "glob": "**/*.test.{ts,tsx,js,jsx}",
+        "reason": "Test files do not participate in rendering the active UI."
+      },
+      {
+        "glob": "**/*.spec.{ts,tsx,js,jsx}",
+        "reason": "Spec files do not participate in rendering the active UI."
+      },
+      {
+        "glob": "vite.config.*",
+        "reason": "Bundler configuration; no UI rendering surface."
+      },
+      {
+        "glob": "tsconfig*.json",
+        "reason": "TypeScript project configuration; no UI rendering surface."
+      },
+      {
+        "glob": ".cursor/**",
+        "reason": "Editor skill/reference docs; not application source."
+      },
+      {
+        "glob": ".git/**",
+        "reason": "Version control internals; not application source."
+      }
+    ],
+    "generated": {
+      "schemaVersion": 2,
+      "source": "setup-agent.point-and-edit-path-classifier",
+      "prompt": "same-turn-setup-subagent-v5",
+      "model": "claude-sonnet-4-6",
+      "createdAt": "2026-09-01T00:00:00.000Z",
+      "confidence": 0.92,
+      "explanation": "The repo is a single-app Vite + React prototype with a clear separation between page-level composition surfaces (src/pages/), reusable app-specific UI components (src/components/), and non-rendering support folders (src/data/, src/theme/, src/context/), making classification straightforward with high confidence."
+    }
+  }
+}

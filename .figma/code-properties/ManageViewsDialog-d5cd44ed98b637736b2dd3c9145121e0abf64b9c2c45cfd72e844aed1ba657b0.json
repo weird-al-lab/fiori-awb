@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "componentName": "ManageViewsDialog",
+    "filePath": "node_modules/@ui5/webcomponents-react/dist/components/VariantManagement/ManageViewsDialog.js"
+  },
+  "codeProperties": {
+    "showShare": {
+      "type": "boolean",
+      "name": "Show Share"
+    },
+    "showApplyAutomatically": {
+      "type": "boolean",
+      "name": "Show Apply Automatically"
+    },
+    "showSetAsDefault": {
+      "type": "boolean",
+      "name": "Show Set As Default"
+    },
+    "showCreatedBy": {
+      "type": "boolean",
+      "name": "Show Created By"
+    },
+    "showOnlyFavorites": {
+      "type": "boolean",
+      "name": "Show Only Favorites"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "componentName": "CollapsedAvatar",
+    "filePath": "node_modules/@ui5/webcomponents-react/dist/components/ObjectPage/CollapsedAvatar.js"
+  },
+  "codeProperties": {
+    "image": {
+      "type": {
+        "name": "other",
+        "value": "figma-reference"
+      },
+      "name": "Image",
+      "control": false
+    },
+    "imageShapeCircle": {
+      "type": "boolean",
+      "name": "Image Shape Circle"
+    },
+    "hideCollapsedAvatar": {
+      "type": "boolean",
+      "name": "Hide Collapsed Avatar"
+    }
+  }
+}

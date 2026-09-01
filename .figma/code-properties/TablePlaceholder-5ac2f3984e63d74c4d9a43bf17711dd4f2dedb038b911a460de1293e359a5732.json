@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "componentName": "TablePlaceholder",
+    "filePath": "node_modules/@ui5/webcomponents-react/dist/components/AnalyticalTable/defaults/LoadingComponent/TablePlaceholder.js"
+  },
+  "codeProperties": {
+    "rows": {
+      "type": "number",
+      "name": "Rows",
+      "defaultValue": 5,
+      "description": "Number of placeholder rows to display."
+    }
+  }
+}
