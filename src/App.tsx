@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { PrototypePersonaProvider } from './context/PrototypePersonaContext'
 import { AusbildungAntragReviewPage } from './pages/AusbildungAntragReviewPage'
+import { FlowsIndexPage } from './pages/FlowsIndexPage'
 import {
   AusbildungAntragWizardPage,
   AusbildungAntragWizardRedirect,
@@ -16,7 +17,8 @@ function App() {
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
       <PrototypePersonaProvider>
       <Routes>
-        <Route path="/" element={<MitarbeitendePage />} />
+        <Route path="/" element={<FlowsIndexPage />} />
+        <Route path="/home" element={<MitarbeitendePage />} />
         <Route path="/weiterbildung" element={<WeiterbildungEmployeeListPage />} />
         <Route
           path="/weiterbildung/:employeeId"

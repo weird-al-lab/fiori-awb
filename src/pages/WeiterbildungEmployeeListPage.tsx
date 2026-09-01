@@ -47,7 +47,7 @@ export function WeiterbildungEmployeeListPage() {
   )
 
   const goBack = () => {
-    navigate('/')
+    navigate('/home')
   }
 
   const openEmployee = (employeeId: string) => {

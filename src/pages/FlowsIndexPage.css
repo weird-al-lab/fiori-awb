@@ -1,0 +1,32 @@
+.flows-index-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.flows-index-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-block: 0.5rem;
+}
+
+.flows-index-page__intro-text {
+  color: var(--sapContent_LabelColor);
+}
+
+.flows-index-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.flows-index-page__card {
+  width: 100%;
+}
+
+.flows-index-page__card-body {
+  padding: 0 1rem 1rem;
+  color: var(--sapTile_TextColor);
+}
