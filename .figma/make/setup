@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# First-open setup: verify system prerequisites are present.
+# Project dependencies are handled by ./install (runs every open).
+set -euo pipefail
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "Node.js is required but was not found on PATH." >&2
+  exit 1
+fi
+
+if ! command -v npm >/dev/null 2>&1; then
+  echo "npm is required but was not found on PATH." >&2
+  exit 1
+fi
+
+echo "Setup OK: node $(node --version), npm $(npm --version)"

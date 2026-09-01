@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Verify the dev server is reachable at the configured URL.
+set -euo pipefail
+
+set -a
+# shellcheck disable=SC1091
+. "$(dirname "$0")/env"
+set +a
+
+URL="${FIGMA_MAKE_URL:-http://localhost:${PORT}}"
+
+for _ in $(seq 1 30); do
+  if curl -fsS -o /dev/null "$URL"; then
+    echo "Dev server is up at $URL"
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "Dev server did not become reachable at $URL" >&2
+exit 1

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Start the Vite dev server bound to the port from ./env.
+set -euo pipefail
+
+cd "$(dirname "$0")/../.."
+
+# Load PORT (and any other env vars) from the sibling env file.
+set -a
+# shellcheck disable=SC1091
+. "$(dirname "$0")/env"
+set +a
+
+exec npm run dev -- --port "$PORT" --strictPort --host
