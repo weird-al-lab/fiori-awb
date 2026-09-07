@@ -1,0 +1,116 @@
+.awb-antrag-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.awb-antrag-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.awb-antrag-form__section-title {
+  color: var(--sapGroup_TitleTextColor);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--sapGroup_TitleBorderColor);
+}
+
+.awb-antrag-form__form {
+  width: 100%;
+  container-type: inline-size;
+  container-name: awb-antrag-form;
+}
+
+.awb-antrag-form__label-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.awb-antrag-form__stacked-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+}
+
+.awb-antrag-form__group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  min-height: var(--_ui5_form-group-heading-height, 2.75rem);
+  box-sizing: border-box;
+}
+
+.awb-antrag-form__group-header-title {
+  color: var(--sapGroup_TitleTextColor);
+  margin: 0;
+}
+
+.awb-antrag-form__radio-row {
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.awb-antrag-form__info {
+  width: 100%;
+}
+
+.awb-antrag-form__form ui5-input,
+.awb-antrag-form__form ui5-select,
+.awb-antrag-form__form ui5-date-picker,
+.awb-antrag-form__form ui5-combobox {
+  width: 100%;
+}
+
+.awb-antrag-form__form ui5-form-item:has(.awb-antrag-form__date-row) {
+  width: 100%;
+  max-width: 100%;
+}
+
+.awb-antrag-form__date-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 2rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.awb-antrag-form__date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.awb-antrag-form__date-field ui5-date-picker,
+.awb-antrag-form__date-picker {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.awb-antrag-form__date-picker::part(input) {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .awb-antrag-form__date-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container awb-antrag-form (max-width: 599px) {
+  .awb-antrag-form__date-row {
+    grid-template-columns: 1fr;
+  }
+}

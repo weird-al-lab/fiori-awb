@@ -1,0 +1,300 @@
+import { useEffect, useRef, useState } from 'react'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Bar } from '@ui5/webcomponents-react/Bar'
+import { Button } from '@ui5/webcomponents-react/Button'
+import { AwbDialog } from '../../components/AwbDialog'
+import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
+import { ObjectPage } from '@ui5/webcomponents-react/ObjectPage'
+import { ObjectPageSection } from '@ui5/webcomponents-react/ObjectPageSection'
+import { ObjectPageTitle } from '@ui5/webcomponents-react/ObjectPageTitle'
+import { Text } from '@ui5/webcomponents-react/Text'
+import { Title } from '@ui5/webcomponents-react/Title'
+import { FlexBoxAlignItems } from '@ui5/webcomponents-react/enums/FlexBoxAlignItems'
+import { FlexBoxJustifyContent } from '@ui5/webcomponents-react/enums/FlexBoxJustifyContent'
+import { FlexBoxWrap } from '@ui5/webcomponents-react/enums/FlexBoxWrap'
+import { AppShellBar } from '../../components/AppShellBar'
+import { OwnCaseGuard } from '../../components/OwnCaseGuard'
+import { UnterstatusTag } from '../../components/UnterstatusTag'
+import { usePrototypePersona } from '../../context/PrototypePersonaContext'
+import {
+  beginVgAntragEdit,
+  createNewAntrag,
+  deleteAntrag,
+  getAntrag,
+  isMaUeberarbeitungPhase,
+  isVgAntragPruefungEditable,
+  isVgDraftResubmit,
+  saveDraft,
+  submitAntrag,
+  type AntragFormData,
+  type WeiterbildungAntrag,
+} from '../../data/antraege'
+import { getEmployee } from '../../data/employees'
+import {
+  AntragFormArbeitszeitSection,
+  AntragFormGrunddatenSection,
+  AntragFormKostenSection,
+} from './AntragFormPanels'
+import './AusbildungAntragPage.css'
+
+function updateForm(
+  antrag: WeiterbildungAntrag,
+  patch: Partial<AntragFormData>,
+): WeiterbildungAntrag {
+  return {
+    ...antrag,
+    form: { ...antrag.form, ...patch },
+  }
+}
+
+function isPersisted(antrag: WeiterbildungAntrag): boolean {
+  try {
+    return Boolean(getAntrag(antrag.id))
+  } catch {
+    return false
+  }
+}
+
+function getPageTitle(antrag: WeiterbildungAntrag, isEdit: boolean): string {
+  if (!isEdit) {
+    return 'Neuer Weiterbildungsantrag'
+  }
+  const objectTitle = antrag.form.titel.trim() || antrag.ausbildung.trim()
+  return objectTitle || 'Weiterbildungsantrag bearbeiten'
+}
+
+/** Redirect legacy wizard step URLs to the single-page form. */
+export function AusbildungAntragStepRedirect() {
+  const { employeeId = '', antragId } = useParams()
+  if (antragId) {
+    return (
+      <Navigate
+        to={`/v2/weiterbildung/${employeeId}/antrag/${antragId}/bearbeiten`}
+        replace
+      />
+    )
+  }
+  return <Navigate to={`/v2/weiterbildung/${employeeId}/antrag/neu`} replace />
+}
+
+export function AusbildungAntragPage() {
+  const { employeeId = '', antragId } = useParams()
+  const navigate = useNavigate()
+  const employee = getEmployee(employeeId)
+  const { persona, ownsEmployee, isVg } = usePrototypePersona()
+  const isEdit = Boolean(antragId)
+  const ownCase = ownsEmployee(employeeId)
+
+  const [antrag, setAntrag] = useState<WeiterbildungAntrag | null>(null)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const loadedAntragIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!employee) {
+      navigate('/v2/weiterbildung', { replace: true })
+    }
+  }, [employee, navigate])
+
+  useEffect(() => {
+    if (!employee) {
+      return
+    }
+    if (antragId) {
+      if (loadedAntragIdRef.current === antragId) {
+        return
+      }
+      const existing = getAntrag(antragId)
+      if (!existing || existing.employeeId !== employee.id) {
+        navigate(`/v2/weiterbildung/${employee.id}`, { replace: true })
+        return
+      }
+      loadedAntragIdRef.current = antragId
+      let loaded: WeiterbildungAntrag = existing
+      if (isVg && isVgAntragPruefungEditable(loaded)) {
+        loaded = beginVgAntragEdit(loaded)
+      }
+      setAntrag(loaded)
+      return
+    }
+    loadedAntragIdRef.current = null
+    setAntrag((prev) => {
+      if (prev && prev.employeeId === employee.id && !getAntrag(prev.id)) {
+        return prev
+      }
+      return createNewAntrag(employee.id)
+    })
+  }, [antragId, employee, isVg, navigate])
+
+  const goBack = () => {
+    navigate(`/v2/weiterbildung/${employeeId}`)
+  }
+
+  const persistRevisionDraft = (draft: WeiterbildungAntrag): WeiterbildungAntrag => {
+    if (!isMaUeberarbeitungPhase(draft)) {
+      return draft
+    }
+    return saveDraft(draft)
+  }
+
+  const handleSaveDraft = () => {
+    if (!antrag) {
+      return
+    }
+    const saved = saveDraft(antrag)
+    setAntrag(saved)
+    navigate(`/v2/weiterbildung/${employeeId}`, {
+      state: {
+        toast: 'Antrag als Entwurf gespeichert',
+      },
+    })
+  }
+
+  const handleSubmit = () => {
+    if (!antrag) {
+      return
+    }
+    const persisted = persistRevisionDraft(antrag)
+    setAntrag(persisted)
+    const submitted = submitAntrag(persisted, persona.name)
+    const toast = isVgDraftResubmit(persisted)
+      ? 'Antrag wurde aktualisiert und steht zur Prüfung bereit.'
+      : isVg
+        ? 'Antrag wurde zur Prüfung weitergeleitet.'
+        : 'Dein Antrag wurde an Mettler Markus zur Prüfung weitergeleitet'
+    navigate(`/v2/weiterbildung/${employeeId}/antrag/${submitted.id}`, {
+      state: { toast },
+    })
+  }
+
+  const handleDeleteConfirm = () => {
+    if (antrag && isPersisted(antrag)) {
+      deleteAntrag(antrag.id)
+    }
+    setDeleteOpen(false)
+    navigate(`/v2/weiterbildung/${employeeId}`)
+  }
+
+  const patchForm = (patch: Partial<AntragFormData>) => {
+    setAntrag((prev) => (prev ? updateForm(prev, patch) : prev))
+  }
+
+  if (!employee || !antrag) {
+    return null
+  }
+
+  const showDelete = isEdit && isPersisted(antrag)
+  const pageTitle = getPageTitle(antrag, isEdit)
+
+  return (
+    <OwnCaseGuard
+      ownCase={ownCase}
+      onBack={goBack}
+      className="awb-antrag-page app-page"
+      mainClassName="page-content-column awb-antrag-page__main"
+      message="Dieser Fall gehört nicht zu dir."
+    >
+      <div className="awb-antrag-page app-page">
+        <AppShellBar appTitle="Entwicklung" onBack={goBack} />
+
+        <ObjectPage
+          className="awb-antrag-page__object"
+          titleArea={
+            <ObjectPageTitle
+              header={
+                <FlexBox
+                  alignItems={FlexBoxAlignItems.Center}
+                  wrap={FlexBoxWrap.Wrap}
+                  className="awb-antrag-page__title-row"
+                >
+                  <Title level="H1" size="H3">
+                    {pageTitle}
+                  </Title>
+                  {isEdit ? <UnterstatusTag unterstatus={antrag.unterstatus} /> : null}
+                </FlexBox>
+              }
+              subHeader={
+                <Text>
+                  {employee.name} / Personalnr. {employee.personalnummer}
+                </Text>
+              }
+              actionsBar={
+                showDelete ? (
+                  <FlexBox className="awb-antrag-page__header-actions" wrap={FlexBoxWrap.Wrap}>
+                    <Button design="Transparent" icon="delete" onClick={() => setDeleteOpen(true)}>
+                      Löschen
+                    </Button>
+                  </FlexBox>
+                ) : undefined
+              }
+            />
+          }
+          footerArea={
+            <Bar
+              className="awb-antrag-page__footer"
+              design="FloatingFooter"
+              endContent={
+                <FlexBox
+                  justifyContent={FlexBoxJustifyContent.End}
+                  alignItems={FlexBoxAlignItems.Center}
+                  className="awb-antrag-page__footer-actions"
+                >
+                  <Button design="Transparent" onClick={goBack}>
+                    Abbrechen
+                  </Button>
+                  <Button design="Default" onClick={handleSaveDraft}>
+                    Entwurf speichern
+                  </Button>
+                  <Button design="Emphasized" onClick={handleSubmit}>
+                    Absenden
+                  </Button>
+                </FlexBox>
+              }
+            />
+          }
+        >
+          <ObjectPageSection id="antrag" titleText="Antrag" hideTitleText>
+            <main className="page-content-column awb-antrag-page__main">
+              <div className="awb-antrag-form__body">
+                <AntragFormGrunddatenSection form={antrag.form} onPatch={patchForm} />
+                <AntragFormKostenSection form={antrag.form} onPatch={patchForm} />
+                <AntragFormArbeitszeitSection
+                  form={antrag.form}
+                  employeeTagessatz={employee.tagessatz}
+                  onPatch={patchForm}
+                />
+              </div>
+            </main>
+          </ObjectPageSection>
+        </ObjectPage>
+
+        <AwbDialog
+          open={deleteOpen}
+          headerText="Antrag löschen"
+          onClose={() => setDeleteOpen(false)}
+          footer={
+            <Bar
+              design="Footer"
+              endContent={
+                <>
+                  <Button design="Transparent" onClick={() => setDeleteOpen(false)}>
+                    Abbrechen
+                  </Button>
+                  <Button design="Negative" onClick={handleDeleteConfirm}>
+                    Löschen
+                  </Button>
+                </>
+              }
+            />
+          }
+        >
+          <div className="awb-dialog-content">
+            <Text>
+              Möchtest du diesen Antrag unwiderruflich löschen? Nicht gespeicherte Änderungen
+              gehen verloren.
+            </Text>
+          </div>
+        </AwbDialog>
+      </div>
+    </OwnCaseGuard>
+  )
+}

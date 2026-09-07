@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Verifies the dev server is reachable on PORT.
+set -euo pipefail
+
+cd "$(dirname "$0")"
+set -a
+# shellcheck disable=SC1091
+. "./env"
+set +a
+
+url="http://localhost:${PORT}/"
+
+for i in $(seq 1 30); do
+  if curl -fsS -o /dev/null "$url"; then
+    echo "verify: dev server is up at $url"
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "verify: dev server did not respond at $url" >&2
+exit 1

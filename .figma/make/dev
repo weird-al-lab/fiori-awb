@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Starts the Vite dev server. Runs for the whole session; killed on close.
+set -euo pipefail
+
+cd "$(dirname "$0")/../.."
+
+# Load PORT from the sibling env file.
+set -a
+# shellcheck disable=SC1091
+. "$(dirname "$0")/env"
+set +a
+
+exec npx vite --port "$PORT" --strictPort --host

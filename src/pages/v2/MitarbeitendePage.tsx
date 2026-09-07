@@ -7,8 +7,8 @@ import { TabSeparator } from '@ui5/webcomponents-react/TabSeparator'
 import { Title } from '@ui5/webcomponents-react/Title'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
 import { FlexBoxWrap } from '@ui5/webcomponents-react/enums/FlexBoxWrap'
-import { AppShellBar } from '../components/AppShellBar'
-import { LaunchpadTile } from '../components/LaunchpadTile'
+import { AppShellBar } from '../../components/AppShellBar'
+import { LaunchpadTile } from '../../components/LaunchpadTile'
 import './MitarbeitendePage.css'
 
 const HOME_TAB = 'Meine Startseite'
@@ -113,7 +113,7 @@ const TILE_SECTIONS: TileSection[] = [
         title: 'Weiterbildung beantragen',
         icon: 'pdf-attachment',
         tcode: 'ERP35020',
-        to: '/weiterbildung',
+        to: '/v2/weiterbildung',
       },
       {
         title: 'Lernangebote',

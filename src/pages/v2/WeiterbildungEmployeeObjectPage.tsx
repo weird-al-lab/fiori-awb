@@ -28,22 +28,22 @@ import { Title } from '@ui5/webcomponents-react/Title'
 import { Toast } from '@ui5/webcomponents-react/Toast'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
 import { FlexBoxWrap } from '@ui5/webcomponents-react/enums/FlexBoxWrap'
-import { AppShellBar } from '../components/AppShellBar'
-import { OwnCaseGuard } from '../components/OwnCaseGuard'
-import { UnterstatusTag } from '../components/UnterstatusTag'
-import { usePrototypePersona } from '../context/PrototypePersonaContext'
-import { useObjectPageHeaderExpanded } from '../layout/useObjectPageHeaderExpanded'
+import { AppShellBar } from '../../components/AppShellBar'
+import { OwnCaseGuard } from '../../components/OwnCaseGuard'
+import { UnterstatusTag } from '../../components/UnterstatusTag'
+import { usePrototypePersona } from '../../context/PrototypePersonaContext'
+import { useObjectPageHeaderExpanded } from '../../layout/useObjectPageHeaderExpanded'
 import {
   getAktuellBeiDisplay,
   getMergedWeiterbildungenByEmployee,
   isPersistedAntragId,
-} from '../data/antraege'
-import { getEmployee } from '../data/employees'
-import { getPersonaById } from '../data/personas'
+} from '../../data/antraege'
+import { getEmployee } from '../../data/employees'
+import { getPersonaById } from '../../data/personas'
 import {
   type VertragFilter,
   type WeiterbildungUnterstatus,
-} from '../data/weiterbildungen'
+} from '../../data/weiterbildungen'
 import './WeiterbildungEmployeeObjectPage.css'
 
 const VERTRAG_TABLE_TITLE: Record<VertragFilter, string> = {
@@ -78,7 +78,7 @@ export function WeiterbildungEmployeeObjectPage() {
 
   useEffect(() => {
     if (!employee) {
-      navigate('/weiterbildung', { replace: true })
+      navigate('/v2/weiterbildung', { replace: true })
     }
   }, [employee, navigate])
 
@@ -115,10 +115,10 @@ export function WeiterbildungEmployeeObjectPage() {
 
   const goBack = () => {
     if (isMa) {
-      navigate('/home', { replace: true })
+      navigate('/v2', { replace: true })
       return
     }
-    navigate('/weiterbildung', { replace: true })
+    navigate('/v2/weiterbildung', { replace: true })
   }
 
   const openAntrag = (id: string, unterstatus: WeiterbildungUnterstatus) => {
@@ -126,10 +126,10 @@ export function WeiterbildungEmployeeObjectPage() {
       return
     }
     if (unterstatus === 'Entwurf') {
-      navigate(`/weiterbildung/${employeeId}/antrag/${id}/bearbeiten/1`)
+      navigate(`/v2/weiterbildung/${employeeId}/antrag/${id}/bearbeiten`)
       return
     }
-    navigate(`/weiterbildung/${employeeId}/antrag/${id}`)
+    navigate(`/v2/weiterbildung/${employeeId}/antrag/${id}`)
   }
 
   if (!employee) {
@@ -139,7 +139,7 @@ export function WeiterbildungEmployeeObjectPage() {
   const handlePersonaChange = (personaId: string) => {
     const next = getPersonaById(personaId)
     if (next.role === 'Mitarbeitender' && next.employeeId) {
-      navigate(`/weiterbildung/${next.employeeId}`, { replace: true })
+      navigate(`/v2/weiterbildung/${next.employeeId}`, { replace: true })
     }
   }
 
@@ -155,10 +155,10 @@ export function WeiterbildungEmployeeObjectPage() {
       breadcrumbs={
         <Breadcrumbs>
           <BreadcrumbsItem
-            href="/weiterbildung"
+            href="/v2/weiterbildung"
             onClick={(event) => {
               event.preventDefault()
-              navigate('/weiterbildung')
+              navigate('/v2/weiterbildung')
             }}
           >
             Mitarbeiter
@@ -275,7 +275,7 @@ export function WeiterbildungEmployeeObjectPage() {
                 design="Emphasized"
                 icon="add"
                 onClick={() =>
-                  navigate(`/weiterbildung/${employee.id}/antrag/neu`)
+                  navigate(`/v2/weiterbildung/${employee.id}/antrag/neu`)
                 }
               >
                 Ausbildung beantragen

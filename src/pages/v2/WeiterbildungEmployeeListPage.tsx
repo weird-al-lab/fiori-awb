@@ -12,10 +12,10 @@ import { TableHeaderRow } from '@ui5/webcomponents-react/TableHeaderRow'
 import { TableRow } from '@ui5/webcomponents-react/TableRow'
 import { TableRowActionNavigation } from '@ui5/webcomponents-react/TableRowActionNavigation'
 import { Title } from '@ui5/webcomponents-react/Title'
-import { AppShellBar } from '../components/AppShellBar'
-import { usePrototypePersona } from '../context/PrototypePersonaContext'
-import { getEmployees } from '../data/employees'
-import { getPersonaById } from '../data/personas'
+import { AppShellBar } from '../../components/AppShellBar'
+import { usePrototypePersona } from '../../context/PrototypePersonaContext'
+import { getEmployees } from '../../data/employees'
+import { getPersonaById } from '../../data/personas'
 import './WeiterbildungEmployeeListPage.css'
 
 type EmployeeScope = 'direct' | 'all'
@@ -33,7 +33,7 @@ export function WeiterbildungEmployeeListPage() {
 
   useEffect(() => {
     if (isMa && persona.employeeId) {
-      navigate(`/weiterbildung/${persona.employeeId}`, { replace: true })
+      navigate(`/v2/weiterbildung/${persona.employeeId}`, { replace: true })
     }
   }, [isMa, persona.employeeId, navigate])
 
@@ -47,17 +47,17 @@ export function WeiterbildungEmployeeListPage() {
   )
 
   const goBack = () => {
-    navigate('/home')
+    navigate('/v2')
   }
 
   const openEmployee = (employeeId: string) => {
-    navigate(`/weiterbildung/${employeeId}`)
+    navigate(`/v2/weiterbildung/${employeeId}`)
   }
 
   const handlePersonaChange = (personaId: string) => {
     const next = getPersonaById(personaId)
     if (next.role === 'Mitarbeitender' && next.employeeId) {
-      navigate(`/weiterbildung/${next.employeeId}`, { replace: true })
+      navigate(`/v2/weiterbildung/${next.employeeId}`, { replace: true })
     }
   }
 

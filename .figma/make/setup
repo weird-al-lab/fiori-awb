@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Runs once on first open. System-level prep; cached after first run.
+# This project needs only Node.js + npm, which the host already provides,
+# so there is nothing system-level to install here.
+set -euo pipefail
+
+echo "setup: nothing to do (Node.js and npm are provided by the host)."

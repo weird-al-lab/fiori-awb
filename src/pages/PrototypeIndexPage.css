@@ -1,0 +1,18 @@
+.prototype-index__main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.prototype-index__intro {
+  max-width: 40rem;
+}
+
+.prototype-index__list {
+  width: 100%;
+  max-width: 40rem;
+  background: var(--sapList_Background);
+  border-radius: var(--sapTile_BorderCornerRadius, 0.5rem);
+  overflow: hidden;
+}

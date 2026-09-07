@@ -7,7 +7,7 @@ export function ThemeLabIndexPage() {
   const navigate = useNavigate()
 
   return (
-    <ThemeLabLayout title="Theme Lab" onBack={() => navigate('/')}>
+    <ThemeLabLayout title="Theme Lab" onBack={() => navigate('/home')}>
       <div className="theme-lab-intro">
         <Text>
           Temporary gallery to verify that <code>awb_custom</code> theme tokens
