@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "componentName": "VirtualTableBodyContainer",
+    "filePath": "node_modules/@ui5/webcomponents-react/dist/components/AnalyticalTable/TableBody/VirtualTableBodyContainer.js"
+  },
+  "codeProperties": {
+    "infiniteScroll": {
+      "type": "boolean",
+      "name": "Infinite Scroll"
+    },
+    "infiniteScrollThreshold": {
+      "type": "number",
+      "name": "Infinite Scroll Threshold"
+    },
+    "isGrouped": {
+      "type": "boolean",
+      "name": "Is Grouped"
+    },
+    "isFirefox": {
+      "type": "boolean",
+      "name": "Is Firefox"
+    }
+  }
+}

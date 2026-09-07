@@ -1,0 +1,124 @@
+{
+  "pointAndEdit": {
+    "priorityPaths": {
+      "prefer": [
+        "src/pages/**/*.tsx",
+        "src/pages/**/*.jsx",
+        "src/components/**/*.tsx",
+        "src/components/**/*.jsx",
+        "src/App.tsx"
+      ],
+      "deprioritize": [
+        "src/layout/**/*.ts",
+        "src/layout/**/*.tsx",
+        "src/context/**/*.tsx",
+        "src/theme/**/*.ts",
+        "src/theme/**/*.less",
+        "src/themes/**/*.css",
+        "src/pages/**/*.css",
+        "src/components/**/*.css",
+        "src/App.css",
+        "src/index.css"
+      ],
+      "exclude": [
+        "src/data/**/*",
+        "src/scripts/**/*",
+        "src/assets/**/*",
+        "src/config/**/*",
+        "public/**/*",
+        "dist/**/*",
+        "node_modules/**/*",
+        "**/*.figma.ts",
+        "**/*.figma.tsx",
+        "**/*.figma.js",
+        "**/*.figma.jsx",
+        "**/*.figma.template.*",
+        "tsconfig*.json",
+        "vite.config.ts",
+        ".cursor/**/*"
+      ]
+    },
+    "libraryPaths": {
+      "local": [],
+      "external": [
+        "node_modules/@ui5/webcomponents-react/**/*",
+        "node_modules/@ui5/webcomponents/**/*",
+        "node_modules/@ui5/webcomponents-fiori/**/*"
+      ]
+    },
+    "pathClassification": {
+      "classifier": "sonnet"
+    },
+    "exclusions": [
+      {
+        "glob": "src/data/**/*",
+        "reason": "Pure data, seed, and service logic with no rendering; not a valid UI source anchor."
+      },
+      {
+        "glob": "src/scripts/**/*",
+        "reason": "Build-time scripts (e.g. build-theme.cjs); not part of the rendered UI."
+      },
+      {
+        "glob": "src/assets/**/*",
+        "reason": "Static image and SVG assets; not editable UI source components."
+      },
+      {
+        "glob": "src/config/**/*",
+        "reason": "App configuration constants (e.g. prototype-gate.ts); not rendering components."
+      },
+      {
+        "glob": "public/**/*",
+        "reason": "Static public assets served verbatim; not UI source code."
+      },
+      {
+        "glob": "dist/**/*",
+        "reason": "Build output; should never be edited directly."
+      },
+      {
+        "glob": "node_modules/**/*",
+        "reason": "Third-party dependencies; not editable project source."
+      },
+      {
+        "glob": "**/*.figma.ts",
+        "reason": "Figma mapping files are excluded per classification rules."
+      },
+      {
+        "glob": "**/*.figma.tsx",
+        "reason": "Figma mapping files are excluded per classification rules."
+      },
+      {
+        "glob": "**/*.figma.js",
+        "reason": "Figma mapping files are excluded per classification rules."
+      },
+      {
+        "glob": "**/*.figma.jsx",
+        "reason": "Figma mapping files are excluded per classification rules."
+      },
+      {
+        "glob": "**/*.figma.template.*",
+        "reason": "Figma mapping files are excluded per classification rules."
+      },
+      {
+        "glob": "tsconfig*.json",
+        "reason": "TypeScript compiler configuration; not a UI source anchor."
+      },
+      {
+        "glob": "vite.config.ts",
+        "reason": "Vite build configuration; not a UI source anchor."
+      },
+      {
+        "glob": ".cursor/**/*",
+        "reason": "Editor skill/reference files; not part of the application source."
+      }
+    ],
+    "generated": {
+      "schemaVersion": 2,
+      "source": "setup-agent.point-and-edit-path-classifier",
+      "prompt": "same-turn-setup-subagent-v5",
+      "model": "claude-sonnet-4-6",
+      "createdAt": "2026-09-07T00:00:00.000Z",
+      "confidence": 0.93,
+      "explanation": "The repository is a single-root React/Vite prototype with a clear src/pages and src/components rendering surface, no local published design-system library, and externally published UI5/Fiori components as the only shared component library."
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "componentName": "ManageViewsTableRows",
+    "filePath": "node_modules/@ui5/webcomponents-react/dist/components/VariantManagement/ManageViewsTableRows.js"
+  },
+  "codeProperties": {
+    "showShare": {
+      "type": "boolean",
+      "name": "Show Share"
+    },
+    "showApplyAutomatically": {
+      "type": "boolean",
+      "name": "Show Apply Automatically"
+    },
+    "showSetAsDefault": {
+      "type": "boolean",
+      "name": "Show Set As Default"
+    },
+    "showCreatedBy": {
+      "type": "boolean",
+      "name": "Show Created By"
+    },
+    "labelReadOnly": {
+      "type": "boolean",
+      "name": "Label Read Only"
+    },
+    "favorite": {
+      "type": "boolean",
+      "name": "Favorite"
+    },
+    "global": {
+      "type": "boolean",
+      "name": "Global"
+    },
+    "isDefault": {
+      "type": "boolean",
+      "name": "Is Default"
+    },
+    "applyAutomatically": {
+      "type": "boolean",
+      "name": "Apply Automatically"
+    },
+    "applyAutomaticallyText": {
+      "type": "string",
+      "name": "Apply Automatically Text"
+    },
+    "author": {
+      "type": "string",
+      "name": "Author"
+    },
+    "hideDelete": {
+      "type": "boolean",
+      "name": "Hide Delete"
+    },
+    "showOnlyFavorites": {
+      "type": "boolean",
+      "name": "Show Only Favorites"
+    }
+  }
+}
