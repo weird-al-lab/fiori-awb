@@ -61,7 +61,12 @@
   width: 100%;
 }
 
+.awb-antrag-form__field-error {
+  width: 100%;
+}
+
 .awb-antrag-form__form ui5-input,
+.awb-antrag-form__form ui5-textarea,
 .awb-antrag-form__form ui5-select,
 .awb-antrag-form__form ui5-date-picker,
 .awb-antrag-form__form ui5-combobox {

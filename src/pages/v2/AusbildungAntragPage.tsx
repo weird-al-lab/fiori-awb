@@ -1,12 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Bar } from '@ui5/webcomponents-react/Bar'
 import { Button } from '@ui5/webcomponents-react/Button'
 import { AwbDialog } from '../../components/AwbDialog'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
+import { MessageItem } from '@ui5/webcomponents-react/MessageItem'
+import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
+import { MessageView } from '@ui5/webcomponents-react/MessageView'
+import { MessageViewButton } from '@ui5/webcomponents-react/MessageViewButton'
 import { ObjectPage } from '@ui5/webcomponents-react/ObjectPage'
 import { ObjectPageSection } from '@ui5/webcomponents-react/ObjectPageSection'
 import { ObjectPageTitle } from '@ui5/webcomponents-react/ObjectPageTitle'
+import { Popover } from '@ui5/webcomponents-react/Popover'
 import { Text } from '@ui5/webcomponents-react/Text'
 import { Title } from '@ui5/webcomponents-react/Title'
 import { FlexBoxAlignItems } from '@ui5/webcomponents-react/enums/FlexBoxAlignItems'
@@ -27,7 +32,12 @@ import {
   saveDraft,
   submitAntrag,
   type AntragFormData,
+  type AntragFormFieldId,
   type WeiterbildungAntrag,
+  ANTRAG_FORM_FIELD_ORDER,
+  focusAntragFormField,
+  validateAntragForm,
+  validationMessagesToFieldErrors,
 } from '../../data/antraege'
 import { getEmployee } from '../../data/employees'
 import {
@@ -63,6 +73,17 @@ function getPageTitle(antrag: WeiterbildungAntrag, isEdit: boolean): string {
   return objectTitle || 'Weiterbildungsantrag bearbeiten'
 }
 
+const MESSAGE_BUTTON_ID = 'awb-antrag-message-btn'
+
+function focusFirstInvalidField(messages: ReturnType<typeof validateAntragForm>) {
+  const firstFieldId = ANTRAG_FORM_FIELD_ORDER.find((fieldId) =>
+    messages.some((message) => message.fieldId === fieldId),
+  )
+  if (firstFieldId) {
+    focusAntragFormField(firstFieldId)
+  }
+}
+
 /** Redirect legacy wizard step URLs to the single-page form. */
 export function AusbildungAntragStepRedirect() {
   const { employeeId = '', antragId } = useParams()
@@ -87,6 +108,8 @@ export function AusbildungAntragPage() {
 
   const [antrag, setAntrag] = useState<WeiterbildungAntrag | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [submitAttempted, setSubmitAttempted] = useState(false)
+  const [messagePopoverOpen, setMessagePopoverOpen] = useState(false)
   const loadedAntragIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -153,6 +176,12 @@ export function AusbildungAntragPage() {
     if (!antrag) {
       return
     }
+    setSubmitAttempted(true)
+    const validationMessages = validateAntragForm(antrag.form)
+    if (validationMessages.length > 0) {
+      focusFirstInvalidField(validationMessages)
+      return
+    }
     const persisted = persistRevisionDraft(antrag)
     setAntrag(persisted)
     const submitted = submitAntrag(persisted, persona.name)
@@ -166,6 +195,11 @@ export function AusbildungAntragPage() {
     })
   }
 
+  const handleValidationNavigate = (fieldId: AntragFormFieldId) => {
+    setMessagePopoverOpen(false)
+    focusAntragFormField(fieldId)
+  }
+
   const handleDeleteConfirm = () => {
     if (antrag && isPersisted(antrag)) {
       deleteAntrag(antrag.id)
@@ -177,6 +211,22 @@ export function AusbildungAntragPage() {
   const patchForm = (patch: Partial<AntragFormData>) => {
     setAntrag((prev) => (prev ? updateForm(prev, patch) : prev))
   }
+
+  const validationMessages = useMemo(
+    () => (submitAttempted && antrag ? validateAntragForm(antrag.form) : []),
+    [antrag, submitAttempted],
+  )
+  const fieldErrors = useMemo(
+    () => (submitAttempted ? validationMessagesToFieldErrors(validationMessages) : {}),
+    [submitAttempted, validationMessages],
+  )
+  const validationErrorCount = validationMessages.length
+
+  useEffect(() => {
+    if (validationErrorCount === 0) {
+      setMessagePopoverOpen(false)
+    }
+  }, [validationErrorCount])
 
   if (!employee || !antrag) {
     return null
@@ -228,44 +278,96 @@ export function AusbildungAntragPage() {
               }
             />
           }
-          footerArea={
-            <Bar
-              className="awb-antrag-page__footer"
-              design="FloatingFooter"
-              endContent={
-                <FlexBox
-                  justifyContent={FlexBoxJustifyContent.End}
-                  alignItems={FlexBoxAlignItems.Center}
-                  className="awb-antrag-page__footer-actions"
-                >
-                  <Button design="Transparent" onClick={goBack}>
-                    Abbrechen
-                  </Button>
-                  <Button design="Default" onClick={handleSaveDraft}>
-                    Entwurf speichern
-                  </Button>
-                  <Button design="Emphasized" onClick={handleSubmit}>
-                    Absenden
-                  </Button>
-                </FlexBox>
-              }
-            />
-          }
         >
           <ObjectPageSection id="antrag" titleText="Antrag" hideTitleText>
             <main className="page-content-column awb-antrag-page__main">
               <div className="awb-antrag-form__body">
-                <AntragFormGrunddatenSection form={antrag.form} onPatch={patchForm} />
-                <AntragFormKostenSection form={antrag.form} onPatch={patchForm} />
+                {validationErrorCount > 0 ? (
+                  <MessageStrip
+                    design="Negative"
+                    hideCloseButton
+                    className="awb-antrag-page__validation-summary"
+                  >
+                    Der Antrag enthält Fehler. Bitte korrigiere die markierten Felder.
+                  </MessageStrip>
+                ) : null}
+                <AntragFormGrunddatenSection
+                  form={antrag.form}
+                  onPatch={patchForm}
+                  fieldErrors={fieldErrors}
+                />
+                <AntragFormKostenSection
+                  form={antrag.form}
+                  onPatch={patchForm}
+                  fieldErrors={fieldErrors}
+                />
                 <AntragFormArbeitszeitSection
                   form={antrag.form}
                   employeeTagessatz={employee.tagessatz}
                   onPatch={patchForm}
+                  fieldErrors={fieldErrors}
                 />
               </div>
             </main>
           </ObjectPageSection>
         </ObjectPage>
+
+        <Bar
+          className="awb-antrag-page__footer"
+          design="FloatingFooter"
+          startContent={
+            validationErrorCount > 0 ? (
+              <MessageViewButton
+                id={MESSAGE_BUTTON_ID}
+                type="Negative"
+                counter={validationErrorCount}
+                onClick={() => setMessagePopoverOpen(true)}
+              />
+            ) : undefined
+          }
+          endContent={
+            <FlexBox
+              justifyContent={FlexBoxJustifyContent.End}
+              alignItems={FlexBoxAlignItems.Center}
+              className="awb-antrag-page__footer-actions"
+            >
+              <Button design="Transparent" onClick={goBack}>
+                Abbrechen
+              </Button>
+              <Button design="Default" onClick={handleSaveDraft}>
+                Entwurf speichern
+              </Button>
+              <Button design="Emphasized" onClick={handleSubmit}>
+                Absenden
+              </Button>
+            </FlexBox>
+          }
+        />
+
+        {validationErrorCount > 0 && messagePopoverOpen ? (
+          <Popover
+            className="awb-antrag-page__message-popover"
+            open
+            opener={MESSAGE_BUTTON_ID}
+            placement="Top"
+            verticalAlign="Bottom"
+            horizontalAlign="Start"
+            onClose={() => setMessagePopoverOpen(false)}
+          >
+            <MessageView groupItems>
+              {validationMessages.map((message) => (
+                <MessageItem
+                  key={message.fieldId}
+                  type="Negative"
+                  groupName={message.section}
+                  titleText={message.label}
+                  subtitleText={message.message}
+                  onClick={() => handleValidationNavigate(message.fieldId)}
+                />
+              ))}
+            </MessageView>
+          </Popover>
+        ) : null}
 
         <AwbDialog
           open={deleteOpen}

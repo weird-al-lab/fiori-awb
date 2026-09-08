@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Bar } from '@ui5/webcomponents-react/Bar'
 import { Button } from '@ui5/webcomponents-react/Button'
 import { ComboBox } from '@ui5/webcomponents-react/ComboBox'
@@ -16,18 +16,22 @@ import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
 import { Option } from '@ui5/webcomponents-react/Option'
 import { RadioButton } from '@ui5/webcomponents-react/RadioButton'
 import { Select } from '@ui5/webcomponents-react/Select'
+import { TextArea } from '@ui5/webcomponents-react/TextArea'
 import { Text } from '@ui5/webcomponents-react/Text'
 import { Title } from '@ui5/webcomponents-react/Title'
 import {
+  ANTRAG_FORM_SECTION_TITLES,
   FACHRICHTUNG_OPTIONS,
   formatChf,
   formatChfRate,
   getArbeitszeitGrundlage,
   getBundBeteiligung,
   getPostKostenGrundlage,
+  isBund50NiveauEligible,
   SCHULEN_ANBIETER_OPTIONS,
   TYP_OPTIONS,
   type AntragFormData,
+  type AntragFormFieldId,
   type JaNein,
 } from '../../data/antraege'
 import './AusbildungAntragForm.css'
@@ -39,11 +43,7 @@ const FORM_LAYOUT = 'S1 M2 L2 XL2'
 const FORM_LABEL_SPAN = 'S12 M12 L12 XL12'
 const FORM_ACCESSIBLE_MODE = 'Edit' as const
 
-export const ANTRAG_FORM_SECTION_TITLES = {
-  grunddaten: 'Grunddaten',
-  kosten: 'Kosten',
-  arbeitszeit: 'Arbeitszeit / Pensum',
-} as const
+export { ANTRAG_FORM_SECTION_TITLES } from '../../data/antraege'
 
 function FormSectionBlock({
   title,
@@ -90,20 +90,38 @@ function FormGroupInfoHeader({
   )
 }
 
+export type AntragFormSectionProps = {
+  form: AntragFormData
+  onPatch: (patch: Partial<AntragFormData>) => void
+  fieldErrors?: Partial<Record<AntragFormFieldId, string>>
+}
+
+function fieldValueState(error?: string) {
+  return error ? ('Negative' as const) : ('None' as const)
+}
+
+function fieldValueStateMessage(error?: string) {
+  return error ? <span slot="valueStateMessage">{error}</span> : undefined
+}
+
 function RadioFormItem({
   label,
   infoLabel,
   onInfo,
+  error,
+  fieldId,
   children,
 }: {
   label: ReactNode
   infoLabel?: string
   onInfo?: () => void
+  error?: string
+  fieldId?: AntragFormFieldId
   children: ReactNode
 }) {
   return (
     <FormItem>
-      <div className="awb-antrag-form__stacked-field">
+      <div className="awb-antrag-form__stacked-field" data-antrag-field={fieldId}>
         <div className="awb-antrag-form__label-row">
           {label}
           {onInfo && infoLabel ? (
@@ -116,21 +134,25 @@ function RadioFormItem({
           ) : null}
         </div>
         <FlexBox className="awb-antrag-form__radio-row">{children}</FlexBox>
+        {error ? (
+          <MessageStrip design="Negative" hideCloseButton className="awb-antrag-form__field-error">
+            {error}
+          </MessageStrip>
+        ) : null}
       </div>
     </FormItem>
   )
-}
-
-export type AntragFormSectionProps = {
-  form: AntragFormData
-  onPatch: (patch: Partial<AntragFormData>) => void
 }
 
 export type AntragFormArbeitszeitSectionProps = AntragFormSectionProps & {
   employeeTagessatz: number
 }
 
-export function AntragFormGrunddatenSection({ form, onPatch }: AntragFormSectionProps) {
+export function AntragFormGrunddatenSection({
+  form,
+  onPatch,
+  fieldErrors = {},
+}: AntragFormSectionProps) {
   return (
     <FormSectionBlock title={ANTRAG_FORM_SECTION_TITLES.grunddaten} sectionId="grunddaten">
       <Form
@@ -142,13 +164,21 @@ export function AntragFormGrunddatenSection({ form, onPatch }: AntragFormSection
         <FormGroup headerText="Anbieter und Dauer">
           <FormItem labelContent={<Label required showColon>Titel</Label>}>
             <Input
+              id="antrag-field-titel"
+              data-antrag-field="titel"
               value={form.titel}
+              valueState={fieldValueState(fieldErrors.titel)}
+              valueStateMessage={fieldValueStateMessage(fieldErrors.titel)}
               onInput={(event) => onPatch({ titel: event.target.value ?? '' })}
             />
           </FormItem>
           <FormItem labelContent={<Label required showColon>Anbieter/-in / Schule</Label>}>
             <ComboBox
+              id="antrag-field-anbieter"
+              data-antrag-field="anbieter"
               value={form.anbieter}
+              valueState={fieldValueState(fieldErrors.anbieter)}
+              valueStateMessage={fieldValueStateMessage(fieldErrors.anbieter)}
               placeholder="Schule suchen oder auswählen"
               filter="Contains"
               showClearIcon
@@ -166,9 +196,13 @@ export function AntragFormGrunddatenSection({ form, onPatch }: AntragFormSection
               <div className="awb-antrag-form__date-field">
                 <Label required showColon>Vom</Label>
                 <DatePicker
+                  id="antrag-field-von"
+                  data-antrag-field="von"
                   className="awb-antrag-form__date-picker"
                   style={{ width: '100%' }}
                   value={form.von}
+                  valueState={fieldValueState(fieldErrors.von)}
+                  valueStateMessage={fieldValueStateMessage(fieldErrors.von)}
                   placeholder="z. B. 13.09.2026"
                   formatPattern="dd.MM.yyyy"
                   onChange={(event) => onPatch({ von: event.detail.value ?? '' })}
@@ -177,9 +211,13 @@ export function AntragFormGrunddatenSection({ form, onPatch }: AntragFormSection
               <div className="awb-antrag-form__date-field">
                 <Label required showColon>Voraussichtlich bis</Label>
                 <DatePicker
+                  id="antrag-field-bis"
+                  data-antrag-field="bis"
                   className="awb-antrag-form__date-picker"
                   style={{ width: '100%' }}
                   value={form.bis}
+                  valueState={fieldValueState(fieldErrors.bis)}
+                  valueStateMessage={fieldValueStateMessage(fieldErrors.bis)}
                   placeholder="z. B. 24.12.2026"
                   formatPattern="dd.MM.yyyy"
                   onChange={(event) => onPatch({ bis: event.detail.value ?? '' })}
@@ -192,9 +230,20 @@ export function AntragFormGrunddatenSection({ form, onPatch }: AntragFormSection
         <FormGroup headerText="Abschluss">
           <FormItem labelContent={<Label required showColon>Typ</Label>}>
             <Select
+              id="antrag-field-niveau"
+              data-antrag-field="niveau"
+              valueState={fieldValueState(fieldErrors.niveau)}
+              valueStateMessage={fieldValueStateMessage(fieldErrors.niveau)}
               onChange={(event) => {
                 const text = event.detail.selectedOption?.textContent ?? ''
-                onPatch({ niveau: text === 'Bitte wählen' ? '' : text })
+                const niveau = text === 'Bitte wählen' ? '' : text
+                const patch: Partial<AntragFormData> = { niveau }
+                if (!isBund50NiveauEligible(niveau)) {
+                  patch.bund50 = 'nein'
+                } else if (!isBund50NiveauEligible(form.niveau)) {
+                  patch.bund50 = ''
+                }
+                onPatch(patch)
               }}
             >
               <Option data-key="" selected={!form.niveau}>Bitte wählen</Option>
@@ -207,6 +256,10 @@ export function AntragFormGrunddatenSection({ form, onPatch }: AntragFormSection
           </FormItem>
           <FormItem labelContent={<Label required showColon>Fachrichtung</Label>}>
             <Select
+              id="antrag-field-fachrichtung"
+              data-antrag-field="fachrichtung"
+              valueState={fieldValueState(fieldErrors.fachrichtung)}
+              valueStateMessage={fieldValueStateMessage(fieldErrors.fachrichtung)}
               onChange={(event) => {
                 const text = event.detail.selectedOption?.textContent ?? ''
                 onPatch({ fachrichtung: text === 'Bitte wählen' ? '' : text })
@@ -226,12 +279,24 @@ export function AntragFormGrunddatenSection({ form, onPatch }: AntragFormSection
   )
 }
 
-export function AntragFormKostenSection({ form, onPatch }: AntragFormSectionProps) {
+export function AntragFormKostenSection({
+  form,
+  onPatch,
+  fieldErrors = {},
+}: AntragFormSectionProps) {
   const [beteiligungBundInfoOpen, setBeteiligungBundInfoOpen] = useState(false)
+  const bund50Locked = !isBund50NiveauEligible(form.niveau)
   const bundBetrag = getBundBeteiligung(form)
   const postGrundlage = getPostKostenGrundlage(form)
   const bundBetragLabel =
     bundBetrag > 0 ? `- ${bundBetrag.toLocaleString('de-CH')}` : '0'
+  const showBundBetrag = form.bund50 === 'ja'
+
+  useEffect(() => {
+    if (bund50Locked && form.bund50 !== 'nein') {
+      onPatch({ bund50: 'nein' })
+    }
+  }, [bund50Locked, form.bund50, onPatch])
 
   return (
     <FormSectionBlock title={ANTRAG_FORM_SECTION_TITLES.kosten} sectionId="kosten">
@@ -248,6 +313,8 @@ export function AntragFormKostenSection({ form, onPatch }: AntragFormSectionProp
             onInfo={() => setBeteiligungBundInfoOpen(true)}
           />
           <RadioFormItem
+            fieldId="bund50"
+            error={fieldErrors.bund50}
             label={
               <Label required showColon>
                 Handelt es sich beim angestrebten Abschluss um eine eidgenössische Prüfung,
@@ -258,13 +325,15 @@ export function AntragFormKostenSection({ form, onPatch }: AntragFormSectionProp
             <RadioButton
               name="bund50"
               text="Ja"
-              checked={form.bund50 === 'ja'}
+              checked={!bund50Locked && form.bund50 === 'ja'}
+              disabled={bund50Locked}
               onChange={() => onPatch({ bund50: 'ja' as JaNein })}
             />
             <RadioButton
               name="bund50"
               text="Nein"
-              checked={form.bund50 === 'nein'}
+              checked={bund50Locked ? true : form.bund50 === 'nein'}
+              disabled={bund50Locked}
               onChange={() => onPatch({ bund50: 'nein' as JaNein })}
             />
           </RadioFormItem>
@@ -279,13 +348,19 @@ export function AntragFormKostenSection({ form, onPatch }: AntragFormSectionProp
           </FormItem>
           <FormItem labelContent={<Label required showColon>Kurskosten</Label>}>
             <Input
+              id="antrag-field-kurskosten"
+              data-antrag-field="kurskosten"
               value={form.kurskosten}
+              valueState={fieldValueState(fieldErrors.kurskosten)}
+              valueStateMessage={fieldValueStateMessage(fieldErrors.kurskosten)}
               onInput={(event) => onPatch({ kurskosten: event.target.value ?? '' })}
             />
           </FormItem>
-          <FormItem labelContent={<Label showColon>Beteiligung Bund</Label>}>
-            <Text>{bundBetragLabel}</Text>
-          </FormItem>
+          {showBundBetrag ? (
+            <FormItem labelContent={<Label showColon>Beteiligung Bund</Label>}>
+              <Text>{bundBetragLabel}</Text>
+            </FormItem>
+          ) : null}
           <FormItem
             labelContent={
               <Label showColon>Zusätzliche Kosten (Einschreibegebühr, Material, etc.)</Label>
@@ -355,6 +430,7 @@ export function AntragFormArbeitszeitSection({
   form,
   employeeTagessatz,
   onPatch,
+  fieldErrors = {},
 }: AntragFormArbeitszeitSectionProps) {
   const [arbeitszeiterleichterungInfoOpen, setArbeitszeiterleichterungInfoOpen] =
     useState(false)
@@ -373,6 +449,8 @@ export function AntragFormArbeitszeitSection({
       >
         <FormGroup headerText="Arbeitspensum">
           <RadioFormItem
+            fieldId="beschaeftigungsgradAnpassen"
+            error={fieldErrors.beschaeftigungsgradAnpassen}
             label={
               <Label required showColon>
                 Muss der Beschäftigungsgrad für die Dauer der Ausbildung angepasst werden
@@ -401,6 +479,8 @@ export function AntragFormArbeitszeitSection({
             onInfo={() => setArbeitszeiterleichterungInfoOpen(true)}
           />
           <RadioFormItem
+            fieldId="arbeitszeiterleichterung"
+            error={fieldErrors.arbeitszeiterleichterung}
             label={
               <Label required showColon>Benötigst du eine Arbeitszeiterleichterung?</Label>
             }
@@ -422,15 +502,25 @@ export function AntragFormArbeitszeitSection({
             <>
               <FormItem labelContent={<Label required showColon>Anzahl Tage</Label>}>
                 <Input
+                  id="antrag-field-anzahl-tage-erleichterung"
+                  data-antrag-field="anzahlTageErleichterung"
                   value={form.anzahlTageErleichterung}
+                  valueState={fieldValueState(fieldErrors.anzahlTageErleichterung)}
+                  valueStateMessage={fieldValueStateMessage(fieldErrors.anzahlTageErleichterung)}
                   onInput={(event) =>
                     onPatch({ anzahlTageErleichterung: event.target.value ?? '' })
                   }
                 />
               </FormItem>
               <FormItem labelContent={<Label required showColon>Begründung</Label>}>
-                <Input
+                <TextArea
+                  id="antrag-field-begruendung-erleichterung"
+                  data-antrag-field="begruendungErleichterung"
+                  rows={4}
+                  style={{ width: '100%' }}
                   value={form.begruendungErleichterung}
+                  valueState={fieldValueState(fieldErrors.begruendungErleichterung)}
+                  valueStateMessage={fieldValueStateMessage(fieldErrors.begruendungErleichterung)}
                   onInput={(event) =>
                     onPatch({ begruendungErleichterung: event.target.value ?? '' })
                   }

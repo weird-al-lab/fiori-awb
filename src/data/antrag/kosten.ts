@@ -1,4 +1,4 @@
-import { VERTRAG_SCHWELLENWERT_CHF } from './constants'
+import { isBund50NiveauEligible, VERTRAG_SCHWELLENWERT_CHF } from './constants'
 import { getDefaultAuszahlungsMonat, parseNumber } from './format'
 import type {
   AntragFormData,
@@ -9,7 +9,7 @@ import type {
 } from './types'
 
 export function getBundBeteiligung(form: AntragFormData): number {
-  if (form.bund50 !== 'ja') {
+  if (!isBund50NiveauEligible(form.niveau) || form.bund50 !== 'ja') {
     return 0
   }
   return parseNumber(form.kurskosten) * 0.5

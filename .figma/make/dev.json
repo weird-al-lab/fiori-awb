@@ -2,40 +2,42 @@
   "pointAndEdit": {
     "priorityPaths": {
       "prefer": [
-        "src/pages/**/*.tsx",
-        "src/pages/**/*.jsx",
+        "src/pages/v2/**/*.tsx",
+        "src/pages/v2/**/*.css",
+        "src/pages/*.tsx",
+        "src/pages/*.css",
         "src/components/**/*.tsx",
-        "src/components/**/*.jsx",
-        "src/App.tsx"
+        "src/components/**/*.css",
+        "src/App.tsx",
+        "src/App.css"
       ],
       "deprioritize": [
-        "src/layout/**/*.ts",
-        "src/layout/**/*.tsx",
         "src/context/**/*.tsx",
-        "src/theme/**/*.ts",
-        "src/theme/**/*.less",
-        "src/themes/**/*.css",
-        "src/pages/**/*.css",
-        "src/components/**/*.css",
-        "src/App.css",
-        "src/index.css"
+        "src/layout/**/*.css",
+        "src/index.css",
+        "src/pages/theme-lab/**/*",
+        "src/theme/**/*",
+        "src/data/**/*",
+        "src/config/**/*",
+        "src/main.tsx"
       ],
       "exclude": [
-        "src/data/**/*",
         "src/scripts/**/*",
         "src/assets/**/*",
-        "src/config/**/*",
+        "src/**/*.figma.ts",
+        "src/**/*.figma.tsx",
+        "src/**/*.figma.js",
+        "src/**/*.figma.jsx",
+        ".figma/**/*",
         "public/**/*",
-        "dist/**/*",
         "node_modules/**/*",
-        "**/*.figma.ts",
-        "**/*.figma.tsx",
-        "**/*.figma.js",
-        "**/*.figma.jsx",
-        "**/*.figma.template.*",
-        "tsconfig*.json",
-        "vite.config.ts",
-        ".cursor/**/*"
+        "dist/**/*",
+        ".git/**/*",
+        ".cursor/**/*",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
       ]
     },
     "libraryPaths": {
@@ -51,64 +53,68 @@
     },
     "exclusions": [
       {
-        "glob": "src/data/**/*",
-        "reason": "Pure data, seed, and service logic with no rendering; not a valid UI source anchor."
-      },
-      {
         "glob": "src/scripts/**/*",
-        "reason": "Build-time scripts (e.g. build-theme.cjs); not part of the rendered UI."
+        "reason": "Build-time Node.js scripts (e.g. build-theme.cjs) that run outside the browser render path and are not UI source anchors."
       },
       {
         "glob": "src/assets/**/*",
-        "reason": "Static image and SVG assets; not editable UI source components."
+        "reason": "Static binary and data-URI assets (images, SVGs, logo source) with no renderable component logic."
       },
       {
-        "glob": "src/config/**/*",
-        "reason": "App configuration constants (e.g. prototype-gate.ts); not rendering components."
+        "glob": "src/**/*.figma.ts",
+        "reason": "Figma mapping files are excluded per policy — they are not UI source anchors."
+      },
+      {
+        "glob": "src/**/*.figma.tsx",
+        "reason": "Figma mapping files are excluded per policy — they are not UI source anchors."
+      },
+      {
+        "glob": "src/**/*.figma.js",
+        "reason": "Figma mapping files are excluded per policy — they are not UI source anchors."
+      },
+      {
+        "glob": "src/**/*.figma.jsx",
+        "reason": "Figma mapping files are excluded per policy — they are not UI source anchors."
+      },
+      {
+        "glob": ".figma/**/*",
+        "reason": "Figma Make tooling files, code-properties JSON, and setup scripts — not part of the app render tree."
       },
       {
         "glob": "public/**/*",
-        "reason": "Static public assets served verbatim; not UI source code."
-      },
-      {
-        "glob": "dist/**/*",
-        "reason": "Build output; should never be edited directly."
+        "reason": "Static public assets served verbatim (favicon, icons, _redirects) — not UI component source."
       },
       {
         "glob": "node_modules/**/*",
-        "reason": "Third-party dependencies; not editable project source."
+        "reason": "Third-party installed packages — not editable app source. External library paths are listed separately in libraryPaths.external."
       },
       {
-        "glob": "**/*.figma.ts",
-        "reason": "Figma mapping files are excluded per classification rules."
+        "glob": "dist/**/*",
+        "reason": "Build output — generated files that are not source anchors."
       },
       {
-        "glob": "**/*.figma.tsx",
-        "reason": "Figma mapping files are excluded per classification rules."
-      },
-      {
-        "glob": "**/*.figma.js",
-        "reason": "Figma mapping files are excluded per classification rules."
-      },
-      {
-        "glob": "**/*.figma.jsx",
-        "reason": "Figma mapping files are excluded per classification rules."
-      },
-      {
-        "glob": "**/*.figma.template.*",
-        "reason": "Figma mapping files are excluded per classification rules."
-      },
-      {
-        "glob": "tsconfig*.json",
-        "reason": "TypeScript compiler configuration; not a UI source anchor."
-      },
-      {
-        "glob": "vite.config.ts",
-        "reason": "Vite build configuration; not a UI source anchor."
+        "glob": ".git/**/*",
+        "reason": "Version control internals — not source files."
       },
       {
         "glob": ".cursor/**/*",
-        "reason": "Editor skill/reference files; not part of the application source."
+        "reason": "Editor configuration and AI skill reference files — not UI source."
+      },
+      {
+        "glob": "**/*.test.ts",
+        "reason": "Test files are not UI render anchors."
+      },
+      {
+        "glob": "**/*.test.tsx",
+        "reason": "Test files are not UI render anchors."
+      },
+      {
+        "glob": "**/*.spec.ts",
+        "reason": "Test files are not UI render anchors."
+      },
+      {
+        "glob": "**/*.spec.tsx",
+        "reason": "Test files are not UI render anchors."
       }
     ],
     "generated": {
@@ -116,9 +122,9 @@
       "source": "setup-agent.point-and-edit-path-classifier",
       "prompt": "same-turn-setup-subagent-v5",
       "model": "claude-sonnet-4-6",
-      "createdAt": "2026-09-07T00:00:00.000Z",
-      "confidence": 0.93,
-      "explanation": "The repository is a single-root React/Vite prototype with a clear src/pages and src/components rendering surface, no local published design-system library, and externally published UI5/Fiori components as the only shared component library."
+      "createdAt": "2026-09-08T00:00:00.000Z",
+      "confidence": 0.92,
+      "explanation": "Single Vite + React app with a clear src/ structure, active v2 pages, app-specific components directory, and no local published design system library — boundaries are unambiguous and fully inspected."
     }
   }
 }

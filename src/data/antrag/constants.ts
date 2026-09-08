@@ -33,6 +33,22 @@ export const TYP_OPTIONS = [
   'Weiterbildung ohne Bestätigung',
 ] as const
 
+export const ANTRAG_FORM_SECTION_TITLES = {
+  grunddaten: 'Grunddaten',
+  kosten: 'Kosten',
+  arbeitszeit: 'Arbeitszeit / Pensum',
+} as const
+
+/** Abschluss-Typen, bei denen die Frage zur 50%-Bundesfinanzierung relevant ist. */
+export const BUND50_ELIGIBLE_NIVEAU_OPTIONS = [
+  'Eidg. Diplom',
+  'Eidg. Fachausweis (FA)',
+] as const
+
+export function isBund50NiveauEligible(niveau: string): boolean {
+  return (BUND50_ELIGIBLE_NIVEAU_OPTIONS as readonly string[]).includes(niveau)
+}
+
 export const FACHRICHTUNG_OPTIONS = [
   'Administration / Sekretariat',
   'Betriebswirtschaft',
