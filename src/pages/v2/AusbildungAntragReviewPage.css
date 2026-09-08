@@ -106,6 +106,28 @@
   width: 100%;
 }
 
+.awb-review__ueberarbeitung-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.awb-review__ueberarbeitung-dialog-label {
+  margin-top: 0.25rem;
+}
+
+.awb-review__ueberarbeitung-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.awb-review__ueberarbeitung-kommentar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .awb-review__two-col {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

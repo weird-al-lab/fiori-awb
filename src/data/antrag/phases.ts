@@ -2,7 +2,6 @@ import { isHauptstatusReached } from '../weiterbildungen'
 import type {
   AntragFormData,
   AusbildungUpdateDraft,
-  FeedEintrag,
   WeiterbildungAntrag,
 } from './types'
 
@@ -52,29 +51,24 @@ export function isMaUeberarbeitungPhase(antrag: WeiterbildungAntrag): boolean {
   )
 }
 
-/** VG may open the wizard from these review statuses; editing moves the antrag to Entwurf. */
+/** VG may open the form from these review statuses while the antrag stays in review for MA. */
 export function isVgAntragPruefungEditable(antrag: WeiterbildungAntrag): boolean {
   return (
     antrag.hauptstatus === 'Antrag' &&
+    !antrag.vgBearbeitungAktiv &&
     (antrag.unterstatus === 'In Prüfung VG' ||
       antrag.unterstatus === 'Wieder eingereicht')
   )
 }
 
-function antragWasSubmittedBefore(feed: FeedEintrag[]): boolean {
-  return feed.some(
-    (entry) =>
-      entry.titel === 'Antrag eingereicht' ||
-      entry.titel === 'Antrag wieder eingereicht',
-  )
+/** VG is actively editing an in-review antrag (employee still sees review status). */
+export function isVgBearbeitungAktiv(antrag: WeiterbildungAntrag): boolean {
+  return antrag.vgBearbeitungAktiv === true
 }
 
-/** Entwurf after a prior MA submission — VG is editing, not first-time MA submit. */
+/** @deprecated Prefer isVgBearbeitungAktiv — kept for existing call sites */
 export function isVgDraftResubmit(antrag: WeiterbildungAntrag): boolean {
-  if (antrag.unterstatus !== 'Entwurf' || isMaUeberarbeitungPhase(antrag)) {
-    return false
-  }
-  return antragWasSubmittedBefore(antrag.kommentareAktivitaeten ?? [])
+  return isVgBearbeitungAktiv(antrag)
 }
 
 const UEBERARBEITUNG_FORM_KEYS: (keyof AntragFormData)[] = [

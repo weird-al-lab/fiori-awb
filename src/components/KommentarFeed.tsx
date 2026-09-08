@@ -20,7 +20,7 @@ import './KommentarFeed.css'
 
 type KommentarFeedProps = {
   eintraege: FeedEintrag[]
-  onPost: (text: string) => void
+  onPost?: (text: string) => void
 }
 
 function FeedItem({ eintrag }: { eintrag: FeedEintrag }) {
@@ -66,10 +66,11 @@ function FeedItem({ eintrag }: { eintrag: FeedEintrag }) {
 export function KommentarFeed({ eintraege, onPost }: KommentarFeedProps) {
   const { persona } = usePrototypePersona()
   const [draft, setDraft] = useState('')
+  const showComposer = Boolean(onPost)
 
   const handlePost = () => {
     const trimmed = draft.trim()
-    if (!trimmed) {
+    if (!trimmed || !onPost) {
       return
     }
     onPost(trimmed)
@@ -78,35 +79,41 @@ export function KommentarFeed({ eintraege, onPost }: KommentarFeedProps) {
 
   return (
     <div className="awb-feed">
-      <div className="awb-feed__composer">
-        <Avatar
-          className="awb-feed__composer-avatar"
-          initials={persona.initials}
-          size="S"
-        />
-        <div className="awb-feed__composer-body">
-          <TextArea
-            className="awb-feed__input"
-            rows={3}
-            value={draft}
-            placeholder="Kommentar schreiben …"
-            onInput={(event) => setDraft(event.target.value ?? '')}
+      {showComposer ? (
+        <div className="awb-feed__composer">
+          <Avatar
+            className="awb-feed__composer-avatar"
+            initials={persona.initials}
+            size="S"
           />
-          <FlexBox
-            justifyContent={FlexBoxJustifyContent.End}
-            alignItems={FlexBoxAlignItems.Center}
-            direction={FlexBoxDirection.Row}
-            className="awb-feed__composer-actions"
-          >
-            <Button design="Default" onClick={handlePost} disabled={!draft.trim()}>
-              Kommentieren
-            </Button>
-          </FlexBox>
+          <div className="awb-feed__composer-body">
+            <TextArea
+              className="awb-feed__input"
+              rows={3}
+              value={draft}
+              placeholder="Kommentar schreiben …"
+              onInput={(event) => setDraft(event.target.value ?? '')}
+            />
+            <FlexBox
+              justifyContent={FlexBoxJustifyContent.End}
+              alignItems={FlexBoxAlignItems.Center}
+              direction={FlexBoxDirection.Row}
+              className="awb-feed__composer-actions"
+            >
+              <Button design="Default" onClick={handlePost} disabled={!draft.trim()}>
+                Kommentieren
+              </Button>
+            </FlexBox>
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {eintraege.length ? (
-        <div className="awb-feed__list" role="feed" aria-label="Kommentare und Aktivitäten">
+        <div
+          className="awb-feed__list"
+          role="feed"
+          aria-label={showComposer ? 'Kommentare und Aktivitäten' : 'Prozessverlauf'}
+        >
           {eintraege.map((eintrag) => (
             <FeedItem key={eintrag.id} eintrag={eintrag} />
           ))}
@@ -117,7 +124,11 @@ export function KommentarFeed({ eintraege, onPost }: KommentarFeedProps) {
           name="NoEntries"
           design="Spot"
           titleText="Noch keine Einträge"
-          subtitleText="Kommentare und Aktivitäten zu diesem Antrag erscheinen hier chronologisch."
+          subtitleText={
+            showComposer
+              ? 'Kommentare und Aktivitäten zu diesem Antrag erscheinen hier chronologisch.'
+              : 'Der Prozessverlauf dieses Antrags erscheint hier chronologisch.'
+          }
         />
       )}
     </div>

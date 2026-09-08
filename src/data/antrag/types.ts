@@ -111,6 +111,8 @@ export type WeiterbildungAntrag = {
   formBaselineVorUeberarbeitung?: AntragFormData
   /** Document ids at send-back time */
   dokumenteBaselineVorUeberarbeitung?: string[]
+  /** VG is editing an in-review antrag; employee-visible unterstatus stays in review */
+  vgBearbeitungAktiv?: boolean
   aktuellBeiLabel: string | null
   updatedAt: string
   createdAt: string

@@ -87,19 +87,29 @@ export function createNewAntrag(employeeId: string): WeiterbildungAntrag {
   }
 }
 
-/** Pulls an in-review antrag into Entwurf when VG starts editing. */
+/** Marks an in-review antrag as being edited by VG; MA-visible status stays in review. */
 export function beginVgAntragEdit(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
   if (!isVgAntragPruefungEditable(antrag)) {
     return antrag
   }
   return upsertAntrag({
     ...antrag,
-    hauptstatus: 'Antrag',
-    unterstatus: 'Entwurf',
+    vgBearbeitungAktiv: true,
     aktuellBeiLabel: VG_AKTUELL_BEI_LABEL,
     formBaselineVorUeberarbeitung: undefined,
     dokumenteBaselineVorUeberarbeitung: undefined,
     ueberarbeitungKommentarVg: null,
+  })
+}
+
+/** Aborts VG in-review editing; discards unsaved form changes on the client. */
+export function cancelVgAntragEdit(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
+  if (!antrag.vgBearbeitungAktiv) {
+    return antrag
+  }
+  return upsertAntrag({
+    ...antrag,
+    vgBearbeitungAktiv: false,
   })
 }
 
@@ -201,7 +211,11 @@ export function saveDraft(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
   return upsertAntrag({
     ...antrag,
     hauptstatus: 'Antrag',
-    unterstatus: inRevision ? 'In Überarbeitung' : 'Entwurf',
+    unterstatus: inRevision
+      ? 'In Überarbeitung'
+      : vgDraft
+        ? antrag.unterstatus
+        : 'Entwurf',
     aktuellBeiLabel: inRevision
       ? (employee?.name ?? null)
       : vgDraft
@@ -343,15 +357,20 @@ export function acceptAngebotByMa(
 export function sendAntragToUeberarbeitung(
   antrag: WeiterbildungAntrag,
   autorName: string = CURRENT_USER_NAME,
+  kommentarOverride?: string,
 ): WeiterbildungAntrag {
   const normalized = normalizeAntragFeed(antrag)
   const now = new Date().toISOString()
   const employee = getEmployee(antrag.employeeId)
-  const kommentarText = antrag.form.kommentar.trim()
+  const kommentarText = (kommentarOverride ?? antrag.form.kommentar).trim()
   let feed = [...(normalized.kommentareAktivitaeten ?? [])]
   let form = antrag.form
+  const antragForFeed =
+    kommentarOverride !== undefined
+      ? { ...antrag, form: { ...antrag.form, kommentar: kommentarOverride } }
+      : antrag
 
-  ;({ feed, form } = consumeFormKommentar(antrag, feed, autorName, now))
+  ;({ feed, form } = consumeFormKommentar(antragForFeed, feed, autorName, now))
 
   const sendBackIteration =
     feed.filter((entry) => entry.titel === 'Zur Überarbeitung gesendet').length + 1
@@ -620,6 +639,18 @@ export function submitAntrag(
         ),
       )
     }
+  } else {
+    feed.push(
+      createAktivitaetEintrag(
+        'Antrag bearbeitet',
+        employee
+          ? `Antrag für ${employee.name} wurde von der Führungsperson bearbeitet.`
+          : 'Antrag wurde von der Führungsperson bearbeitet.',
+        autorName,
+        now,
+        'edit',
+      ),
+    )
   }
 
   return upsertAntrag({
@@ -627,8 +658,13 @@ export function submitAntrag(
     form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Antrag',
-    unterstatus: isResubmit ? 'Wieder eingereicht' : 'In Prüfung VG',
+    unterstatus: isVgResubmit
+      ? antrag.unterstatus
+      : isResubmit
+        ? 'Wieder eingereicht'
+        : 'In Prüfung VG',
     aktuellBeiLabel: VG_AKTUELL_BEI_LABEL,
+    vgBearbeitungAktiv: false,
     formBaselineVorUeberarbeitung: isVgResubmit
       ? undefined
       : antrag.formBaselineVorUeberarbeitung,

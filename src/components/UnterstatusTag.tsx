@@ -2,7 +2,7 @@ import { Tag } from '@ui5/webcomponents-react/Tag'
 import type { WeiterbildungUnterstatus } from '../data/weiterbildungen'
 
 type UnterstatusTagConfig = {
-  design: 'Neutral' | 'Positive' | 'Critical'
+  design: 'Neutral' | 'Positive' | 'Critical' | 'Negative'
   hideStateIcon: boolean
 }
 
@@ -20,9 +20,8 @@ const UNTERSTATUS_TAG_CONFIG: Record<WeiterbildungUnterstatus, UnterstatusTagCon
   'Ausbildung gestartet': { design: 'Neutral', hideStateIcon: true },
   'Prüfung nicht bestanden': { design: 'Critical', hideStateIcon: false },
   'Ausbildung abgebrochen': { design: 'Critical', hideStateIcon: false },
-  'Antrag abgelehnt': { design: 'Critical', hideStateIcon: false },
-  'Angebot abgelehnt': { design: 'Critical', hideStateIcon: false },
-  'Ausbildung abgeschlossen': { design: 'Positive', hideStateIcon: false },
+  'Antrag abgelehnt': { design: 'Negative', hideStateIcon: false },
+  'Angebot abgelehnt': { design: 'Negative', hideStateIcon: false },
   'Ausbildung bestanden': { design: 'Positive', hideStateIcon: false },
 }
 

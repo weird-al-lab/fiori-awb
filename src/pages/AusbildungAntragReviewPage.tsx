@@ -1002,13 +1002,6 @@ export function AusbildungAntragReviewPage() {
                 </>
               ) : isVg && antrag.unterstatus === 'Angebot erstellen' ? (
                 <>
-                  <Button
-                    design="Transparent"
-                    icon="question-mark"
-                    onClick={() => setHrBeratungOpen(true)}
-                  >
-                    HR-Beratung
-                  </Button>
                   <Button design="Default" onClick={() => setRejectAntragOpen(true)}>
                     Antrag ablehnen
                   </Button>

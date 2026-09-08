@@ -42,10 +42,10 @@ export function createDefaultVereinbarung(
   form: AntragFormData,
 ): VereinbarungData {
   return {
-    akModus: 'keine',
+    akModus: 'prozentual',
     akProzent: null,
     akPauschalBetrag: '',
-    azeModus: 'keine',
+    azeModus: 'pauschal',
     azeTage: '',
     sofortauszahlung: false,
     auszahlungsMonat: getDefaultAuszahlungsMonat(form),

@@ -50,6 +50,22 @@
   width: 100%;
 }
 
+.awb-antrag-page__ueberarbeitung-banner {
+  width: 100%;
+}
+
+.awb-antrag-page__ueberarbeitung-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.awb-antrag-page__ueberarbeitung-kommentar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .awb-antrag-page__message-popover::part(content) {
   padding: 0;
 }

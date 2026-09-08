@@ -125,7 +125,11 @@ export function WeiterbildungEmployeeObjectPage() {
     if (!isPersistedAntragId(id)) {
       return
     }
-    if (unterstatus === 'Entwurf') {
+    const opensInEditForm =
+      unterstatus === 'Entwurf' ||
+      (isMa &&
+        (unterstatus === 'Zur Überarbeitung' || unterstatus === 'In Überarbeitung'))
+    if (opensInEditForm) {
       navigate(`/v2/weiterbildung/${employeeId}/antrag/${id}/bearbeiten`)
       return
     }

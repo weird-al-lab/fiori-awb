@@ -17,6 +17,7 @@ import { ObjectPageSection } from '@ui5/webcomponents-react/ObjectPageSection'
 import { ObjectPageTitle } from '@ui5/webcomponents-react/ObjectPageTitle'
 import type { TabDomRef } from '@ui5/webcomponents-react/Tab'
 import { Text } from '@ui5/webcomponents-react/Text'
+import { TextArea } from '@ui5/webcomponents-react/TextArea'
 import { Title } from '@ui5/webcomponents-react/Title'
 import { Toast } from '@ui5/webcomponents-react/Toast'
 import { FlexBoxAlignItems } from '@ui5/webcomponents-react/enums/FlexBoxAlignItems'
@@ -37,24 +38,21 @@ import { useObjectPageHeaderExpanded } from '../../layout/useObjectPageHeaderExp
 import { KommentarFeed } from '../../components/KommentarFeed'
 import { UnterstatusTag } from '../../components/UnterstatusTag'
 import { VereinbarungSection } from '../../components/VereinbarungSection'
+import { AntragReviewArbeitszeitSection } from './AntragFormPanels'
 import { usePrototypePersona } from '../../context/PrototypePersonaContext'
 import {
   acceptAngebotByMa,
-  addKommentarToAntrag,
   approveAntragAndCreateOffer,
   beginVgAntragEdit,
   canConfirmAusbildungUpdate,
   confirmAusbildungUpdate,
   ensureAusbildungUpdate,
   ensureVereinbarung,
-  flushFormKommentarToFeed,
   formatChf,
-  formatChfRate,
   getAntragAenderungen,
   getAntrag,
-  getArbeitszeitGrundlage,
+  getAktivitaetFeedEintraege,
   getBundBeteiligung,
-  getFeedEintraege,
   getPostKostenGrundlage,
   isAbschlussPhase,
   isAntragPruefungPhase,
@@ -202,6 +200,9 @@ export function AusbildungAntragReviewPage() {
   const [toastText, setToastText] = useState('')
   const [rejectAntragOpen, setRejectAntragOpen] = useState(false)
   const [rejectAngebotOpen, setRejectAngebotOpen] = useState(false)
+  const [ueberarbeitungDialogOpen, setUeberarbeitungDialogOpen] = useState(false)
+  const [ueberarbeitungKommentar, setUeberarbeitungKommentar] = useState('')
+  const [ueberarbeitungConfirmOpen, setUeberarbeitungConfirmOpen] = useState(false)
   const [hrBeratungOpen, setHrBeratungOpen] = useState(false)
   const [maAngebotEinverstanden, setMaAngebotEinverstanden] = useState(false)
   const [maAngebotHrKostenPflicht, setMaAngebotHrKostenPflicht] = useState(false)
@@ -244,6 +245,18 @@ export function AusbildungAntragReviewPage() {
       getPreferredReviewSectionId(loaded.hauptstatus, loaded.unterstatus),
     )
   }, [antragId, employee, navigate])
+
+  useEffect(() => {
+    if (!antrag || !employee || !isMa || !ownCase) {
+      return
+    }
+    if (isMaUeberarbeitungPhase(antrag)) {
+      navigate(
+        `/v2/weiterbildung/${employeeId}/antrag/${antragId}/bearbeiten`,
+        { replace: true },
+      )
+    }
+  }, [antrag, employee, employeeId, antragId, isMa, ownCase, navigate])
 
   useObjectPageHeaderExpanded(objectPageRef, antrag?.id)
 
@@ -309,22 +322,28 @@ export function AusbildungAntragReviewPage() {
       setToastOpen(true)
       return
     }
-    const withComment = flushFormKommentarToFeed(antrag, persona.name)
-    const toSave = isVereinbarungPhase(withComment)
-      ? { ...withComment, vereinbarung: ensureVereinbarung(withComment) }
-      : withComment
+    const toSave = isVereinbarungPhase(antrag)
+      ? { ...antrag, vereinbarung: ensureVereinbarung(antrag) }
+      : antrag
     const saved = upsertAntrag(toSave)
     setAntrag(saved)
     setToastText('Änderungen gespeichert')
     setToastOpen(true)
   }
 
-  const executeSendToUeberarbeitung = () => {
+  const closeUeberarbeitungDialog = () => {
+    setUeberarbeitungDialogOpen(false)
+    setUeberarbeitungKommentar('')
+  }
+
+  const executeSendToUeberarbeitung = (kommentar: string) => {
     if (!antrag) {
       return
     }
-    const updated = sendAntragToUeberarbeitung(antrag, persona.name)
+    const updated = sendAntragToUeberarbeitung(antrag, persona.name, kommentar)
     setAntrag(updated)
+    closeUeberarbeitungDialog()
+    setUeberarbeitungConfirmOpen(false)
     setToastText('Antrag wurde zur Überarbeitung an die/ den Mitarbeitende/n gesendet')
     setToastOpen(true)
   }
@@ -333,7 +352,16 @@ export function AusbildungAntragReviewPage() {
     if (!antrag) {
       return
     }
-    executeSendToUeberarbeitung()
+    setUeberarbeitungKommentar('')
+    setUeberarbeitungDialogOpen(true)
+  }
+
+  const handleUeberarbeitungDialogSubmit = () => {
+    if (!ueberarbeitungKommentar.trim()) {
+      setUeberarbeitungConfirmOpen(true)
+      return
+    }
+    executeSendToUeberarbeitung(ueberarbeitungKommentar.trim())
   }
 
   const handleApproveAntrag = () => {
@@ -453,18 +481,6 @@ export function AusbildungAntragReviewPage() {
     setToastOpen(true)
   }
 
-  const handlePostKommentar = (text: string) => {
-    if (!antrag) {
-      return
-    }
-    const flushed = flushFormKommentarToFeed(antrag, persona.name)
-    const updated = addKommentarToAntrag(flushed, text, persona.name)
-    const saved = upsertAntrag(updated)
-    setAntrag(saved)
-    setToastText('Kommentar hinzugefügt')
-    setToastOpen(true)
-  }
-
   if (!employee || !antrag) {
     return null
   }
@@ -472,8 +488,7 @@ export function AusbildungAntragReviewPage() {
   const { form } = antrag
   const bundBetrag = getBundBeteiligung(form)
   const postGrundlage = getPostKostenGrundlage(form)
-  const arbeitszeit = getArbeitszeitGrundlage(form, employee.tagessatz)
-  const feedEintraege = getFeedEintraege(antrag)
+  const feedEintraege = getAktivitaetFeedEintraege(antrag)
   const inVereinbarungPhase = isVereinbarungPhase(antrag)
   const inAusbildungPhase = isAusbildungPhase(antrag)
   const inAbschlussPhase = isAbschlussPhase(antrag)
@@ -601,7 +616,8 @@ export function AusbildungAntragReviewPage() {
             !inAbschlussPhase &&
             isVg &&
             showRoleBanner &&
-            !vgResubmitReview ? (
+            !vgResubmitReview &&
+            !isMaUeberarbeitungPhase(antrag) ? (
               <MessageStrip
                 design="Information"
                 className="awb-review__content-banner"
@@ -617,9 +633,15 @@ export function AusbildungAntragReviewPage() {
                 className="awb-review__content-banner"
                 onClose={() => setShowMaUeberarbeitungBanner(false)}
               >
-                {antrag.ueberarbeitungKommentarVg
-                  ? `Überarbeite den Antrag. Kommentar VG: ${antrag.ueberarbeitungKommentarVg}`
-                  : 'Überarbeite den Antrag.'}
+                <div className="awb-review__ueberarbeitung-banner">
+                  <Text>Bitte überarbeite deinen Antrag.</Text>
+                  {antrag.ueberarbeitungKommentarVg ? (
+                    <div className="awb-review__ueberarbeitung-kommentar">
+                      <Label showColon>Was muss überarbeitet werden</Label>
+                      <Text>{antrag.ueberarbeitungKommentarVg}</Text>
+                    </div>
+                  ) : null}
+                </div>
               </MessageStrip>
             ) : null}
             {vgResubmitReview && showVgResubmitBanner ? (
@@ -703,49 +725,11 @@ export function AusbildungAntragReviewPage() {
               </div>
             </ReviewPanel>
 
-            <ReviewPanel title="Arbeitszeit / Pensum">
-              <div className="awb-review__two-col">
-                <Group title="Arbeitspensum / Erleichterung">
-                  <DisplayField
-                    label="Beschäftigungsgrad anpassen"
-                    value={jaNeinLabel(form.beschaeftigungsgradAnpassen)}
-                    changed={fieldChanged('beschaeftigungsgradAnpassen')}
-                  />
-                  <DisplayField
-                    label="Arbeitszeiterleichterung"
-                    value={jaNeinLabel(form.arbeitszeiterleichterung)}
-                    changed={fieldChanged('arbeitszeiterleichterung')}
-                  />
-                  {form.arbeitszeiterleichterung === 'ja' ? (
-                    <>
-                      <DisplayField
-                        label="Anzahl Tage"
-                        value={form.anzahlTageErleichterung}
-                        changed={fieldChanged('anzahlTageErleichterung')}
-                      />
-                      <DisplayField
-                        label="Begründung"
-                        value={form.begruendungErleichterung}
-                        changed={fieldChanged('begruendungErleichterung')}
-                      />
-                      <MessageStrip
-                        design="ColorSet2"
-                        colorScheme="9"
-                        hideCloseButton
-                        className="awb-review__info"
-                        icon={<Icon name="timesheet" slot="icon" />}
-                      >
-                        Die Grundlage für die Beteiligung Post an der Arbeitszeit ist{' '}
-                        {formatChf(arbeitszeit.betrag)}
-                        {arbeitszeit.tage > 0
-                          ? ` (${arbeitszeit.tage} Tage à ${formatChfRate(arbeitszeit.tagessatz)})`
-                          : ''}
-                      </MessageStrip>
-                    </>
-                  ) : null}
-                </Group>
-              </div>
-            </ReviewPanel>
+            <AntragReviewArbeitszeitSection
+              form={form}
+              employeeTagessatz={employee.tagessatz}
+              fieldChanged={fieldChanged}
+            />
           </SectionMain>
         </ObjectPageSection>
 
@@ -827,16 +811,10 @@ export function AusbildungAntragReviewPage() {
           </SectionMain>
         </ObjectPageSection>
 
-        <ObjectPageSection
-          id="kommentare"
-          titleText="Kommentare und Aktivitäten"
-        >
-          <SectionMain sectionId="kommentare">
-            <ReviewPanel title="Kommentare und Aktivitäten">
-              <KommentarFeed
-                eintraege={feedEintraege}
-                onPost={handlePostKommentar}
-              />
+        <ObjectPageSection id="prozessverlauf" titleText="Prozessverlauf">
+          <SectionMain sectionId="prozessverlauf">
+            <ReviewPanel title="Prozessverlauf">
+              <KommentarFeed eintraege={feedEintraege} />
             </ReviewPanel>
           </SectionMain>
         </ObjectPageSection>
@@ -867,13 +845,6 @@ export function AusbildungAntragReviewPage() {
                 </>
               ) : isVg && antrag.unterstatus === 'Angebot erstellen' ? (
                 <>
-                  <Button
-                    design="Transparent"
-                    icon="question-mark"
-                    onClick={() => setHrBeratungOpen(true)}
-                  >
-                    HR-Beratung
-                  </Button>
                   <Button design="Default" onClick={() => setRejectAntragOpen(true)}>
                     Antrag ablehnen
                   </Button>
@@ -968,6 +939,78 @@ export function AusbildungAntragReviewPage() {
           <Text>
             Möchtest du dieses Angebot wirklich ablehnen? Der Antrag wird abgeschlossen und
             kann nicht mehr bearbeitet werden.
+          </Text>
+        </div>
+      </AwbDialog>
+
+      <AwbDialog
+        open={ueberarbeitungDialogOpen}
+        headerText="An MA zur Überarbeitung"
+        onClose={closeUeberarbeitungDialog}
+        footer={
+          <Bar
+            design="Footer"
+            endContent={
+              <>
+                <Button design="Transparent" onClick={closeUeberarbeitungDialog}>
+                  Abbrechen
+                </Button>
+                <Button design="Emphasized" onClick={handleUeberarbeitungDialogSubmit}>
+                  Zurücksenden
+                </Button>
+              </>
+            }
+          />
+        }
+      >
+        <div className="awb-dialog-content awb-review__ueberarbeitung-dialog">
+          <Text>
+            Der Antrag wird an {employee.name} zur Überarbeitung zurückgesendet. Beschreibe,
+            was angepasst werden muss.
+          </Text>
+          <Label showColon className="awb-review__ueberarbeitung-dialog-label">
+            Was muss überarbeitet werden
+          </Label>
+          <TextArea
+            className="awb-review__comment-input"
+            rows={4}
+            value={ueberarbeitungKommentar}
+            placeholder="z. B. Bitte Titel und Kostenangaben nochmals prüfen …"
+            onInput={(event) => setUeberarbeitungKommentar(event.target.value ?? '')}
+          />
+        </div>
+      </AwbDialog>
+
+      <AwbDialog
+        open={ueberarbeitungConfirmOpen}
+        headerText="Ohne Kommentar zurücksenden"
+        onClose={() => setUeberarbeitungConfirmOpen(false)}
+        footer={
+          <Bar
+            design="Footer"
+            endContent={
+              <>
+                <Button
+                  design="Transparent"
+                  onClick={() => setUeberarbeitungConfirmOpen(false)}
+                >
+                  Abbrechen
+                </Button>
+                <Button
+                  design="Emphasized"
+                  onClick={() => executeSendToUeberarbeitung('')}
+                >
+                  Zurücksenden
+                </Button>
+              </>
+            }
+          />
+        }
+      >
+        <div className="awb-dialog-content">
+          <Text>
+            Möchtest du den Antrag wirklich ohne Kommentar zur Überarbeitung an {employee.name}
+            zurücksenden?
           </Text>
         </div>
       </AwbDialog>

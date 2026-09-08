@@ -28,6 +28,7 @@ import {
   getBundBeteiligung,
   getPostKostenGrundlage,
   isBund50NiveauEligible,
+  jaNeinLabel,
   SCHULEN_ANBIETER_OPTIONS,
   TYP_OPTIONS,
   type AntragFormData,
@@ -585,6 +586,117 @@ export function AntragFormArbeitszeitSection({
           </ul>
         </div>
       </AwbDialog>
+    </FormSectionBlock>
+  )
+}
+
+function ReviewStackedField({
+  label,
+  value,
+  changed,
+}: {
+  label: ReactNode
+  value: string
+  changed?: boolean
+}) {
+  return (
+    <FormItem>
+      <div
+        className={`awb-antrag-form__stacked-field${changed ? ' awb-review__field--changed' : ''}`}
+      >
+        <div className="awb-antrag-form__label-row">{label}</div>
+        <Text>{value || '—'}</Text>
+      </div>
+    </FormItem>
+  )
+}
+
+function ReviewGroupHeader({ title }: { title: string }) {
+  return (
+    <FormItem>
+      <div className="awb-antrag-form__group-header">
+        <Title level="H6" size="H6" className="awb-antrag-form__group-header-title">
+          {title}
+        </Title>
+      </div>
+    </FormItem>
+  )
+}
+
+export type AntragReviewArbeitszeitSectionProps = {
+  form: AntragFormData
+  employeeTagessatz: number
+  fieldChanged?: (key: string) => boolean
+}
+
+export function AntragReviewArbeitszeitSection({
+  form,
+  employeeTagessatz,
+  fieldChanged = () => false,
+}: AntragReviewArbeitszeitSectionProps) {
+  const arbeitszeit = getArbeitszeitGrundlage(form, employeeTagessatz)
+
+  return (
+    <FormSectionBlock
+      title={ANTRAG_FORM_SECTION_TITLES.arbeitszeit}
+      sectionId="arbeitszeit"
+    >
+      <Form
+        className="awb-antrag-form__form"
+        layout={FORM_LAYOUT}
+        labelSpan={FORM_LABEL_SPAN}
+        accessibleMode={FORM_ACCESSIBLE_MODE}
+      >
+        <FormGroup headerText="Arbeitspensum">
+          <ReviewStackedField
+            label={
+              <Label showColon>
+                Muss der Beschäftigungsgrad für die Dauer der Ausbildung angepasst werden
+              </Label>
+            }
+            value={jaNeinLabel(form.beschaeftigungsgradAnpassen)}
+            changed={fieldChanged('beschaeftigungsgradAnpassen')}
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <ReviewGroupHeader title="Arbeitszeiterleichterung" />
+          <ReviewStackedField
+            label={<Label showColon>Benötigst du eine Arbeitszeiterleichterung?</Label>}
+            value={jaNeinLabel(form.arbeitszeiterleichterung)}
+            changed={fieldChanged('arbeitszeiterleichterung')}
+          />
+          {form.arbeitszeiterleichterung === 'ja' ? (
+            <>
+              <ReviewStackedField
+                label={<Label showColon>Anzahl Tage</Label>}
+                value={form.anzahlTageErleichterung}
+                changed={fieldChanged('anzahlTageErleichterung')}
+              />
+              <ReviewStackedField
+                label={<Label showColon>Begründung</Label>}
+                value={form.begruendungErleichterung}
+                changed={fieldChanged('begruendungErleichterung')}
+              />
+              <FormItem>
+                <MessageStrip
+                  design="ColorSet2"
+                  colorScheme="9"
+                  hideCloseButton
+                  className="awb-antrag-form__info"
+                  icon={<Icon name="timesheet" slot="icon" />}
+                >
+                  Die Grundlage für die Beteiligung Post an der Arbeitszeit ist{' '}
+                  {formatChf(arbeitszeit.betrag)}
+                  {arbeitszeit.tage > 0
+                    ? ` (${arbeitszeit.tage} Tage à ${formatChfRate(arbeitszeit.tagessatz)})`
+                    : ''}
+                </MessageStrip>
+              </FormItem>
+            </>
+          ) : null}
+        </FormGroup>
+      </Form>
     </FormSectionBlock>
   )
 }

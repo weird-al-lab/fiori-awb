@@ -4,6 +4,7 @@ import { Bar } from '@ui5/webcomponents-react/Bar'
 import { Button } from '@ui5/webcomponents-react/Button'
 import { AwbDialog } from '../../components/AwbDialog'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
+import { Label } from '@ui5/webcomponents-react/Label'
 import { MessageItem } from '@ui5/webcomponents-react/MessageItem'
 import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
 import { MessageView } from '@ui5/webcomponents-react/MessageView'
@@ -23,6 +24,7 @@ import { UnterstatusTag } from '../../components/UnterstatusTag'
 import { usePrototypePersona } from '../../context/PrototypePersonaContext'
 import {
   beginVgAntragEdit,
+  cancelVgAntragEdit,
   createNewAntrag,
   deleteAntrag,
   getAntrag,
@@ -102,7 +104,7 @@ export function AusbildungAntragPage() {
   const { employeeId = '', antragId } = useParams()
   const navigate = useNavigate()
   const employee = getEmployee(employeeId)
-  const { persona, ownsEmployee, isVg } = usePrototypePersona()
+  const { persona, ownsEmployee, isMa, isVg } = usePrototypePersona()
   const isEdit = Boolean(antragId)
   const ownCase = ownsEmployee(employeeId)
 
@@ -110,6 +112,7 @@ export function AusbildungAntragPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [submitAttempted, setSubmitAttempted] = useState(false)
   const [messagePopoverOpen, setMessagePopoverOpen] = useState(false)
+  const [showUeberarbeitungBanner, setShowUeberarbeitungBanner] = useState(true)
   const loadedAntragIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -117,6 +120,10 @@ export function AusbildungAntragPage() {
       navigate('/v2/weiterbildung', { replace: true })
     }
   }, [employee, navigate])
+
+  useEffect(() => {
+    setShowUeberarbeitungBanner(true)
+  }, [antragId])
 
   useEffect(() => {
     if (!employee) {
@@ -149,6 +156,11 @@ export function AusbildungAntragPage() {
   }, [antragId, employee, isVg, navigate])
 
   const goBack = () => {
+    if (antrag?.vgBearbeitungAktiv && antragId) {
+      cancelVgAntragEdit(antrag)
+      navigate(`/v2/weiterbildung/${employeeId}/antrag/${antragId}`)
+      return
+    }
     navigate(`/v2/weiterbildung/${employeeId}`)
   }
 
@@ -186,11 +198,19 @@ export function AusbildungAntragPage() {
     setAntrag(persisted)
     const submitted = submitAntrag(persisted, persona.name)
     const toast = isVgDraftResubmit(persisted)
-      ? 'Antrag wurde aktualisiert und steht zur Prüfung bereit.'
+      ? 'Antrag wurde gespeichert.'
       : isVg
         ? 'Antrag wurde zur Prüfung weitergeleitet.'
-        : 'Dein Antrag wurde an Mettler Markus zur Prüfung weitergeleitet'
-    navigate(`/v2/weiterbildung/${employeeId}/antrag/${submitted.id}`, {
+        : submitted.unterstatus === 'Wieder eingereicht'
+          ? 'Dein überarbeiteter Antrag wurde zur Prüfung weitergeleitet.'
+          : 'Dein Antrag wurde an Mettler Markus zur Prüfung weitergeleitet'
+    if (isVg) {
+      navigate(`/v2/weiterbildung/${employeeId}/antrag/${submitted.id}`, {
+        state: { toast },
+      })
+      return
+    }
+    navigate(`/v2/weiterbildung/${employeeId}`, {
       state: { toast },
     })
   }
@@ -232,8 +252,11 @@ export function AusbildungAntragPage() {
     return null
   }
 
-  const showDelete = isEdit && isPersisted(antrag)
+  const vgAntragEdit = isVg && isVgDraftResubmit(antrag)
+  const showDelete = isEdit && isPersisted(antrag) && antrag.unterstatus === 'Entwurf'
   const pageTitle = getPageTitle(antrag, isEdit)
+  const maUeberarbeitung = isMa && ownCase && isMaUeberarbeitungPhase(antrag)
+  const submitLabel = vgAntragEdit ? 'Speichern' : 'Absenden'
 
   return (
     <OwnCaseGuard
@@ -282,6 +305,23 @@ export function AusbildungAntragPage() {
           <ObjectPageSection id="antrag" titleText="Antrag" hideTitleText>
             <main className="page-content-column awb-antrag-page__main">
               <div className="awb-antrag-form__body">
+                {maUeberarbeitung && showUeberarbeitungBanner ? (
+                  <MessageStrip
+                    design="Critical"
+                    className="awb-antrag-page__ueberarbeitung-banner"
+                    onClose={() => setShowUeberarbeitungBanner(false)}
+                  >
+                    <div className="awb-antrag-page__ueberarbeitung-banner-content">
+                      <Text>Bitte überarbeite deinen Antrag.</Text>
+                      {antrag.ueberarbeitungKommentarVg ? (
+                        <div className="awb-antrag-page__ueberarbeitung-kommentar">
+                          <Label showColon>Was muss überarbeitet werden</Label>
+                          <Text>{antrag.ueberarbeitungKommentarVg}</Text>
+                        </div>
+                      ) : null}
+                    </div>
+                  </MessageStrip>
+                ) : null}
                 {validationErrorCount > 0 ? (
                   <MessageStrip
                     design="Negative"
@@ -334,11 +374,13 @@ export function AusbildungAntragPage() {
               <Button design="Transparent" onClick={goBack}>
                 Abbrechen
               </Button>
-              <Button design="Default" onClick={handleSaveDraft}>
-                Entwurf speichern
-              </Button>
+              {!vgAntragEdit ? (
+                <Button design="Default" onClick={handleSaveDraft}>
+                  Entwurf speichern
+                </Button>
+              ) : null}
               <Button design="Emphasized" onClick={handleSubmit}>
-                Absenden
+                {submitLabel}
               </Button>
             </FlexBox>
           }

@@ -20,7 +20,7 @@ import type {
   WeiterbildungAntrag,
 } from './types'
 
-export const DEMO_ANTRAEGE_VERSION = '4'
+export const DEMO_ANTRAEGE_VERSION = '6'
 export const DEMO_ANTRAEGE_VERSION_KEY = 'awb-demo-antraege-version'
 
 /** Fabian Fankhauser — full status showcase */
@@ -147,9 +147,7 @@ function buildDemoForm(
 function buildDemoVereinbarung(form: AntragFormData): VereinbarungData {
   return {
     ...createDefaultVereinbarung(form),
-    akModus: 'prozentual',
     akProzent: 50,
-    azeModus: 'keine',
     rueckzahlungVereinbaren: 'nein',
     zwingendeAusbildung: 'nein',
   }
@@ -357,16 +355,6 @@ function buildDemoFeed(
       steps.push({
         titel: 'Ausbildung bestanden',
         text: 'Die Ausbildung wurde als bestanden bestätigt.',
-        autorName: employeeName,
-        icon: 'accept',
-      })
-      break
-
-    case 'Abschluss|Ausbildung abgeschlossen':
-      pushHappyPathToAusbildung()
-      steps.push({
-        titel: 'Ausbildung abgeschlossen',
-        text: 'Die Ausbildung wurde abgeschlossen.',
         autorName: employeeName,
         icon: 'accept',
       })

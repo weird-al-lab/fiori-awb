@@ -6,6 +6,8 @@ import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
 import { Input } from '@ui5/webcomponents-react/Input'
 import { Label } from '@ui5/webcomponents-react/Label'
 import { Link } from '@ui5/webcomponents-react/Link'
+import { List } from '@ui5/webcomponents-react/List'
+import { ListItemStandard } from '@ui5/webcomponents-react/ListItemStandard'
 import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
 import { Panel } from '@ui5/webcomponents-react/Panel'
 import { RadioButton } from '@ui5/webcomponents-react/RadioButton'
@@ -14,7 +16,6 @@ import { SegmentedButtonItem } from '@ui5/webcomponents-react/SegmentedButtonIte
 import { Switch } from '@ui5/webcomponents-react/Switch'
 import { Text } from '@ui5/webcomponents-react/Text'
 import { TextArea } from '@ui5/webcomponents-react/TextArea'
-import { Title } from '@ui5/webcomponents-react/Title'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
 import { FlexBoxWrap } from '@ui5/webcomponents-react/enums/FlexBoxWrap'
 import {
@@ -71,19 +72,74 @@ function GroupTitle({ children }: { children: string }) {
   )
 }
 
+const AK_MODUS_OPTIONS = [
+  { value: 'prozentual', label: 'Prozentual' },
+  { value: 'pauschal', label: 'Pauschal' },
+  { value: 'keine', label: 'Keine' },
+] as const satisfies ReadonlyArray<{ value: AkModus; label: string }>
+
+const AZE_MODUS_OPTIONS = [
+  { value: 'pauschal', label: 'Pauschal' },
+  { value: 'keine', label: 'Keine' },
+] as const satisfies ReadonlyArray<{ value: AzeModus; label: string }>
+
+function BeteiligungModeControl<T extends string>({
+  locked,
+  title,
+  accessibleName,
+  value,
+  options,
+  onSelect,
+}: {
+  locked: boolean
+  title: string
+  accessibleName: string
+  value: T
+  options: ReadonlyArray<{ value: T; label: string }>
+  onSelect: (next: T) => void
+}) {
+  return (
+    <>
+      <GroupTitle>{title}</GroupTitle>
+      <SegmentedButton accessibleName={accessibleName}>
+        {options.map((option) => {
+          const selected = value === option.value
+          return (
+            <SegmentedButtonItem
+              key={option.value}
+              selected={selected}
+              disabled={locked && !selected}
+              onClick={() => {
+                if (!locked) {
+                  onSelect(option.value)
+                }
+              }}
+            >
+              {option.label}
+            </SegmentedButtonItem>
+          )
+        })}
+      </SegmentedButton>
+    </>
+  )
+}
+
 function VereinbarungPanel({
   title,
   collapsed = false,
+  fixed = false,
   children,
 }: {
   title: string
   collapsed?: boolean
+  fixed?: boolean
   children: ReactNode
 }) {
   return (
     <Panel
       className="awb-review__panel"
       collapsed={collapsed}
+      fixed={fixed}
       accessibleName={title}
       headerLevel="H3"
       headerText={title}
@@ -106,6 +162,58 @@ function akBeteiligungSummary(vereinbarung: VereinbarungData): string {
   return betrag ? `Pauschal CHF ${betrag}` : 'Pauschal'
 }
 
+type OfferFacts = {
+  akText: string
+  azeText: string
+  postTotal: string
+  auszahlungText: string
+  rueckzahlung: 'Ja' | 'Nein'
+  hasRueckzahlung: boolean
+}
+
+function auszahlungSummary(
+  vereinbarung: VereinbarungData,
+  kosten: VereinbarungKosten,
+): string {
+  if (kosten.postAk <= 0) {
+    return 'Keine'
+  }
+  const total = `CHF ${formatChfDecimal(kosten.postAk)}`
+  if (vereinbarung.sofortauszahlung) {
+    return `Mit nächstem Lohn (${total})`
+  }
+  const scheduled = parseNumber(vereinbarung.auszahlungsBetrag)
+  const month = vereinbarung.auszahlungsMonat.trim()
+  if (scheduled > 0 && month) {
+    const rest = Math.max(0, kosten.postAk - scheduled)
+    const first = `${month}: CHF ${formatChfDecimal(scheduled)}`
+    return rest > 0 ? `${first} · Rest mit nächstem Lohn` : first
+  }
+  if (month) {
+    return `${month} (${total})`
+  }
+  return total
+}
+
+function getOfferFacts(
+  antrag: WeiterbildungAntrag,
+  kosten: VereinbarungKosten,
+  hasRueckzahlung: boolean,
+): OfferFacts {
+  const vereinbarung = antrag.vereinbarung!
+  return {
+    akText: akBeteiligungSummary(vereinbarung),
+    azeText:
+      vereinbarung.azeModus === 'pauschal' && kosten.postAzeTage > 0
+        ? `${kosten.postAzeTage} Tage`
+        : 'Keine',
+    postTotal: formatChfDecimal(kosten.postTotal),
+    auszahlungText: auszahlungSummary(vereinbarung, kosten),
+    rueckzahlung: hasRueckzahlung ? 'Ja' : 'Nein',
+    hasRueckzahlung,
+  }
+}
+
 function AngebotSummary({
   antrag,
   kosten,
@@ -117,47 +225,59 @@ function AngebotSummary({
   onPreviewVertrag: () => void
   maOfferAcceptance: NonNullable<VereinbarungSectionProps['maOfferAcceptance']>
 }) {
-  const vereinbarung = antrag.vereinbarung!
-  const hasRueckzahlung = maOfferAcceptance.hasRueckzahlung
-  const rueckzahlung = hasRueckzahlung ? 'Ja' : 'Nein'
-  const azeText =
-    vereinbarung.azeModus === 'pauschal' && kosten.postAzeTage > 0
-      ? `${kosten.postAzeTage} Tage`
-      : 'Keine'
-  const kommentarVg = antrag.form.kommentar.trim() || '—'
+  const facts = getOfferFacts(antrag, kosten, maOfferAcceptance.hasRueckzahlung)
 
   return (
-    <div className="awb-vereinbarung__summary">
-      <Title level="H2" size="H5">
-        Zusammenfassung des Angebots
-      </Title>
-      <ul className="awb-vereinbarung__summary-list">
-        <li className="awb-vereinbarung__summary-row awb-vereinbarung__summary-row--ok">
-          <span aria-hidden="true">✓</span>
-          <Text>
-            Beteiligung Post an Ausbildungskosten: {akBeteiligungSummary(vereinbarung)}
-          </Text>
-        </li>
-        <li className="awb-vereinbarung__summary-row awb-vereinbarung__summary-row--ok">
-          <span aria-hidden="true">✓</span>
-          <Text>Arbeitszeiterleichterung: {azeText}</Text>
-        </li>
-        <li className="awb-vereinbarung__summary-row awb-vereinbarung__summary-row--ok">
-          <span aria-hidden="true">✓</span>
-          <Text>
-            Gesamtbeteiligung Post: CHF {formatChfDecimal(kosten.postTotal)}
-          </Text>
-        </li>
-        <li className="awb-vereinbarung__summary-row awb-vereinbarung__summary-row--info">
-          <span aria-hidden="true">ℹ</span>
-          <Text>Rückzahlung: {rueckzahlung}</Text>
-        </li>
-        <li className="awb-vereinbarung__summary-row awb-vereinbarung__summary-row--muted">
-          <span aria-hidden="true">—</span>
-          <Text>Kommentar Vorgesetzte/r: {kommentarVg}</Text>
-        </li>
-      </ul>
-      {hasRueckzahlung ? (
+    <VereinbarungPanel title="Zusammenfassung des Angebots" fixed>
+      <List
+        className="awb-vereinbarung__summary-list-ui5"
+        accessibleName="Zusammenfassung des Angebots"
+      >
+        <ListItemStandard
+          icon="study-leave"
+          description={facts.akText}
+          wrappingType="Normal"
+          type="Inactive"
+        >
+          Beteiligung Post an Ausbildungskosten
+        </ListItemStandard>
+        {antrag.form.arbeitszeiterleichterung === 'ja' ? (
+          <ListItemStandard
+            icon="timesheet"
+            description={facts.azeText}
+            wrappingType="Normal"
+            type="Inactive"
+          >
+            Arbeitszeiterleichterung
+          </ListItemStandard>
+        ) : null}
+        <ListItemStandard
+          icon="money-bills"
+          description={`CHF ${facts.postTotal}`}
+          wrappingType="Normal"
+          type="Inactive"
+        >
+          Gesamtbeteiligung Post
+        </ListItemStandard>
+        <ListItemStandard
+          icon="monitor-payments"
+          description={facts.auszahlungText}
+          wrappingType="Normal"
+          type="Inactive"
+        >
+          Auszahlung Aus- und Weiterbildungskosten
+        </ListItemStandard>
+        <ListItemStandard
+          icon="customer-order-entry"
+          description={facts.rueckzahlung}
+          wrappingType="Normal"
+          type="Inactive"
+        >
+          Rückzahlung
+        </ListItemStandard>
+      </List>
+
+      {facts.hasRueckzahlung ? (
         <div className="awb-vereinbarung__summary-actions">
           <Button design="Default" onClick={onPreviewVertrag}>
             Vertrag lesen
@@ -165,12 +285,6 @@ function AngebotSummary({
         </div>
       ) : null}
       <div className="awb-vereinbarung__summary-zustimmung">
-        <GroupTitle>Zustimmung</GroupTitle>
-        <Text>
-          {hasRueckzahlung
-            ? 'Mit dem Klick auf "Elektronisch unterschreiben" wird Vertrag signiert und im E-Dossier abgelegt.'
-            : 'Mit dem Klick auf "Angebot akzeptieren" wird das Angebot bestätigt.'}
-        </Text>
         <div className="awb-vereinbarung__summary-checks">
           <CheckBox
             checked={maOfferAcceptance.einverstanden}
@@ -178,7 +292,7 @@ function AngebotSummary({
               maOfferAcceptance.onEinverstandenChange(event.target.checked)
             }
             text={
-              hasRueckzahlung
+              facts.hasRueckzahlung
                 ? 'Ich habe den Vertrag gelesen und bin mit dem Inhalt einverstanden (inkl. Rückzahlungsverpflichtung).'
                 : 'Ich habe Antrag und Angebot gelesen und bin mit dem Inhalt einverstanden.'
             }
@@ -189,14 +303,14 @@ function AngebotSummary({
               maOfferAcceptance.onHrKostenPflichtChange(event.target.checked)
             }
             text={
-              hasRueckzahlung
-                ? 'Falls die tatsächlichen Kosten meiner Aus- oder Weiterbildung unerwartet wesentlich tiefer ausfallen, bin ich verpflichtet, HR-Services zu informieren.'
-                : 'Falls die tatsächlichen Kosten der Aus-/Weiterbildung unerwartet wesentlich tiefer ausfallen, bin ich verpflichtet, HR-Services zu informieren.'
+              facts.hasRueckzahlung
+                ? 'Ich bestätige, dass ich vom Anbieter zugelassen worden bin. Falls die tatsächlichen Kosten der Aus- oder Weiterbildung unerwartet wesentlich tiefer ausfallen, bin ich verpflichtet, HR-Services zu informieren.'
+                : 'Ich bestätige, dass ich vom Anbieter zugelassen worden bin. Falls die tatsächlichen Kosten der Aus- oder Weiterbildung unerwartet wesentlich tiefer ausfallen, bin ich verpflichtet, HR-Services zu informieren.'
             }
           />
         </div>
       </div>
-    </div>
+    </VereinbarungPanel>
   )
 }
 
@@ -337,7 +451,6 @@ export function VereinbarungSection({
 
   const postAkZero = kosten.postAk === 0
   const switchChecked = postAkZero ? true : vereinbarung.sofortauszahlung
-  const switchDisabled = locked || postAkZero
   const showMonatBetrag = !postAkZero && !vereinbarung.sofortauszahlung
   const betragPlaceholder = `Maximal ${formatChfDecimal(kosten.postAk)}`
 
@@ -366,6 +479,7 @@ export function VereinbarungSection({
   const showVertragsDetails =
     vertragPflichtig || vereinbarung.rueckzahlungVereinbaren === 'ja' || hrBeratungFlow
   const panelsCollapsed = maReview
+  const showAze = antrag.form.arbeitszeiterleichterung === 'ja'
 
   const prevShowZwingendeFrageRef = useRef(showZwingendeFrage)
   useEffect(() => {
@@ -421,29 +535,14 @@ export function VereinbarungSection({
       >
         <div className="awb-vereinbarung__beteiligung-grid">
           <div className="awb-vereinbarung__controls">
-            <GroupTitle>Beteiligung an Aus- und Weiterbildungskosten (AK)</GroupTitle>
-            <SegmentedButton accessibleName="Beteiligung Ausbildungskosten">
-              {(
-                [
-                  ['keine', 'Keine'],
-                  ['prozentual', 'Prozentual'],
-                  ['pauschal', 'Pauschal'],
-                ] as const
-              ).map(([value, label]) => (
-                <SegmentedButtonItem
-                  key={value}
-                  selected={vereinbarung.akModus === value}
-                  disabled={locked}
-                  onClick={() => {
-                    if (!locked) {
-                      patch({ akModus: value as AkModus })
-                    }
-                  }}
-                >
-                  {label}
-                </SegmentedButtonItem>
-              ))}
-            </SegmentedButton>
+            <BeteiligungModeControl
+              locked={locked}
+              title="Beteiligung an Aus- und Weiterbildungskosten (AK)"
+              accessibleName="Beteiligung Ausbildungskosten"
+              value={vereinbarung.akModus}
+              options={AK_MODUS_OPTIONS}
+              onSelect={(akModus) => patch({ akModus })}
+            />
 
             {vereinbarung.akModus === 'prozentual' ? (
               <div className="awb-vereinbarung__field-group">
@@ -455,7 +554,7 @@ export function VereinbarungSection({
                       name="akProzent"
                       text={label}
                       checked={vereinbarung.akProzent === value}
-                      disabled={locked}
+                      readonly={locked}
                       onChange={() => patch({ akProzent: value as AkProzent })}
                     />
                   ))}
@@ -470,7 +569,7 @@ export function VereinbarungSection({
                   <Input
                     value={vereinbarung.akPauschalBetrag}
                     placeholder={`max. ${formatChfDecimal(akBasis)}`}
-                    disabled={locked}
+                    readonly={locked}
                     onInput={(event) =>
                       patch({ akPauschalBetrag: event.target.value ?? '' })
                     }
@@ -480,43 +579,33 @@ export function VereinbarungSection({
               </div>
             ) : null}
 
-            <GroupTitle>Beteiligung an Arbeitszeiterleichterung (AZE)</GroupTitle>
-            <SegmentedButton accessibleName="Beteiligung Arbeitszeiterleichterung">
-              {(
-                [
-                  ['keine', 'Keine'],
-                  ['pauschal', 'Pauschal'],
-                ] as const
-              ).map(([value, label]) => (
-                <SegmentedButtonItem
-                  key={value}
-                  selected={vereinbarung.azeModus === value}
-                  disabled={locked}
-                  onClick={() => {
-                    if (!locked) {
-                      patch({ azeModus: value as AzeModus })
-                    }
-                  }}
-                >
-                  {label}
-                </SegmentedButtonItem>
-              ))}
-            </SegmentedButton>
+            {showAze ? (
+              <>
+                <BeteiligungModeControl
+                  locked={locked}
+                  title="Beteiligung an Arbeitszeiterleichterung (AZE)"
+                  accessibleName="Beteiligung Arbeitszeiterleichterung"
+                  value={vereinbarung.azeModus}
+                  options={AZE_MODUS_OPTIONS}
+                  onSelect={(azeModus) => patch({ azeModus })}
+                />
 
-            {vereinbarung.azeModus === 'pauschal' ? (
-              <div className="awb-vereinbarung__field-group">
-                <Label showColon>Pauschale Beteiligung Post</Label>
-                <FlexBox className="awb-vereinbarung__input-with-unit">
-                  <Input
-                    className="awb-vereinbarung__input-narrow"
-                    value={vereinbarung.azeTage}
-                    placeholder={`max. ${antragAzeTage}`}
-                    disabled={locked}
-                    onInput={(event) => patch({ azeTage: event.target.value ?? '' })}
-                  />
-                  <Text>Tage</Text>
-                </FlexBox>
-              </div>
+                {vereinbarung.azeModus === 'pauschal' ? (
+                  <div className="awb-vereinbarung__field-group">
+                    <Label showColon>Pauschale Beteiligung Post</Label>
+                    <FlexBox className="awb-vereinbarung__input-with-unit">
+                      <Input
+                        className="awb-vereinbarung__input-narrow"
+                        value={vereinbarung.azeTage}
+                        placeholder={`max. ${antragAzeTage}`}
+                        readonly={locked}
+                        onInput={(event) => patch({ azeTage: event.target.value ?? '' })}
+                      />
+                      <Text>Tage</Text>
+                    </FlexBox>
+                  </div>
+                ) : null}
+              </>
             ) : null}
           </div>
 
@@ -535,7 +624,8 @@ export function VereinbarungSection({
               <FlexBox className="awb-vereinbarung__switch-row">
                 <Switch
                   checked={switchChecked}
-                  disabled={switchDisabled}
+                  disabled={postAkZero}
+                  readonly={locked}
                   onChange={(event) => {
                     if (locked) {
                       return
@@ -584,7 +674,7 @@ export function VereinbarungSection({
                         <Input
                           value={vereinbarung.auszahlungsBetrag}
                           placeholder={betragPlaceholder}
-                          disabled={locked}
+                          readonly={locked}
                           onInput={(event) =>
                             patch({ auszahlungsBetrag: event.target.value ?? '' })
                           }
@@ -632,7 +722,7 @@ export function VereinbarungSection({
                     name="zwingendeAusbildung"
                     text={label}
                     checked={vereinbarung.zwingendeAusbildung === value}
-                    disabled={locked}
+                    readonly={locked}
                     onChange={() =>
                       patch({
                         zwingendeAusbildung: value as ZwingendeAusbildung,
@@ -687,7 +777,7 @@ export function VereinbarungSection({
                         name="rueckzahlungVereinbaren"
                         text={label}
                         checked={vereinbarung.rueckzahlungVereinbaren === value}
-                        disabled={locked}
+                        readonly={locked}
                         onChange={() =>
                           patch({ rueckzahlungVereinbaren: value as RueckzahlungVereinbaren })
                         }

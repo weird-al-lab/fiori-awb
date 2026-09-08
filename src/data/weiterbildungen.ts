@@ -26,7 +26,6 @@ export type AbschlussUnterstatus =
   | 'Ausbildung abgebrochen'
   | 'Antrag abgelehnt'
   | 'Angebot abgelehnt'
-  | 'Ausbildung abgeschlossen'
   | 'Ausbildung bestanden'
   | 'Prüfung nicht bestanden'
 
@@ -122,11 +121,6 @@ export const STATUS_CATALOG: readonly StatusPair[] = [
   },
   {
     hauptstatus: 'Abschluss',
-    unterstatus: 'Ausbildung abgeschlossen',
-    aktuellBei: null,
-  },
-  {
-    hauptstatus: 'Abschluss',
     unterstatus: 'Ausbildung bestanden',
     aktuellBei: null,
   },
@@ -193,7 +187,6 @@ export function getLastReachedHauptstatusIndex(
       return HAUPTSTATUS_ORDER.Vereinbarung
     case 'Ausbildung abgebrochen':
     case 'Ausbildung bestanden':
-    case 'Ausbildung abgeschlossen':
     case 'Prüfung nicht bestanden':
       return HAUPTSTATUS_ORDER.Ausbildung
     default:
