@@ -75,6 +75,43 @@ export const ANTRAG_FORM_FIELD_ORDER: AntragFormFieldId[] = [
   'begruendungErleichterung',
 ]
 
+/** Wizard step (1–3) that owns each field — matches form section order. */
+export const ANTRAG_FORM_FIELD_STEP: Record<AntragFormFieldId, 1 | 2 | 3> = {
+  titel: 1,
+  anbieter: 1,
+  von: 1,
+  bis: 1,
+  niveau: 1,
+  fachrichtung: 1,
+  bund50: 2,
+  kurskosten: 2,
+  beschaeftigungsgradAnpassen: 3,
+  arbeitszeiterleichterung: 3,
+  anzahlTageErleichterung: 3,
+  begruendungErleichterung: 3,
+}
+
+export function getAntragFormFieldStep(fieldId: AntragFormFieldId): 1 | 2 | 3 {
+  return ANTRAG_FORM_FIELD_STEP[fieldId]
+}
+
+export function validateAntragFormStep(
+  form: AntragFormData,
+  step: number,
+): AntragFormValidationMessage[] {
+  return validateAntragForm(form).filter(
+    (message) => ANTRAG_FORM_FIELD_STEP[message.fieldId] === step,
+  )
+}
+
+export function firstInvalidAntragFieldId(
+  messages: AntragFormValidationMessage[],
+): AntragFormFieldId | undefined {
+  return ANTRAG_FORM_FIELD_ORDER.find((fieldId) =>
+    messages.some((message) => message.fieldId === fieldId),
+  )
+}
+
 function parseUiDate(value: string): Date | null {
   const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value.trim())
   if (!match) {

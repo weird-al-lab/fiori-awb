@@ -47,9 +47,9 @@ import {
 import './WeiterbildungEmployeeObjectPage.css'
 
 const VERTRAG_TABLE_TITLE: Record<VertragFilter, string> = {
-  all: 'Alle Aus- und Weiterbildungen',
-  with: 'Aus und Weiterbildungen mit Vertrag',
-  without: 'Aus und Weiterbildungen ohne Vertrag',
+  all: 'Alle Weiterbildungen',
+  with: 'Weiterbildungen mit Vertrag',
+  without: 'Weiterbildungen ohne Vertrag',
 }
 
 function HeaderFacet({ label, value }: { label: string; value: string }) {
@@ -245,12 +245,12 @@ export function WeiterbildungEmployeeObjectPage() {
       >
         <ObjectPageSection
           id="weiterbildungen"
-          titleText="Übersicht Aus- und Weiterbildungen"
+          titleText="Übersicht Weiterbildungen"
           hideTitleText
         >
           <div className="page-content-column page-content-column--align-only wb-object-page__section">
             <Title level="H2" size="H3" className="wb-object-page__section-title">
-              Übersicht Aus- und Weiterbildungen
+              Übersicht Weiterbildungen
             </Title>
 
             <div className="wb-object-page__actions-row">
@@ -282,7 +282,7 @@ export function WeiterbildungEmployeeObjectPage() {
                   navigate(`/v2/weiterbildung/${employee.id}/antrag/neu`)
                 }
               >
-                Ausbildung beantragen
+                Weiterbildung beantragen
               </Button>
             </div>
 
@@ -293,7 +293,7 @@ export function WeiterbildungEmployeeObjectPage() {
                 </Title>
                 <Input
                   className="wb-object-page__search"
-                  placeholder="Suche nach Ausbildung"
+                  placeholder="Suche nach Weiterbildung"
                   value={search}
                   onInput={(event) => setSearch(event.target.value ?? '')}
                   icon={<Icon name="search" slot="icon" />}
@@ -301,7 +301,7 @@ export function WeiterbildungEmployeeObjectPage() {
               </div>
 
               <Table
-                accessibleName="Aus- und Weiterbildungen"
+                accessibleName="Weiterbildungen"
                 className="wb-object-page__table"
                 noDataText="Keine Weiterbildungen gefunden"
                 rowActionCount={2}
@@ -327,7 +327,7 @@ export function WeiterbildungEmployeeObjectPage() {
                 headerRow={
                   <TableHeaderRow slot="headerRow">
                     <TableHeaderCell minWidth="14rem">
-                      Ausbildung
+                      Weiterbildung
                     </TableHeaderCell>
                     <TableHeaderCell minWidth="7rem" width="8rem">
                       Vom

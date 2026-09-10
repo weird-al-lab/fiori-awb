@@ -1,5 +1,5 @@
 import { BESCHAEFTIGUNGSGRAD_PERCENTS } from './constants'
-import type { AntragFormData, JaNein, Pruefungszulassung } from './types'
+import type { AntragFormData, JaNein } from './types'
 
 export function parseNumber(value: string): number {
   const normalized = value.replace(/'/g, '').replace(/\s/g, '').replace(',', '.')
@@ -80,15 +80,12 @@ export function formatFeedTimestamp(iso: string): string {
   })
 }
 
-export function jaNeinLabel(value: JaNein | Pruefungszulassung): string {
+export function jaNeinLabel(value: JaNein): string {
   if (value === 'ja') {
     return 'Ja'
   }
   if (value === 'nein') {
     return 'Nein'
-  }
-  if (value === 'keine') {
-    return 'Keine Zulassung nötig'
   }
   return '—'
 }

@@ -1,6 +1,11 @@
 import { useEffect, type ReactNode } from 'react'
+import { Button } from '@ui5/webcomponents-react/Button'
 import { DatePicker } from '@ui5/webcomponents-react/DatePicker'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
+import { Form } from '@ui5/webcomponents-react/Form'
+import { FormGroup } from '@ui5/webcomponents-react/FormGroup'
+import { FormItem } from '@ui5/webcomponents-react/FormItem'
+import { IllustratedMessage } from '@ui5/webcomponents-react/IllustratedMessage'
 import { Label } from '@ui5/webcomponents-react/Label'
 import { Link } from '@ui5/webcomponents-react/Link'
 import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
@@ -8,11 +13,14 @@ import { Panel } from '@ui5/webcomponents-react/Panel'
 import { RadioButton } from '@ui5/webcomponents-react/RadioButton'
 import { Text } from '@ui5/webcomponents-react/Text'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
+import '@ui5/webcomponents-fiori/dist/illustrations/SuccessHighFive.js'
 import {
+  AUSBILDUNG_FORM_FIELD_IDS,
   createDefaultAusbildungUpdate,
   ensureAusbildungUpdate,
   isAbschlussPhase,
   isAusbildungPhase,
+  type AusbildungFormFieldId,
   type AusbildungOutcome,
   type AusbildungUpdateDraft,
   type JaNein,
@@ -20,17 +28,20 @@ import {
 } from '../data/antraege'
 import './AusbildungSection.css'
 
+const FORM_LAYOUT = 'S1 M2 L2 XL2'
+const FORM_LABEL_SPAN = 'S12 M12 L12 XL12'
+
 type AusbildungSectionProps = {
   antrag: WeiterbildungAntrag
   readOnly: boolean
+  /** When true, Datum bis stays editable even if status radios are read-only. */
+  endDateEditable?: boolean
   showUpdateBanner: boolean
   onCloseBanner?: () => void
   onChange: (draft: AusbildungUpdateDraft) => void
   onWeisungClick?: () => void
-}
-
-function GroupTitle({ children }: { children: string }) {
-  return <Text className="awb-ausbildung__group-title">{children}</Text>
+  onProfilUpdateClick?: () => void
+  fieldErrors?: Partial<Record<AusbildungFormFieldId, string>>
 }
 
 function AusbildungPanel({
@@ -53,13 +64,12 @@ function AusbildungPanel({
   )
 }
 
-function DisplayField({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="awb-ausbildung__field">
-      <Label showColon>{label}</Label>
-      <Text>{value || '—'}</Text>
-    </div>
-  )
+function fieldValueState(error?: string) {
+  return error ? ('Negative' as const) : ('None' as const)
+}
+
+function fieldValueStateMessage(error?: string) {
+  return error ? <span slot="valueStateMessage">{error}</span> : undefined
 }
 
 function outcomeLabel(
@@ -85,16 +95,26 @@ function outcomeLabel(
 export function AusbildungSection({
   antrag,
   readOnly,
+  endDateEditable = false,
   showUpdateBanner,
   onCloseBanner,
   onChange,
   onWeisungClick,
+  onProfilUpdateClick,
+  fieldErrors = {},
 }: AusbildungSectionProps) {
   const draft = ensureAusbildungUpdate(antrag)
   const isRetryPhase = antrag.unterstatus === 'Prüfung nicht bestanden'
   const inAusbildung = isAusbildungPhase(antrag)
   const inAbschluss = isAbschlussPhase(antrag)
   const interactive = !readOnly && inAusbildung
+  const stillInAusbildung =
+    inAusbildung &&
+    !isRetryPhase &&
+    draft.outcome === 'in_ausbildung'
+  const showBestandenDelight = antrag.unterstatus === 'Ausbildung bestanden'
+  const formAccessibleMode =
+    interactive || endDateEditable ? ('Edit' as const) : ('Display' as const)
 
   useEffect(() => {
     if (!antrag.ausbildungUpdate && inAusbildung) {
@@ -135,9 +155,11 @@ export function AusbildungSection({
     draft.outcome === 'pruefung_nicht_bestanden'
 
   const showEndDateEdit =
-    interactive &&
-    (draft.outcome === 'in_ausbildung' ||
-      (draft.outcome === 'pruefung_nicht_bestanden' && draft.wiederholung === 'ja'))
+    (interactive &&
+      (draft.outcome === 'in_ausbildung' ||
+        (draft.outcome === 'pruefung_nicht_bestanden' &&
+          draft.wiederholung === 'ja'))) ||
+    (endDateEditable && stillInAusbildung)
 
   const endDateValue =
     draft.outcome === 'in_ausbildung'
@@ -175,152 +197,201 @@ export function AusbildungSection({
       ) : null}
 
       <AusbildungPanel title="Ausbildungsdaten">
-        <div className="awb-ausbildung__grid">
-          <div className="awb-ausbildung__col">
-            <GroupTitle>Status der Ausbildung</GroupTitle>
-
+        <Form
+          className="awb-ausbildung__form"
+          layout={FORM_LAYOUT}
+          labelSpan={FORM_LABEL_SPAN}
+          accessibleMode={formAccessibleMode}
+        >
+          <FormGroup headerText="Status der Ausbildung">
             {interactive ? (
-              <FlexBox
-                direction={FlexBoxDirection.Column}
-                className="awb-ausbildung__radios"
-              >
-                {!isRetryPhase ? (
-                  <>
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="In Ausbildung"
-                      checked={draft.outcome === 'in_ausbildung'}
-                      onChange={() => setOutcome('in_ausbildung')}
-                    />
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="Prüfung nicht bestanden"
-                      checked={draft.outcome === 'pruefung_nicht_bestanden'}
-                      onChange={() => setOutcome('pruefung_nicht_bestanden')}
-                    />
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="Ausbildung bestanden"
-                      checked={draft.outcome === 'ausbildung_bestanden'}
-                      onChange={() => setOutcome('ausbildung_bestanden')}
-                    />
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="Abbruch der Ausbildung"
-                      checked={draft.outcome === 'abbruch'}
-                      onChange={() => setOutcome('abbruch')}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="Prüfung nicht bestanden"
-                      checked={draft.outcome === 'pruefung_nicht_bestanden'}
-                      onChange={() => setOutcome('pruefung_nicht_bestanden')}
-                    />
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="Weitere Prüfung nicht bestanden"
-                      checked={
-                        draft.outcome === 'weitere_pruefung_nicht_bestanden'
-                      }
-                      onChange={() =>
-                        setOutcome('weitere_pruefung_nicht_bestanden')
-                      }
-                    />
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="Ausbildung bestanden"
-                      checked={draft.outcome === 'ausbildung_bestanden'}
-                      onChange={() => setOutcome('ausbildung_bestanden')}
-                    />
-                    <RadioButton
-                      name="ausbildung-outcome"
-                      text="Abbruch der Ausbildung"
-                      checked={draft.outcome === 'abbruch'}
-                      onChange={() => setOutcome('abbruch')}
-                    />
-                  </>
-                )}
-              </FlexBox>
+              <FormItem>
+                <div
+                  id={AUSBILDUNG_FORM_FIELD_IDS.outcome}
+                  data-ausbildung-field="outcome"
+                  role="radiogroup"
+                  aria-label="Status der Ausbildung"
+                  aria-invalid={Boolean(fieldErrors.outcome) || undefined}
+                  className="awb-ausbildung__radios awb-ausbildung__radios--column"
+                >
+                  {!isRetryPhase ? (
+                    <>
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="In Ausbildung"
+                        checked={draft.outcome === 'in_ausbildung'}
+                        onChange={() => setOutcome('in_ausbildung')}
+                      />
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="Prüfung nicht bestanden"
+                        checked={draft.outcome === 'pruefung_nicht_bestanden'}
+                        onChange={() => setOutcome('pruefung_nicht_bestanden')}
+                      />
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="Ausbildung bestanden"
+                        checked={draft.outcome === 'ausbildung_bestanden'}
+                        onChange={() => setOutcome('ausbildung_bestanden')}
+                      />
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="Abbruch der Ausbildung"
+                        checked={draft.outcome === 'abbruch'}
+                        onChange={() => setOutcome('abbruch')}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="Prüfung nicht bestanden"
+                        checked={draft.outcome === 'pruefung_nicht_bestanden'}
+                        onChange={() => setOutcome('pruefung_nicht_bestanden')}
+                      />
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="Weitere Prüfung nicht bestanden"
+                        checked={
+                          draft.outcome === 'weitere_pruefung_nicht_bestanden'
+                        }
+                        onChange={() =>
+                          setOutcome('weitere_pruefung_nicht_bestanden')
+                        }
+                      />
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="Ausbildung bestanden"
+                        checked={draft.outcome === 'ausbildung_bestanden'}
+                        onChange={() => setOutcome('ausbildung_bestanden')}
+                      />
+                      <RadioButton
+                        name="ausbildung-outcome"
+                        text="Abbruch der Ausbildung"
+                        checked={draft.outcome === 'abbruch'}
+                        onChange={() => setOutcome('abbruch')}
+                      />
+                    </>
+                  )}
+                </div>
+                {fieldErrors.outcome ? (
+                  <MessageStrip
+                    design="Negative"
+                    hideCloseButton
+                    className="awb-ausbildung__field-error"
+                  >
+                    {fieldErrors.outcome}
+                  </MessageStrip>
+                ) : null}
+              </FormItem>
             ) : (
-              <DisplayField label="Aktueller Status" value={summaryOutcome} />
+              <FormItem
+                labelContent={<Label showColon>Aktueller Status</Label>}
+              >
+                <Text>{summaryOutcome || '—'}</Text>
+              </FormItem>
             )}
 
             {showWiederholung ? (
-              <div className="awb-ausbildung__follow-up">
-                <GroupTitle>Wird die Prüfung wiederholt?</GroupTitle>
-                <FlexBox
-                  direction={FlexBoxDirection.Column}
-                  className="awb-ausbildung__radios"
+              <FormItem>
+                <div
+                  id={AUSBILDUNG_FORM_FIELD_IDS.wiederholung}
+                  data-ausbildung-field="wiederholung"
+                  role="radiogroup"
+                  aria-labelledby="ausbildung-wiederholung-label"
+                  aria-invalid={Boolean(fieldErrors.wiederholung) || undefined}
+                  className="awb-ausbildung__follow-up"
                 >
-                  <RadioButton
-                    name="ausbildung-wiederholung"
-                    text="Ja"
-                    checked={draft.wiederholung === 'ja'}
-                    onChange={() => setWiederholung('ja')}
-                  />
-                  <RadioButton
-                    name="ausbildung-wiederholung"
-                    text="Nein"
-                    checked={draft.wiederholung === 'nein'}
-                    onChange={() => setWiederholung('nein')}
-                  />
-                </FlexBox>
-              </div>
+                  <Label id="ausbildung-wiederholung-label" showColon>
+                    Wird die Prüfung wiederholt?
+                  </Label>
+                  <FlexBox
+                    direction={FlexBoxDirection.Row}
+                    className="awb-ausbildung__radios awb-ausbildung__radios--inline"
+                  >
+                    <RadioButton
+                      name="ausbildung-wiederholung"
+                      text="Ja"
+                      checked={draft.wiederholung === 'ja'}
+                      onChange={() => setWiederholung('ja')}
+                    />
+                    <RadioButton
+                      name="ausbildung-wiederholung"
+                      text="Nein"
+                      checked={draft.wiederholung === 'nein'}
+                      onChange={() => setWiederholung('nein')}
+                    />
+                  </FlexBox>
+                </div>
+                {fieldErrors.wiederholung ? (
+                  <MessageStrip
+                    design="Negative"
+                    hideCloseButton
+                    className="awb-ausbildung__field-error"
+                  >
+                    {fieldErrors.wiederholung}
+                  </MessageStrip>
+                ) : null}
+              </FormItem>
             ) : null}
 
             {showFailNoRetryWarning ? (
-              <MessageStrip design="Critical" hideCloseButton>
-                Hier sollte ein Text kommen, der erklärt, wie es in diesem Fall
-                weitergeht.
-              </MessageStrip>
+              <FormItem>
+                <MessageStrip design="Critical" hideCloseButton>
+                  Ohne Wiederholung wird die Ausbildung als nicht bestanden
+                  abgeschlossen. Du musst die Post-Beiträge und allfällig bezogene
+                  Tage einer Arbeitszeiterleichterung zurückzahlen. Die
+                  HR-Beratung kommt auf dich zu.
+                </MessageStrip>
+              </FormItem>
             ) : null}
 
             {showWeitereWarning ? (
-              <MessageStrip design="Critical" hideCloseButton>
-                Du gibst an, die zweite Prüfung nicht bestanden zu haben. Damit
-                werden 1/3 der durch die Post ausbezahlten Beträge für deine Aus-
-                oder Weiterbildung sowie allfällig bezogene Tage einer
-                Arbeitszeiterleichterung rückzahlungspflichtig.
-              </MessageStrip>
+              <FormItem>
+                <MessageStrip design="Critical" hideCloseButton>
+                  Du musst einen Drittel der Post-Beiträge und allfällig bezogene
+                  Tage einer Arbeitszeiterleichterung zurückzahlen.
+                </MessageStrip>
+              </FormItem>
             ) : null}
 
             {showAbbruchWarning ? (
-              <MessageStrip design="Critical" hideCloseButton>
-                Mit dem Abbruch werden die durch die Post ausbezahlten Beträge
-                für deine Aus- oder Weiterbildung sowie allfällig bezogene Tage
-                einer Arbeitszeiterleichterung rückzahlungspflichtig.{' '}
-                <Link
-                  onClick={(event) => {
-                    event.preventDefault()
-                    onWeisungClick?.()
-                  }}
-                >
-                  Siehe Weisung
-                </Link>
-              </MessageStrip>
+              <FormItem>
+                <MessageStrip design="Critical" hideCloseButton>
+                  Beim Abbruch musst du die Post-Beiträge und allfällig bezogene
+                  Tage einer Arbeitszeiterleichterung zurückzahlen. Die
+                  HR-Beratung kommt auf dich zu.{' '}
+                  <Link
+                    onClick={(event) => {
+                      event.preventDefault()
+                      onWeisungClick?.()
+                    }}
+                  >
+                    Weisung anzeigen
+                  </Link>
+                </MessageStrip>
+              </FormItem>
             ) : null}
-          </div>
+          </FormGroup>
 
-          <div className="awb-ausbildung__col">
-            <GroupTitle>Ausbildungsdauer</GroupTitle>
-            <div className="awb-ausbildung__dates">
-              <div className="awb-ausbildung__field">
-                <Label showColon>Datum von</Label>
+          <FormGroup headerText="Ausbildungsdauer">
+            <div className="awb-ausbildung__dauer-row">
+              <FormItem labelContent={<Label showColon>Datum von</Label>}>
                 <Text>{antrag.von || antrag.form.von || '—'}</Text>
-              </div>
-              <div className="awb-ausbildung__field">
-                <Label showColon>Datum bis</Label>
+              </FormItem>
+              <FormItem labelContent={<Label showColon>Datum bis</Label>}>
                 {showEndDateEdit ? (
                   <DatePicker
+                    id={AUSBILDUNG_FORM_FIELD_IDS.neuesEnddatum}
+                    data-ausbildung-field="neuesEnddatum"
                     value={endDateValue}
-                    placeholder={
-                      draft.outcome === 'in_ausbildung' ? undefined : 'neues Enddatum'
-                    }
                     formatPattern="dd.MM.yyyy"
                     accessibleName="Datum bis"
+                    style={{ width: '100%' }}
+                    valueState={fieldValueState(fieldErrors.neuesEnddatum)}
+                    valueStateMessage={fieldValueStateMessage(
+                      fieldErrors.neuesEnddatum,
+                    )}
                     onChange={(event) =>
                       patch({ neuesEnddatum: event.detail.value ?? '' })
                     }
@@ -328,10 +399,24 @@ export function AusbildungSection({
                 ) : (
                   <Text>{antrag.bis || antrag.form.bis || '—'}</Text>
                 )}
-              </div>
+              </FormItem>
             </div>
-          </div>
-        </div>
+          </FormGroup>
+        </Form>
+
+        {showBestandenDelight ? (
+          <IllustratedMessage
+            className="awb-ausbildung__delight"
+            name="SuccessHighFive"
+            design="Spot"
+            titleText="Herzlichen Glückwunsch!"
+            subtitleText="Deine Ausbildung ist bestanden. Falls sich dein höchster Bildungsabschluss dadurch geändert hat, aktualisiere bitte deine Profilinformationen."
+          >
+            <Button design="Emphasized" onClick={onProfilUpdateClick}>
+              Profil aktualisieren
+            </Button>
+          </IllustratedMessage>
+        ) : null}
       </AusbildungPanel>
     </div>
   )

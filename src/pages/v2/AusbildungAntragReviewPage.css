@@ -74,6 +74,7 @@
 
 .awb-review__content-banner {
   width: 100%;
+  margin-bottom: 1rem;
 }
 
 .awb-review__process-band {
@@ -189,6 +190,21 @@
 .awb-review__footer-actions {
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.awb-review__footer-hint {
+  color: var(--sapContent_LabelColor);
+  font-size: var(--sapFontSmallSize);
+  max-width: 22rem;
+  text-align: end;
+}
+
+.awb-review__message-popover::part(content) {
+  padding: 0;
+}
+
+.awb-review__message-popover ui5-message-view {
+  width: min(24rem, calc(100vw - 2rem));
 }
 
 @media (max-width: 900px) {

@@ -17,7 +17,6 @@ export type FeedEintrag = {
 }
 
 export type JaNein = 'ja' | 'nein' | ''
-export type Pruefungszulassung = 'ja' | 'nein' | 'keine' | ''
 
 export type AntragDokument = {
   id: string
@@ -50,7 +49,6 @@ export type VereinbarungData = {
 
 export type AntragFormData = {
   // Step 1 – Grunddaten
-  vorbesprochen: JaNein
   titel: string
   anbieter: string
   von: string
@@ -58,23 +56,16 @@ export type AntragFormData = {
   niveau: string
   fachrichtung: string
   stufe: string
-  pruefungszulassung: Pruefungszulassung
-  zulassungErklaerung: string
   // Step 2 – Kosten
   bund50: JaNein
   kurskosten: string
   zusaetzlicheKosten: string
   // Step 3 – Arbeitszeit / Pensum
-  anzahlAusbildungstage: string
-  wochentage: string[]
-  schulzeitenBemerkungen: string
   beschaeftigungsgradAnpassen: JaNein
   gewuenschterBeschaeftigungsgrad: string
   arbeitszeiterleichterung: JaNein
   anzahlTageErleichterung: string
   begruendungErleichterung: string
-  // Step 4 – Dokumente / Kommentare
-  kommentar: string
 }
 
 export type AusbildungOutcome =
@@ -103,14 +94,11 @@ export type WeiterbildungAntrag = {
   form: AntragFormData
   vereinbarung?: VereinbarungData
   ausbildungUpdate?: AusbildungUpdateDraft
-  dokumente: AntragDokument[]
   kommentareAktivitaeten?: FeedEintrag[]
   /** VG comment from the latest send-back for MA revision banner */
   ueberarbeitungKommentarVg?: string | null
   /** Form snapshot when VG sent back for revision; used to highlight MA changes */
   formBaselineVorUeberarbeitung?: AntragFormData
-  /** Document ids at send-back time */
-  dokumenteBaselineVorUeberarbeitung?: string[]
   /** VG is editing an in-review antrag; employee-visible unterstatus stays in review */
   vgBearbeitungAktiv?: boolean
   aktuellBeiLabel: string | null

@@ -127,22 +127,35 @@ function BeteiligungModeControl<T extends string>({
 function VereinbarungPanel({
   title,
   collapsed = false,
+  initiallyCollapsed = false,
   fixed = false,
   children,
 }: {
   title: string
+  /** Force collapsed (e.g. MA review) — user cannot expand while true */
   collapsed?: boolean
+  /** Start collapsed but allow expand (VG optional settings) */
+  initiallyCollapsed?: boolean
   fixed?: boolean
   children: ReactNode
 }) {
+  const [userCollapsed, setUserCollapsed] = useState(initiallyCollapsed)
+  const isCollapsed = collapsed || userCollapsed
+
   return (
     <Panel
       className="awb-review__panel"
-      collapsed={collapsed}
+      collapsed={isCollapsed}
       fixed={fixed}
       accessibleName={title}
       headerLevel="H3"
       headerText={title}
+      onToggle={(event) => {
+        if (collapsed || fixed) {
+          return
+        }
+        setUserCollapsed(Boolean(event.target.collapsed))
+      }}
     >
       <div className="awb-review__panel-body">{children}</div>
     </Panel>
@@ -239,7 +252,7 @@ function AngebotSummary({
           wrappingType="Normal"
           type="Inactive"
         >
-          Beteiligung Post an Ausbildungskosten
+          Beteiligung Post an Weiterbildungskosten
         </ListItemStandard>
         {antrag.form.arbeitszeiterleichterung === 'ja' ? (
           <ListItemStandard
@@ -480,6 +493,17 @@ export function VereinbarungSection({
     vertragPflichtig || vereinbarung.rueckzahlungVereinbaren === 'ja' || hrBeratungFlow
   const panelsCollapsed = maReview
   const showAze = antrag.form.arbeitszeiterleichterung === 'ja'
+  const showAuszahlung = kosten.postAk > 0
+  const showRueckzahlung = kosten.postAk > 0 || kosten.postAze > 0
+  const showEinstellungen = showAuszahlung || showRueckzahlung
+  const settingsGridClass = [
+    'awb-vereinbarung__settings-grid',
+    showAuszahlung && showRueckzahlung
+      ? ''
+      : 'awb-vereinbarung__settings-grid--single',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   const prevShowZwingendeFrageRef = useRef(showZwingendeFrage)
   useEffect(() => {
@@ -515,8 +539,10 @@ export function VereinbarungSection({
           className="awb-vereinbarung__banner"
           onClose={onCloseRoleBanner}
         >
-          Du bearbeitest diesen Antrag als Vorgesetzte/r von {employeeName}. Bitte lege
-          den Arbeitgeberbeitrag fest.
+          Du bearbeitest diesen Antrag als Vorgesetzte/r von {employeeName}.
+          <br />
+          Lege den Arbeitgeberbeitrag fest — Auszahlung und Rückzahlung ergeben sich
+          daraus. Danach an MA senden.
         </MessageStrip>
       ) : null}
 
@@ -538,7 +564,7 @@ export function VereinbarungSection({
             <BeteiligungModeControl
               locked={locked}
               title="Beteiligung an Aus- und Weiterbildungskosten (AK)"
-              accessibleName="Beteiligung Ausbildungskosten"
+              accessibleName="Beteiligung Weiterbildungskosten"
               value={vereinbarung.akModus}
               options={AK_MODUS_OPTIONS}
               onSelect={(akModus) => patch({ akModus })}
@@ -613,39 +639,37 @@ export function VereinbarungSection({
         </div>
       </VereinbarungPanel>
 
-      {kosten.postAk > 0 ? (
+      {showEinstellungen ? (
         <VereinbarungPanel
-          title="Auszahlung Aus- und Weiterbildungskosten"
+          key={hrBeratungFlow ? 'auszahlung-rueckzahlung-hr' : 'auszahlung-rueckzahlung'}
+          title="Auszahlung und Rückzahlung"
           collapsed={panelsCollapsed}
+          initiallyCollapsed={false}
         >
-          <div className="awb-vereinbarung__auszahlung-grid">
-            <div className="awb-vereinbarung__auszahlung-col">
-              <GroupTitle>Zeitpunkt</GroupTitle>
-              <FlexBox className="awb-vereinbarung__switch-row">
-                <Switch
-                  checked={switchChecked}
-                  disabled={postAkZero}
-                  readonly={locked}
-                  onChange={(event) => {
-                    if (locked) {
-                      return
-                    }
-                    const checked = event.target.checked
-                    patch({
-                      sofortauszahlung: checked,
-                      ...(checked ? { auszahlungsBetrag: '' } : {}),
-                    })
-                  }}
-                />
-                <Text>Auszahlung mit nächstem Lohn</Text>
-              </FlexBox>
-            </div>
-
-            <div className="awb-vereinbarung__auszahlung-col">
-              <GroupTitle>Betrag</GroupTitle>
-              <div className="awb-vereinbarung__auszahlung-fields">
+          <div className={settingsGridClass}>
+            {showAuszahlung ? (
+              <div className="awb-vereinbarung__settings-col">
+                <GroupTitle>Auszahlung des Post-Beitrags</GroupTitle>
+                <FlexBox className="awb-vereinbarung__switch-row">
+                  <Switch
+                    checked={switchChecked}
+                    disabled={postAkZero}
+                    readonly={locked}
+                    onChange={(event) => {
+                      if (locked) {
+                        return
+                      }
+                      const checked = event.target.checked
+                      patch({
+                        sofortauszahlung: checked,
+                        ...(checked ? { auszahlungsBetrag: '' } : {}),
+                      })
+                    }}
+                  />
+                  <Text>Auszahlung mit nächstem Lohn</Text>
+                </FlexBox>
                 {showMonatBetrag ? (
-                  <>
+                  <div className="awb-vereinbarung__auszahlung-fields">
                     <div className="awb-vereinbarung__field-group">
                       <Label showColon>Monat</Label>
                       <DatePicker
@@ -682,164 +706,159 @@ export function VereinbarungSection({
                         <Text>CHF</Text>
                       </FlexBox>
                     </div>
-                  </>
+                  </div>
                 ) : null}
                 <div className="awb-vereinbarung__field-group">
                   <Label showColon>Mit nächstem Lohn</Label>
                   <Text>{lohnBetrag}</Text>
                 </div>
               </div>
-            </div>
-          </div>
-        </VereinbarungPanel>
-      ) : null}
+            ) : null}
 
-      {kosten.postAk > 0 || kosten.postAze > 0 ? (
-        <VereinbarungPanel
-          title="Rückzahlungspflicht des Mitarbeiters"
-          collapsed={panelsCollapsed}
-        >
-        {showZwingendeFrage ? (
-          <div className="awb-vereinbarung__zwingende-block">
-            <GroupTitle>Zwingende Aus-/Weiterbildung</GroupTitle>
-            <div className="awb-vereinbarung__field-group">
-              <Label showColon>
-                Die Aus- oder Weiterbildung ist für die Ausübung der Arbeit eine
-                zwingende Voraussetzung
-              </Label>
-              <FlexBox
-                direction={FlexBoxDirection.Row}
-                className="awb-vereinbarung__radios awb-vereinbarung__radios--inline"
-              >
-                {(
-                  [
-                    ['ja', 'Ja (Keine Rückzahlungspflicht)'],
-                    ['nein', 'Nein'],
-                  ] as const
-                ).map(([value, label]) => (
-                  <RadioButton
-                    key={value}
-                    name="zwingendeAusbildung"
-                    text={label}
-                    checked={vereinbarung.zwingendeAusbildung === value}
-                    readonly={locked}
-                    onChange={() =>
-                      patch({
-                        zwingendeAusbildung: value as ZwingendeAusbildung,
-                        ...(value === 'nein' ? { begruendungZwingend: '' } : {}),
-                      })
-                    }
-                  />
-                ))}
-              </FlexBox>
-            </div>
-          </div>
-        ) : null}
-        <div
-          className={`awb-vereinbarung__rueckzahlung-grid${showVertragsDetails ? '' : ' awb-vereinbarung__rueckzahlung-grid--single'}`}
-        >
-          <div className="awb-vereinbarung__rueckzahlung-col">
-            <GroupTitle>Vertrag</GroupTitle>
-            {hrBeratungFlow ? (
-              <MessageStrip design="Information" hideCloseButton>
-                Begründe warum die Aus- oder Weiterbildung zwingend ist. Die HR-Beratung
-                überprüft deinen Antrag und nimmt mit dir Kontakt auf.
-              </MessageStrip>
-            ) : vertragPflichtig ? (
-              <MessageStrip design="Critical" hideCloseButton>
-                Für diese Aus-/Weiterbildung wird zwingend ein gegenseitiger Vertrag
-                erstellt, da der Beitrag der Post an den Ausbildungskosten von CHF{' '}
-                {formatChfDecimal(kosten.postAk)}.- den festgelegten Schwellenwert
-                übersteigt
-              </MessageStrip>
-            ) : (
-              <>
-                <MessageStrip design="Information" hideCloseButton>
-                  Beteiligungen von weniger als CHF 5&apos;000 sind im Normalfall nicht
-                  rückzahlungspflichtig.
-                </MessageStrip>
-                <div className="awb-vereinbarung__field-group">
-                  <Label showColon>
-                    Soll dennoch eine Rückzahlungsverpflichtung vereinbart werden?
-                  </Label>
-                  <FlexBox
-                    direction={FlexBoxDirection.Row}
-                    className="awb-vereinbarung__radios awb-vereinbarung__radios--inline"
-                  >
-                    {(
-                      [
-                        ['ja', 'Ja'],
-                        ['nein', 'Nein'],
-                      ] as const
-                    ).map(([value, label]) => (
-                      <RadioButton
-                        key={value}
-                        name="rueckzahlungVereinbaren"
-                        text={label}
-                        checked={vereinbarung.rueckzahlungVereinbaren === value}
+            {showRueckzahlung ? (
+              <div className="awb-vereinbarung__settings-col">
+                <GroupTitle>Rückzahlungspflicht des Mitarbeiters</GroupTitle>
+
+                {showZwingendeFrage ? (
+                  <div className="awb-vereinbarung__zwingende-block">
+                    <div className="awb-vereinbarung__field-group">
+                      <Label showColon>
+                        Ist die Aus- oder Weiterbildung für die Ausübung der Arbeit eine
+                        zwingende Voraussetzung?
+                      </Label>
+                      <FlexBox
+                        direction={FlexBoxDirection.Row}
+                        className="awb-vereinbarung__radios awb-vereinbarung__radios--inline"
+                      >
+                        {(
+                          [
+                            ['ja', 'Ja (Keine Rückzahlungspflicht)'],
+                            ['nein', 'Nein'],
+                          ] as const
+                        ).map(([value, label]) => (
+                          <RadioButton
+                            key={value}
+                            name="zwingendeAusbildung"
+                            text={label}
+                            checked={vereinbarung.zwingendeAusbildung === value}
+                            readonly={locked}
+                            onChange={() =>
+                              patch({
+                                zwingendeAusbildung: value as ZwingendeAusbildung,
+                                ...(value === 'nein' ? { begruendungZwingend: '' } : {}),
+                              })
+                            }
+                          />
+                        ))}
+                      </FlexBox>
+                    </div>
+                  </div>
+                ) : null}
+
+                {hrBeratungFlow ? (
+                  <MessageStrip design="Critical" hideCloseButton>
+                    Senden an MA ist nicht möglich: Bei zwingender Weiterbildung musst du
+                    eine Begründung erfassen und die HR-Beratung beiziehen. Die HR-Beratung
+                    prüft den Antrag und nimmt mit dir Kontakt auf.
+                  </MessageStrip>
+                ) : vertragPflichtig ? (
+                  <MessageStrip design="Information" hideCloseButton>
+                    Für diese Aus-/Weiterbildung wird zwingend ein gegenseitiger Vertrag
+                    erstellt, da der Beitrag der Post an den Weiterbildungskosten von CHF{' '}
+                    {formatChfDecimal(kosten.postAk)}.- den festgelegten Schwellenwert
+                    übersteigt
+                  </MessageStrip>
+                ) : (
+                  <>
+                    <Text>
+                      Beteiligungen von weniger als CHF 5&apos;000 müssen im Normalfall nicht
+                      zurückbezahlt werden.
+                    </Text>
+                    <div className="awb-vereinbarung__field-group">
+                      <Label showColon>
+                        Willst du trotzdem einen Rückzahlungsvertrag erstellen?
+                      </Label>
+                      <FlexBox
+                        direction={FlexBoxDirection.Row}
+                        className="awb-vereinbarung__radios awb-vereinbarung__radios--inline"
+                      >
+                        {(
+                          [
+                            ['ja', 'Ja'],
+                            ['nein', 'Nein'],
+                          ] as const
+                        ).map(([value, label]) => (
+                          <RadioButton
+                            key={value}
+                            name="rueckzahlungVereinbaren"
+                            text={label}
+                            checked={vereinbarung.rueckzahlungVereinbaren === value}
+                            readonly={locked}
+                            onChange={() =>
+                              patch({
+                                rueckzahlungVereinbaren: value as RueckzahlungVereinbaren,
+                              })
+                            }
+                          />
+                        ))}
+                      </FlexBox>
+                    </div>
+                  </>
+                )}
+
+                {showVertragsDetails ? (
+                  hrBeratungFlow ? (
+                    <div className="awb-vereinbarung__field-group">
+                      <GroupTitle>Begründung</GroupTitle>
+                      <TextArea
+                        className="awb-vereinbarung__vertrag-input"
+                        rows={5}
+                        placeholder="Begründung"
+                        value={vereinbarung.begruendungZwingend}
                         readonly={locked}
-                        onChange={() =>
-                          patch({ rueckzahlungVereinbaren: value as RueckzahlungVereinbaren })
+                        onInput={(event) =>
+                          patch({ begruendungZwingend: event.target.value ?? '' })
                         }
                       />
-                    ))}
-                  </FlexBox>
-                </div>
-              </>
-            )}
+                    </div>
+                  ) : (
+                    <div className="awb-vereinbarung__field-group">
+                      <GroupTitle>Spezielle Vertragsbestimmungen (optional)</GroupTitle>
+                      <Text>
+                        Der eingegebene Text wird als besondere Vertragsbestimmungen übernommen.
+                        Formulierungen bitte mit der zuständigen HR Beratung vorgängig
+                        absprechen.
+                      </Text>
+                      <TextArea
+                        className="awb-vereinbarung__vertrag-input"
+                        rows={5}
+                        placeholder="Vertragsbestimmung erfassen"
+                        value={vereinbarung.vertragsbestimmungen}
+                        readonly={locked}
+                        onInput={(event) =>
+                          patch({ vertragsbestimmungen: event.target.value ?? '' })
+                        }
+                      />
+                    </div>
+                  )
+                ) : null}
+
+                {showVertragsDetails ? (
+                  <div className="awb-vereinbarung__preview-row">
+                    {hrBeratungFlow ? (
+                      <Button design="Default" onClick={onHrBeratungBeiziehen}>
+                        HR Beratung beiziehen
+                      </Button>
+                    ) : (
+                      <Button design="Default" onClick={onPreviewVertrag}>
+                        Vorschau Vertragsdokument
+                      </Button>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
-          {showVertragsDetails ? (
-            <div className="awb-vereinbarung__rueckzahlung-col">
-              {hrBeratungFlow ? (
-                <>
-                  <GroupTitle>Begründung</GroupTitle>
-                  <TextArea
-                    className="awb-vereinbarung__vertrag-input"
-                    rows={5}
-                    placeholder="Begründung"
-                    value={vereinbarung.begruendungZwingend}
-                    readonly={locked}
-                    onInput={(event) =>
-                      patch({ begruendungZwingend: event.target.value ?? '' })
-                    }
-                  />
-                </>
-              ) : (
-                <>
-                  <GroupTitle>Spezielle Vertragsbestimmungen</GroupTitle>
-                  <Text>
-                    Eintragungen werden als besondere Vertragsbestimmungen übernommen.
-                    Textformulierungen sind mit der zuständigen HR Beratung vorgängig
-                    abzusprechen.
-                  </Text>
-                  <TextArea
-                    className="awb-vereinbarung__vertrag-input"
-                    rows={5}
-                    placeholder="Vertragsbestimmung erfassen"
-                    value={vereinbarung.vertragsbestimmungen}
-                    readonly={locked}
-                    onInput={(event) =>
-                      patch({ vertragsbestimmungen: event.target.value ?? '' })
-                    }
-                  />
-                </>
-              )}
-            </div>
-          ) : null}
-        </div>
-        {showVertragsDetails ? (
-          <div className="awb-vereinbarung__preview-row">
-            {hrBeratungFlow ? (
-              <Button design="Default" onClick={onHrBeratungBeiziehen}>
-                HR Beratung beiziehen
-              </Button>
-            ) : (
-              <Button design="Default" onClick={onPreviewVertrag}>
-                Vorschau Vertragsdokument
-              </Button>
-            )}
-          </div>
-        ) : null}
         </VereinbarungPanel>
       ) : null}
     </div>

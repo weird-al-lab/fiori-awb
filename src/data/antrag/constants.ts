@@ -104,16 +104,6 @@ export const SCHULEN_ANBIETER_OPTIONS = [
   'ZHdK Weiterbildung',
 ] as const
 
-export const WOCHENTAG_OPTIONS = [
-  'Montag',
-  'Dienstag',
-  'Mittwoch',
-  'Donnerstag',
-  'Freitag',
-  'Samstag',
-  'Sonntag',
-] as const
-
 export const BESCHAEFTIGUNGSGRAD_PERCENTS = [100, 90, 80, 70, 60, 50] as const
 
 export const VERTRAG_SCHWELLENWERT_CHF = 5000

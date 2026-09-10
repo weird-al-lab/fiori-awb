@@ -340,10 +340,10 @@ export function AntragFormKostenSection({
           </RadioFormItem>
         </FormGroup>
 
-        <FormGroup headerText="Ausbildungskosten">
+        <FormGroup headerText="Weiterbildungskosten">
           <FormItem>
             <MessageStrip design="Information" hideCloseButton className="awb-antrag-form__info">
-              Bitte erfasse die Ausbildungskosten in CHF. Reise-, Übernachtungs- oder
+              Bitte erfasse die Weiterbildungskosten in CHF. Reise-, Übernachtungs- oder
               Verpflegungskosten werden über die Spesenabrechnung zurückgefordert.
             </MessageStrip>
           </FormItem>
@@ -382,7 +382,7 @@ export function AntragFormKostenSection({
               className="awb-antrag-form__info"
               icon={<Icon name="money-bills" slot="icon" />}
             >
-              Die Grundlage für die Beteiligung Post an den Ausbildungskosten ist{' '}
+              Die Grundlage für die Beteiligung Post an den Weiterbildungskosten ist{' '}
               {formatChf(postGrundlage)}
             </MessageStrip>
           </FormItem>
@@ -454,7 +454,7 @@ export function AntragFormArbeitszeitSection({
             error={fieldErrors.beschaeftigungsgradAnpassen}
             label={
               <Label required showColon>
-                Muss der Beschäftigungsgrad für die Dauer der Ausbildung angepasst werden
+                Muss der Beschäftigungsgrad für die Dauer der Weiterbildung angepasst werden
               </Label>
             }
           >
@@ -651,7 +651,7 @@ export function AntragReviewArbeitszeitSection({
           <ReviewStackedField
             label={
               <Label showColon>
-                Muss der Beschäftigungsgrad für die Dauer der Ausbildung angepasst werden
+                Muss der Beschäftigungsgrad für die Dauer der Weiterbildung angepasst werden
               </Label>
             }
             value={jaNeinLabel(form.beschaeftigungsgradAnpassen)}

@@ -1,28 +1,17 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Bar } from '@ui5/webcomponents-react/Bar'
 import { Button } from '@ui5/webcomponents-react/Button'
-import { ComboBox } from '@ui5/webcomponents-react/ComboBox'
-import { ComboBoxItem } from '@ui5/webcomponents-react/ComboBoxItem'
-import { DatePicker } from '@ui5/webcomponents-react/DatePicker'
 import { AwbDialog } from '../components/AwbDialog'
-import { FileUploader } from '@ui5/webcomponents-react/FileUploader'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
-import { Icon } from '@ui5/webcomponents-react/Icon'
-import { Input } from '@ui5/webcomponents-react/Input'
 import { Label } from '@ui5/webcomponents-react/Label'
+import { MessageItem } from '@ui5/webcomponents-react/MessageItem'
 import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
-import { MultiComboBox } from '@ui5/webcomponents-react/MultiComboBox'
-import { MultiComboBoxItem } from '@ui5/webcomponents-react/MultiComboBoxItem'
-import { Option } from '@ui5/webcomponents-react/Option'
-import { RadioButton } from '@ui5/webcomponents-react/RadioButton'
-import { Select } from '@ui5/webcomponents-react/Select'
-import { BusyIndicator } from '@ui5/webcomponents-react/BusyIndicator'
+import { MessageView } from '@ui5/webcomponents-react/MessageView'
+import { MessageViewButton } from '@ui5/webcomponents-react/MessageViewButton'
+import { Popover } from '@ui5/webcomponents-react/Popover'
 import { Text } from '@ui5/webcomponents-react/Text'
-import { TextArea } from '@ui5/webcomponents-react/TextArea'
 import { Title } from '@ui5/webcomponents-react/Title'
-import { UploadCollection } from '@ui5/webcomponents-react/UploadCollection'
-import { UploadCollectionItem } from '@ui5/webcomponents-react/UploadCollectionItem'
 import { Wizard } from '@ui5/webcomponents-react/Wizard'
 import { WizardStep } from '@ui5/webcomponents-react/WizardStep'
 import { FlexBoxAlignItems } from '@ui5/webcomponents-react/enums/FlexBoxAlignItems'
@@ -34,50 +23,42 @@ import { UnterstatusTag } from '../components/UnterstatusTag'
 import { usePrototypePersona } from '../context/PrototypePersonaContext'
 import {
   beginVgAntragEdit,
-  createDokumentMeta,
+  cancelVgAntragEdit,
   createNewAntrag,
   deleteAntrag,
-  deleteDokumentBlob,
-  FACHRICHTUNG_OPTIONS,
-  formatChf,
-  formatChfRate,
+  firstInvalidAntragFieldId,
+  focusAntragFormField,
   formatBeschaeftigungsgradOption,
-  formatFileSize,
   getAntrag,
-  getArbeitszeitGrundlage,
-  getBeschaeftigungsgradOptions,
-  getBundBeteiligung,
-  getPostKostenGrundlage,
-  MAX_DOCUMENT_BYTES,
-  TYP_OPTIONS,
+  getAntragFormFieldStep,
   parseBeschaeftigungsgradPercent,
-  saveDokumentBlob,
   saveDraft,
-  flushFormKommentarToFeed,
-  SCHULEN_ANBIETER_OPTIONS,
   isMaUeberarbeitungPhase,
   isVgAntragPruefungEditable,
   isVgDraftResubmit,
   submitAntrag,
+  validateAntragForm,
+  validateAntragFormStep,
+  validationMessagesToFieldErrors,
   type AntragFormData,
-  type JaNein,
-  type Pruefungszulassung,
+  type AntragFormFieldId,
   type WeiterbildungAntrag,
-  WOCHENTAG_OPTIONS,
 } from '../data/antraege'
 import { getEmployee } from '../data/employees'
+import {
+  AntragFormArbeitszeitSection,
+  AntragFormGrunddatenSection,
+  AntragFormKostenSection,
+} from './v2/AntragFormPanels'
 import './AusbildungAntragWizardPage.css'
 
-const STEP_COUNT = 4
-
-const BUND_SUBJEKTFINANZIERUNG_URL =
-  'https://www.sbfi.admin.ch/de/bundesbeitraege-fuer-kurse-die-auf-eidgenoessische-pruefungen-vorbereiten'
+const STEP_COUNT = 3
+const MESSAGE_BUTTON_ID = 'awb-wizard-message-btn'
 
 const WIZARD_STEPS = [
   { number: 1, title: 'Grunddaten' },
   { number: 2, title: 'Kosten' },
   { number: 3, title: 'Arbeitszeit / Pensum' },
-  { number: 4, title: 'Dokumente / Kommentare', subtitle: 'Optional' },
 ] as const
 
 function unlockStorageKey(antragId: string | undefined): string {
@@ -124,50 +105,6 @@ function parseStep(raw: string | undefined): number {
   return 0
 }
 
-function RequiredLabel({ children }: { children: string }) {
-  return (
-    <Label required showColon>
-      {children}
-    </Label>
-  )
-}
-
-function FormField({
-  label,
-  required,
-  children,
-  className,
-}: {
-  label: string
-  required?: boolean
-  children: ReactNode
-  className?: string
-}) {
-  return (
-    <div className={`awb-wizard__field${className ? ` ${className}` : ''}`}>
-      {required ? <RequiredLabel>{label}</RequiredLabel> : <Label showColon>{label}</Label>}
-      {children}
-    </div>
-  )
-}
-
-function SectionCard({
-  title,
-  children,
-}: {
-  title: string
-  children: ReactNode
-}) {
-  return (
-    <section className="awb-wizard__card">
-      <Title level="H2" size="H5" className="awb-wizard__card-title">
-        {title}
-      </Title>
-      {children}
-    </section>
-  )
-}
-
 function updateForm(
   antrag: WeiterbildungAntrag,
   patch: Partial<AntragFormData>,
@@ -176,6 +113,14 @@ function updateForm(
     ...antrag,
     form: { ...antrag.form, ...patch },
   }
+}
+
+function getPageTitle(antrag: WeiterbildungAntrag, isEdit: boolean): string {
+  if (!isEdit) {
+    return 'Neuer Weiterbildungsantrag'
+  }
+  const objectTitle = antrag.form.titel.trim() || antrag.ausbildung.trim()
+  return objectTitle || 'Weiterbildungsantrag bearbeiten'
 }
 
 function WizardStepper({
@@ -236,7 +181,6 @@ function WizardStepper({
           <WizardStep
             key={item.number}
             titleText={item.title}
-            subtitleText={'subtitle' in item ? item.subtitle : undefined}
             selected={item.number === step}
             disabled={item.number > unlockedUntil}
           >
@@ -259,7 +203,7 @@ export function AusbildungAntragWizardPage() {
   const { employeeId = '', antragId, step: stepParam } = useParams()
   const navigate = useNavigate()
   const employee = getEmployee(employeeId)
-  const { persona, ownsEmployee, isVg } = usePrototypePersona()
+  const { persona, ownsEmployee, isVg, isMa } = usePrototypePersona()
   const isEdit = Boolean(antragId)
   const stepFromUrl = parseStep(stepParam)
   const ownCase = ownsEmployee(employeeId)
@@ -269,13 +213,12 @@ export function AusbildungAntragWizardPage() {
     readUnlocked(antragId, isEdit ? STEP_COUNT : 1),
   )
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [pruefungszulassungInfoOpen, setPruefungszulassungInfoOpen] = useState(false)
-  const [beteiligungBundInfoOpen, setBeteiligungBundInfoOpen] = useState(false)
-  const [arbeitszeiterleichterungInfoOpen, setArbeitszeiterleichterungInfoOpen] =
-    useState(false)
-  const [uploadError, setUploadError] = useState('')
-  const [docsBusy, setDocsBusy] = useState(false)
+  /** none = quiet; step = current-step only (Nächster Schritt); all = full form (Absenden) */
+  const [validationMode, setValidationMode] = useState<'none' | 'step' | 'all'>('none')
+  const [messagePopoverOpen, setMessagePopoverOpen] = useState(false)
+  const [showUeberarbeitungBanner, setShowUeberarbeitungBanner] = useState(true)
   const loadedAntragIdRef = useRef<string | null>(null)
+  const pendingFocusFieldRef = useRef<AntragFormFieldId | null>(null)
 
   const step = stepFromUrl
 
@@ -284,6 +227,13 @@ export function AusbildungAntragWizardPage() {
       navigate('/weiterbildung', { replace: true })
     }
   }, [employee, navigate])
+
+  useEffect(() => {
+    setValidationMode('none')
+    setMessagePopoverOpen(false)
+    pendingFocusFieldRef.current = null
+    setShowUeberarbeitungBanner(true)
+  }, [antragId])
 
   useEffect(() => {
     if (!employee) {
@@ -340,6 +290,39 @@ export function AusbildungAntragWizardPage() {
     }
   }, [antragId, employee, employeeId, navigate, stepFromUrl, unlockedUntil])
 
+  const validationMessages = useMemo(() => {
+    if (!antrag || validationMode === 'none' || !step) {
+      return []
+    }
+    if (validationMode === 'step') {
+      return validateAntragFormStep(antrag.form, step)
+    }
+    return validateAntragForm(antrag.form)
+  }, [antrag, step, validationMode])
+  const fieldErrors = useMemo(
+    () => validationMessagesToFieldErrors(validationMessages),
+    [validationMessages],
+  )
+  const validationErrorCount = validationMessages.length
+
+  useEffect(() => {
+    if (validationErrorCount === 0) {
+      setMessagePopoverOpen(false)
+    }
+  }, [validationErrorCount])
+
+  useEffect(() => {
+    const fieldId = pendingFocusFieldRef.current
+    if (!fieldId || !step || getAntragFormFieldStep(fieldId) !== step) {
+      return
+    }
+    pendingFocusFieldRef.current = null
+    const frame = window.requestAnimationFrame(() => {
+      focusAntragFormField(fieldId)
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [step, fieldErrors, antrag])
+
   const goToStep = (next: number, nextAntragId = antragId) => {
     const unlocked = Math.max(unlockedUntil, next)
     setUnlockedUntil(unlocked)
@@ -347,16 +330,38 @@ export function AusbildungAntragWizardPage() {
     navigate(wizardStepPath(employeeId, nextAntragId, next))
   }
 
+  const focusValidationField = (fieldId: AntragFormFieldId) => {
+    const targetStep = getAntragFormFieldStep(fieldId)
+    if (targetStep !== step) {
+      pendingFocusFieldRef.current = fieldId
+      goToStep(targetStep)
+      return
+    }
+    focusAntragFormField(fieldId)
+  }
+
   const goBack = () => {
+    if (antrag?.vgBearbeitungAktiv && antragId) {
+      cancelVgAntragEdit(antrag)
+      navigate(`/weiterbildung/${employeeId}/antrag/${antragId}`)
+      return
+    }
     navigate(`/weiterbildung/${employeeId}`)
+  }
+
+  const handleCancelVgEdit = () => {
+    if (!antrag || !antragId) {
+      return
+    }
+    cancelVgAntragEdit(antrag)
+    navigate(`/weiterbildung/${employeeId}/antrag/${antragId}`)
   }
 
   const handleSave = () => {
     if (!antrag) {
       return
     }
-    const withComment = flushFormKommentarToFeed(antrag, persona.name)
-    const saved = saveDraft(withComment)
+    const saved = saveDraft(antrag)
     writeUnlocked(saved.id, Math.max(unlockedUntil, step || 1))
     navigate(`/weiterbildung/${employeeId}`, {
       state: {
@@ -376,17 +381,35 @@ export function AusbildungAntragWizardPage() {
     if (!antrag) {
       return
     }
+    setValidationMode('all')
+    const messages = validateAntragForm(antrag.form)
+    if (messages.length > 0) {
+      const firstFieldId = firstInvalidAntragFieldId(messages)
+      if (firstFieldId) {
+        focusValidationField(firstFieldId)
+      }
+      return
+    }
     const persisted = persistRevisionDraft(antrag)
     setAntrag(persisted)
     const submitted = submitAntrag(persisted, persona.name)
-    const toast = isVgDraftResubmit(persisted)
-      ? 'Antrag wurde aktualisiert und steht zur Prüfung bereit.'
-      : isVg
-        ? 'Antrag wurde zur Prüfung weitergeleitet.'
-        : 'Dein Antrag wurde an Mettler Markus zur Prüfung weitergeleitet'
+    if (isVg) {
+      const toast = isVgDraftResubmit(persisted)
+        ? 'Antrag wurde aktualisiert und steht zur Prüfung bereit.'
+        : 'Antrag wurde zur Prüfung weitergeleitet.'
+      navigate(`/weiterbildung/${employeeId}/antrag/${submitted.id}`, {
+        state: { toast },
+      })
+      return
+    }
     navigate(`/weiterbildung/${employeeId}/antrag/${submitted.id}`, {
-      state: { toast },
+      state: { antragSubmitted: true },
     })
+  }
+
+  const handleValidationNavigate = (fieldId: AntragFormFieldId) => {
+    setMessagePopoverOpen(false)
+    focusValidationField(fieldId)
   }
 
   const handleDeleteConfirm = () => {
@@ -398,12 +421,22 @@ export function AusbildungAntragWizardPage() {
   }
 
   const goNext = () => {
-    if (antrag) {
-      const saved = persistRevisionDraft(antrag)
-      setAntrag(saved)
+    if (!antrag || !step) {
+      return
     }
-    const next = Math.min((step || 1) + 1, STEP_COUNT)
-    goToStep(next)
+    const saved = persistRevisionDraft(antrag)
+    setAntrag(saved)
+    const stepMessages = validateAntragFormStep(saved.form, step)
+    if (stepMessages.length > 0) {
+      setValidationMode('step')
+      const firstFieldId = firstInvalidAntragFieldId(stepMessages)
+      if (firstFieldId) {
+        focusAntragFormField(firstFieldId)
+      }
+      return
+    }
+    setValidationMode('none')
+    goToStep(Math.min(step + 1, STEP_COUNT))
   }
 
   const goPrev = () => {
@@ -411,53 +444,11 @@ export function AusbildungAntragWizardPage() {
       const saved = persistRevisionDraft(antrag)
       setAntrag(saved)
     }
-    const prev = Math.max((step || 1) - 1, 1)
-    goToStep(prev)
+    goToStep(Math.max((step || 1) - 1, 1))
   }
 
   const patchForm = (patch: Partial<AntragFormData>) => {
     setAntrag((prev) => (prev ? updateForm(prev, patch) : prev))
-  }
-
-  const handleFiles = async (files: FileList | null) => {
-    if (!files?.length || !antrag) {
-      return
-    }
-    setUploadError('')
-    setDocsBusy(true)
-    try {
-      const nextDocs = [...antrag.dokumente]
-      for (const file of Array.from(files)) {
-        if (file.size > MAX_DOCUMENT_BYTES) {
-          setUploadError(
-            `"${file.name}" überschreitet das Limit von ${formatFileSize(MAX_DOCUMENT_BYTES)}.`,
-          )
-          continue
-        }
-        const meta = createDokumentMeta(file)
-        await saveDokumentBlob(meta.id, file)
-        nextDocs.push(meta)
-      }
-      setAntrag({ ...antrag, dokumente: nextDocs })
-    } finally {
-      setDocsBusy(false)
-    }
-  }
-
-  const handleRemoveDokument = async (dokumentId: string) => {
-    if (!antrag) {
-      return
-    }
-    setDocsBusy(true)
-    try {
-      await deleteDokumentBlob(dokumentId)
-      setAntrag({
-        ...antrag,
-        dokumente: antrag.dokumente.filter((doc) => doc.id !== dokumentId),
-      })
-    } finally {
-      setDocsBusy(false)
-    }
   }
 
   const redirectTarget = useMemo(() => {
@@ -479,9 +470,12 @@ export function AusbildungAntragWizardPage() {
   }
 
   const form = antrag.form
-  const bundBetrag = getBundBeteiligung(form)
-  const postGrundlage = getPostKostenGrundlage(form)
-  const arbeitszeit = getArbeitszeitGrundlage(form, employee.tagessatz)
+  const vgAntragEdit = isVg && isVgDraftResubmit(antrag)
+  const maUeberarbeitung = isMa && ownCase && isMaUeberarbeitungPhase(antrag)
+  const submitLabel = vgAntragEdit ? 'Speichern' : 'Absenden'
+  const pageTitle = getPageTitle(antrag, isEdit)
+  const showDelete =
+    isEdit && isPersisted(antrag) && antrag.unterstatus === 'Entwurf' && !vgAntragEdit
 
   return (
     <OwnCaseGuard
@@ -504,7 +498,7 @@ export function AusbildungAntragWizardPage() {
                 className="awb-wizard__title-row"
               >
                 <Title level="H1" size="H3">
-                  Aus- / Weiterbildung beantragen
+                  {pageTitle}
                 </Title>
                 <UnterstatusTag unterstatus={antrag.unterstatus} />
               </FlexBox>
@@ -513,12 +507,26 @@ export function AusbildungAntragWizardPage() {
               </Text>
             </div>
             <FlexBox className="awb-wizard__header-actions" wrap={FlexBoxWrap.Wrap}>
-              <Button design="Transparent" icon="delete" onClick={() => setDeleteOpen(true)}>
-                Löschen
-              </Button>
-              <Button design="Default" onClick={handleSave}>
-                Speichern und schliessen
-              </Button>
+              {vgAntragEdit ? (
+                <Button design="Transparent" onClick={handleCancelVgEdit}>
+                  Abbrechen
+                </Button>
+              ) : (
+                <>
+                  {showDelete ? (
+                    <Button
+                      design="Transparent"
+                      icon="delete"
+                      onClick={() => setDeleteOpen(true)}
+                    >
+                      Löschen
+                    </Button>
+                  ) : null}
+                  <Button design="Default" onClick={handleSave}>
+                    Entwurf speichern
+                  </Button>
+                </>
+              )}
             </FlexBox>
           </div>
 
@@ -533,526 +541,61 @@ export function AusbildungAntragWizardPage() {
       </div>
 
       <main className="page-content-column page-content-column--main awb-wizard__content" key={step}>
+        {maUeberarbeitung && showUeberarbeitungBanner ? (
+          <MessageStrip
+            design="Critical"
+            className="awb-wizard__ueberarbeitung-banner"
+            onClose={() => setShowUeberarbeitungBanner(false)}
+          >
+            <div className="awb-wizard__ueberarbeitung-banner-content">
+              <Text>Bitte überarbeite deinen Antrag.</Text>
+              {antrag.ueberarbeitungKommentarVg ? (
+                <div className="awb-wizard__ueberarbeitung-kommentar">
+                  <Label showColon>Was muss überarbeitet werden</Label>
+                  <Text>{antrag.ueberarbeitungKommentarVg}</Text>
+                </div>
+              ) : null}
+            </div>
+          </MessageStrip>
+        ) : null}
+        {validationErrorCount > 0 ? (
+          <MessageStrip
+            design="Negative"
+            hideCloseButton
+            className="awb-wizard__validation-summary"
+          >
+            Der Antrag enthält Fehler. Bitte korrigiere die markierten Felder.
+          </MessageStrip>
+        ) : null}
+
         {step === 1 ? (
-          <div className="awb-wizard__step-body">
-            <SectionCard title="Besprechungen">
-              <FormField
-                label="Wurde die Aus-/Weiterbildung mit der vorgesetzten Person vorbesprochen"
-                required
-              >
-                <FlexBox className="awb-wizard__radio-row">
-                  <RadioButton
-                    name="vorbesprochen"
-                    text="Ja"
-                    checked={form.vorbesprochen === 'ja'}
-                    onChange={() => patchForm({ vorbesprochen: 'ja' })}
-                  />
-                  <RadioButton
-                    name="vorbesprochen"
-                    text="Nein"
-                    checked={form.vorbesprochen === 'nein'}
-                    onChange={() => patchForm({ vorbesprochen: 'nein' })}
-                  />
-                </FlexBox>
-              </FormField>
-            </SectionCard>
-
-            <SectionCard title="Anbieter und Dauer">
-              <div className="awb-wizard__two-col">
-                <div className="awb-wizard__col">
-                  <Text className="awb-wizard__group-label">Ausbildung und Anbieter</Text>
-                  <FormField label="Titel" required>
-                    <Input
-                      value={form.titel}
-                      onInput={(event) =>
-                        patchForm({ titel: event.target.value ?? '' })
-                      }
-                    />
-                  </FormField>
-                  <FormField label="Anbieter/-in / Schule" required>
-                    <ComboBox
-                      value={form.anbieter}
-                      placeholder="Schule suchen oder auswählen"
-                      filter="Contains"
-                      showClearIcon
-                      accessibleName="Anbieter/-in / Schule"
-                      onInput={(event) =>
-                        patchForm({ anbieter: event.target.value ?? '' })
-                      }
-                      onChange={(event) =>
-                        patchForm({ anbieter: event.target.value ?? '' })
-                      }
-                    >
-                      {SCHULEN_ANBIETER_OPTIONS.map((schule) => (
-                        <ComboBoxItem key={schule} text={schule} />
-                      ))}
-                    </ComboBox>
-                  </FormField>
-                </div>
-                <div className="awb-wizard__col">
-                  <Text className="awb-wizard__group-label">Dauer der Ausbildung</Text>
-                  <FormField label="Vom" required>
-                    <DatePicker
-                      value={form.von}
-                      placeholder="z. B. 13.09.2026"
-                      formatPattern="dd.MM.yyyy"
-                      onChange={(event) =>
-                        patchForm({ von: event.detail.value ?? '' })
-                      }
-                    />
-                  </FormField>
-                  <FormField label="Voraussichtlich bis" required>
-                    <DatePicker
-                      value={form.bis}
-                      placeholder="z. B. 24.12.2026"
-                      formatPattern="dd.MM.yyyy"
-                      onChange={(event) =>
-                        patchForm({ bis: event.detail.value ?? '' })
-                      }
-                    />
-                  </FormField>
-                </div>
-              </div>
-            </SectionCard>
-
-            <SectionCard title="Abschluss und Zulassung">
-              <div className="awb-wizard__two-col">
-                <div className="awb-wizard__col">
-                  <Text className="awb-wizard__group-label">Abschluss</Text>
-                  <FormField label="Typ" required>
-                    <Select
-                      onChange={(event) => {
-                        const text = event.detail.selectedOption?.textContent ?? ''
-                        patchForm({
-                          niveau: text === 'Bitte wählen' ? '' : text,
-                        })
-                      }}
-                    >
-                      <Option data-key="" selected={!form.niveau}>
-                        Bitte wählen
-                      </Option>
-                      {TYP_OPTIONS.map((option) => (
-                        <Option key={option} selected={form.niveau === option}>
-                          {option}
-                        </Option>
-                      ))}
-                    </Select>
-                  </FormField>
-                  <FormField label="Fachrichtung" required>
-                    <Select
-                      onChange={(event) => {
-                        const text = event.detail.selectedOption?.textContent ?? ''
-                        patchForm({
-                          fachrichtung: text === 'Bitte wählen' ? '' : text,
-                        })
-                      }}
-                    >
-                      <Option data-key="" selected={!form.fachrichtung}>
-                        Bitte wählen
-                      </Option>
-                      {FACHRICHTUNG_OPTIONS.map((option) => (
-                        <Option key={option} selected={form.fachrichtung === option}>
-                          {option}
-                        </Option>
-                      ))}
-                    </Select>
-                  </FormField>
-                </div>
-                <div className="awb-wizard__col">
-                  <FlexBox
-                    alignItems={FlexBoxAlignItems.Center}
-                    className="awb-wizard__group-label-row"
-                  >
-                    <Text className="awb-wizard__group-label">Prüfungszulassung</Text>
-                    <Button
-                      design="Transparent"
-                      icon="information"
-                      accessibleName="Informationen zur Prüfungszulassung"
-                      onClick={() => setPruefungszulassungInfoOpen(true)}
-                    />
-                  </FlexBox>
-                  <FormField
-                    label="Ist die Zulassung zur Prüfung gewährleistet"
-                    required
-                  >
-                    <FlexBox className="awb-wizard__radio-row">
-                      {(
-                        [
-                          ['ja', 'Ja'],
-                          ['nein', 'Nein'],
-                          ['keine', 'Keine Zulassung nötig'],
-                        ] as const
-                      ).map(([value, label]) => (
-                        <RadioButton
-                          key={value}
-                          name="pruefungszulassung"
-                          text={label}
-                          checked={form.pruefungszulassung === value}
-                          onChange={() =>
-                            patchForm({
-                              pruefungszulassung: value as Pruefungszulassung,
-                            })
-                          }
-                        />
-                      ))}
-                    </FlexBox>
-                  </FormField>
-                  {form.pruefungszulassung === 'nein' ? (
-                    <FormField label="Erklärung" required>
-                      <Input
-                        value={form.zulassungErklaerung}
-                        onInput={(event) =>
-                          patchForm({
-                            zulassungErklaerung: event.target.value ?? '',
-                          })
-                        }
-                      />
-                    </FormField>
-                  ) : null}
-                </div>
-              </div>
-            </SectionCard>
+          <div className="awb-wizard__step-body awb-antrag-form__body">
+            <AntragFormGrunddatenSection
+              form={form}
+              onPatch={patchForm}
+              fieldErrors={fieldErrors}
+            />
           </div>
         ) : null}
 
         {step === 2 ? (
-          <div className="awb-wizard__step-body">
-            <SectionCard title="Kosten und Finanzierung">
-              <div className="awb-wizard__two-col">
-                <div className="awb-wizard__col">
-                  <FlexBox
-                    alignItems={FlexBoxAlignItems.Center}
-                    className="awb-wizard__group-label-row"
-                  >
-                    <Text className="awb-wizard__group-label">Beteiligung Bund</Text>
-                    <Button
-                      design="Transparent"
-                      icon="information"
-                      accessibleName="Informationen zur Beteiligung Bund"
-                      onClick={() => setBeteiligungBundInfoOpen(true)}
-                    />
-                  </FlexBox>
-                  <FormField
-                    label="Handelt es sich beim angestrebten Abschluss um eine eidgenössische Prüfung, die vom Bund zu 50% finanziert wird"
-                    required
-                  >
-                    <FlexBox className="awb-wizard__radio-row">
-                      <RadioButton
-                        name="bund50"
-                        text="Ja"
-                        checked={form.bund50 === 'ja'}
-                        onChange={() => patchForm({ bund50: 'ja' as JaNein })}
-                      />
-                      <RadioButton
-                        name="bund50"
-                        text="Nein"
-                        checked={form.bund50 === 'nein'}
-                        onChange={() => patchForm({ bund50: 'nein' as JaNein })}
-                      />
-                    </FlexBox>
-                  </FormField>
-                </div>
-                <div className="awb-wizard__col">
-                  <Text className="awb-wizard__group-label">Ausbildungskosten</Text>
-                  <Text>
-                    Bitte erfasse die Ausbildungskosten in CHF. Reise-, Übernachtungs-
-                    oder Verpflegungskosten werden über die Spesenabrechnung
-                    zurückgefordert.
-                  </Text>
-                  <FormField label="Kurskosten" required>
-                    <Input
-                      value={form.kurskosten}
-                      onInput={(event) =>
-                        patchForm({ kurskosten: event.target.value ?? '' })
-                      }
-                    />
-                  </FormField>
-                  <FormField label="Beteiligung Bund">
-                    <Input
-                      value={bundBetrag > 0 ? `- ${bundBetrag.toLocaleString('de-CH')}` : '0'}
-                      readonly
-                    />
-                  </FormField>
-                  <FormField label="Zusätzliche Kosten">
-                    <Input
-                      value={form.zusaetzlicheKosten}
-                      placeholder="z. B. Einschreibegebühr, Material"
-                      onInput={(event) =>
-                        patchForm({
-                          zusaetzlicheKosten: event.target.value ?? '',
-                        })
-                      }
-                    />
-                  </FormField>
-                  <MessageStrip
-                    design="ColorSet2"
-                    colorScheme="9"
-                    hideCloseButton
-                    className="awb-wizard__info"
-                    icon={<Icon name="money-bills" slot="icon" />}
-                  >
-                    Die Grundlage für die Beteiligung Post an den Ausbildungskosten ist{' '}
-                    {formatChf(postGrundlage)}
-                  </MessageStrip>
-                </div>
-              </div>
-            </SectionCard>
+          <div className="awb-wizard__step-body awb-antrag-form__body">
+            <AntragFormKostenSection
+              form={form}
+              onPatch={patchForm}
+              fieldErrors={fieldErrors}
+            />
           </div>
         ) : null}
 
         {step === 3 ? (
-          <div className="awb-wizard__step-body">
-            <SectionCard title="Ausbildungszeiten">
-              <div className="awb-wizard__three-col">
-                <FormField label="Anzahl Ausbildungstage">
-                  <Input
-                    value={form.anzahlAusbildungstage}
-                    onInput={(event) =>
-                      patchForm({
-                        anzahlAusbildungstage: event.target.value ?? '',
-                      })
-                    }
-                  />
-                </FormField>
-                <FormField label="Wochentage">
-                  <MultiComboBox
-                    onSelectionChange={(event) => {
-                      const items = event.detail.items ?? []
-                      patchForm({
-                        wochentage: items
-                          .map((item) => item.text ?? '')
-                          .filter(Boolean),
-                      })
-                    }}
-                  >
-                    {WOCHENTAG_OPTIONS.map((tag) => (
-                      <MultiComboBoxItem
-                        key={tag}
-                        text={tag}
-                        selected={form.wochentage.includes(tag)}
-                      />
-                    ))}
-                  </MultiComboBox>
-                </FormField>
-                <FormField label="Schulzeiten / Bemerkungen">
-                  <Input
-                    value={form.schulzeitenBemerkungen}
-                    onInput={(event) =>
-                      patchForm({
-                        schulzeitenBemerkungen: event.target.value ?? '',
-                      })
-                    }
-                  />
-                </FormField>
-              </div>
-            </SectionCard>
-
-            <SectionCard title="Arbeitszeit">
-              <div className="awb-wizard__two-col">
-                <div className="awb-wizard__col">
-                  <Text className="awb-wizard__group-label">Arbeitspensum</Text>
-                  <FormField
-                    label="Muss der Beschäftigungsgrad für die Dauer der Ausbildung angepasst werden"
-                    required
-                  >
-                    <FlexBox className="awb-wizard__radio-row">
-                      <RadioButton
-                        name="pensum"
-                        text="Ja"
-                        checked={form.beschaeftigungsgradAnpassen === 'ja'}
-                        onChange={() =>
-                          patchForm({ beschaeftigungsgradAnpassen: 'ja' })
-                        }
-                      />
-                      <RadioButton
-                        name="pensum"
-                        text="Nein"
-                        checked={form.beschaeftigungsgradAnpassen === 'nein'}
-                        onChange={() =>
-                          patchForm({ beschaeftigungsgradAnpassen: 'nein' })
-                        }
-                      />
-                    </FlexBox>
-                  </FormField>
-                  {form.beschaeftigungsgradAnpassen === 'ja' ? (
-                    <FormField
-                      label="Gewünschter Beschäftigungsgrad ab Ausbildungsbeginn"
-                      required
-                    >
-                      <Select
-                        onChange={(event) => {
-                          const text = event.detail.selectedOption?.textContent ?? ''
-                          patchForm({
-                            gewuenschterBeschaeftigungsgrad:
-                              text === 'Bitte wählen' ? '' : text,
-                          })
-                        }}
-                      >
-                        <Option data-key="" selected={!form.gewuenschterBeschaeftigungsgrad}>
-                          Bitte wählen
-                        </Option>
-                        {getBeschaeftigungsgradOptions(employee.beschaeftigungsgrad).map((option) => (
-                          <Option
-                            key={option}
-                            selected={form.gewuenschterBeschaeftigungsgrad === option}
-                          >
-                            {option}
-                          </Option>
-                        ))}
-                      </Select>
-                    </FormField>
-                  ) : null}
-                </div>
-                <div className="awb-wizard__col">
-                  <FlexBox
-                    alignItems={FlexBoxAlignItems.Center}
-                    className="awb-wizard__group-label-row"
-                  >
-                    <Text className="awb-wizard__group-label">Arbeitszeiterleichterung</Text>
-                    <Button
-                      design="Transparent"
-                      icon="information"
-                      accessibleName="Informationen zur Arbeitszeiterleichterung"
-                      onClick={() => setArbeitszeiterleichterungInfoOpen(true)}
-                    />
-                  </FlexBox>
-                  <FormField
-                    label="Soll eine Arbeitszeiterleichterung beantragt werden"
-                    required
-                  >
-                    <FlexBox className="awb-wizard__radio-row">
-                      <RadioButton
-                        name="aze"
-                        text="Ja"
-                        checked={form.arbeitszeiterleichterung === 'ja'}
-                        onChange={() =>
-                          patchForm({ arbeitszeiterleichterung: 'ja' })
-                        }
-                      />
-                      <RadioButton
-                        name="aze"
-                        text="Nein"
-                        checked={form.arbeitszeiterleichterung === 'nein'}
-                        onChange={() =>
-                          patchForm({ arbeitszeiterleichterung: 'nein' })
-                        }
-                      />
-                    </FlexBox>
-                  </FormField>
-                  {form.arbeitszeiterleichterung === 'ja' ? (
-                    <>
-                      <FormField label="Anzahl Tage" required>
-                        <Input
-                          value={form.anzahlTageErleichterung}
-                          onInput={(event) =>
-                            patchForm({
-                              anzahlTageErleichterung: event.target.value ?? '',
-                            })
-                          }
-                        />
-                      </FormField>
-                      <FormField label="Begründung" required>
-                        <Input
-                          value={form.begruendungErleichterung}
-                          onInput={(event) =>
-                            patchForm({
-                              begruendungErleichterung: event.target.value ?? '',
-                            })
-                          }
-                        />
-                      </FormField>
-                      <MessageStrip
-                        design="ColorSet2"
-                        colorScheme="9"
-                        hideCloseButton
-                        className="awb-wizard__info"
-                        icon={<Icon name="timesheet" slot="icon" />}
-                      >
-                        Die Grundlage für die Beteiligung Post an der Arbeitszeit ist{' '}
-                        {formatChf(arbeitszeit.betrag)}
-                        {arbeitszeit.tage > 0
-                          ? ` (${arbeitszeit.tage} Tage à ${formatChfRate(arbeitszeit.tagessatz)})`
-                          : ''}
-                      </MessageStrip>
-                    </>
-                  ) : null}
-                </div>
-              </div>
-            </SectionCard>
-          </div>
-        ) : null}
-
-        {step === 4 ? (
-          <div className="awb-wizard__step-body">
-            <SectionCard title="Dokumente">
-              <Text>
-                Lade optionale Beilagen hoch (max. {formatFileSize(MAX_DOCUMENT_BYTES)}{' '}
-                pro Datei). Die Dateien bleiben lokal im Browser gespeichert.
-              </Text>
-              <FileUploader
-                hideInput
-                multiple
-                onChange={(event) => {
-                  void handleFiles(event.detail.files)
-                }}
-              >
-                <Button design="Transparent" icon="upload">
-                  Dokument hochladen
-                </Button>
-              </FileUploader>
-              {uploadError ? (
-                <MessageStrip
-                  design="Negative"
-                  onClose={() => setUploadError('')}
-                  className="awb-wizard__info"
-                >
-                  {uploadError}
-                </MessageStrip>
-              ) : null}
-              <BusyIndicator
-                active={docsBusy}
-                delay={0}
-                text="Dokumente werden verarbeitet …"
-                className="awb-wizard__uploads-busy"
-              >
-                <UploadCollection
-                  className="awb-wizard__uploads"
-                  noDataText="Keine Dokumente hochgeladen"
-                  hideDragOverlay
-                  onItemDelete={(event) => {
-                    const id = event.detail.item.dataset.dokumentId
-                    if (id) {
-                      void handleRemoveDokument(id)
-                    }
-                  }}
-                >
-                {antrag.dokumente.map((doc) => (
-                  <UploadCollectionItem
-                    key={doc.id}
-                    fileName={doc.name}
-                    data-dokument-id={doc.id}
-                    hideDeleteButton={false}
-                    uploadState="Complete"
-                  >
-                    <Text slot="thumbnail">{formatFileSize(doc.size)}</Text>
-                  </UploadCollectionItem>
-                ))}
-              </UploadCollection>
-              </BusyIndicator>
-            </SectionCard>
-
-            <SectionCard title="Kommentar">
-              <FormField label="Kommentar">
-                <TextArea
-                  rows={5}
-                  value={form.kommentar}
-                  placeholder="Schreibe einen Kommentar zur Begründung"
-                  onInput={(event) =>
-                    patchForm({ kommentar: event.target.value ?? '' })
-                  }
-                />
-              </FormField>
-            </SectionCard>
+          <div className="awb-wizard__step-body awb-antrag-form__body">
+            <AntragFormArbeitszeitSection
+              form={form}
+              employeeTagessatz={employee.tagessatz}
+              onPatch={patchForm}
+              fieldErrors={fieldErrors}
+            />
           </div>
         ) : null}
       </main>
@@ -1060,6 +603,16 @@ export function AusbildungAntragWizardPage() {
       <Bar
         className="awb-wizard__footer"
         design="FloatingFooter"
+        startContent={
+          validationErrorCount > 0 ? (
+            <MessageViewButton
+              id={MESSAGE_BUTTON_ID}
+              type="Negative"
+              counter={validationErrorCount}
+              onClick={() => setMessagePopoverOpen(true)}
+            />
+          ) : undefined
+        }
         endContent={
           <FlexBox
             justifyContent={FlexBoxJustifyContent.End}
@@ -1077,123 +630,37 @@ export function AusbildungAntragWizardPage() {
               </Button>
             ) : (
               <Button design="Emphasized" onClick={handleSubmit}>
-                Absenden
+                {submitLabel}
               </Button>
             )}
           </FlexBox>
         }
       />
 
-      <AwbDialog
-        open={pruefungszulassungInfoOpen}
-        headerText="Prüfungszulassung"
-        onClose={() => setPruefungszulassungInfoOpen(false)}
-        footer={
-          <Bar
-            design="Footer"
-            endContent={
-              <Button
-                design="Emphasized"
-                onClick={() => setPruefungszulassungInfoOpen(false)}
-              >
-                OK
-              </Button>
-            }
-          />
-        }
-      >
-        <div className="awb-dialog-content">
-          <Text>
-            Für viele Aus- und Weiterbildungen müssen bestimmte Voraussetzungen für die
-            Prüfung erfüllt sein, zum Beispiel eine passende Ausbildung oder
-            Berufserfahrung.
-            <br />
-            <br />
-            Kläre diese bei der zuständigen Stelle, falls eine Zulassung nötig ist.
-            Möglicherweise musst du dafür einen Nachweis einreichen, etwa eine
-            Arbeitsbestätigung oder ein Zwischenzeugnis.
-          </Text>
-        </div>
-      </AwbDialog>
-
-      <AwbDialog
-        open={beteiligungBundInfoOpen}
-        headerText="Subjektfinanzierung"
-        onClose={() => setBeteiligungBundInfoOpen(false)}
-        footer={
-          <Bar
-            design="Footer"
-            endContent={
-              <>
-                <Button
-                  onClick={() =>
-                    window.open(BUND_SUBJEKTFINANZIERUNG_URL, '_blank', 'noopener,noreferrer')
-                  }
-                >
-                  Informationen Bund
-                </Button>
-                <Button
-                  design="Emphasized"
-                  onClick={() => setBeteiligungBundInfoOpen(false)}
-                >
-                  OK
-                </Button>
-              </>
-            }
-          />
-        }
-      >
-        <div className="awb-dialog-content">
-          <Text>
-            Informiere dich auf der Seite des Bundes, ob dein Lehrgang vom Bund zu 50%
-            finanziert wird.
-            <br />
-            <br />
-            Die Beteiligung der Post wird auf Basis des nicht finanzierten Anteils
-            berechnet.
-          </Text>
-        </div>
-      </AwbDialog>
-
-      <AwbDialog
-        open={arbeitszeiterleichterungInfoOpen}
-        headerText="Arbeitszeiterleichterung (AZE)"
-        onClose={() => setArbeitszeiterleichterungInfoOpen(false)}
-        footer={
-          <Bar
-            design="Footer"
-            endContent={
-              <Button
-                design="Emphasized"
-                onClick={() => setArbeitszeiterleichterungInfoOpen(false)}
-              >
-                OK
-              </Button>
-            }
-          />
-        }
-      >
-        <div className="awb-dialog-content">
-          <Text>
-            Arbeitszeiterleichterung ist als zeitliche Lernunterstützung gedacht und wird in
-            den Gesamtbetrag und in die Rückzahlungsverpflichtung einbezogen.
-          </Text>
-          <ul className="awb-dialog-content__list">
-            <li>
-              Bei der Arbeitszeiterleichterung (AZE) entscheidet die Führungsperson über die
-              effektiv gewährte Anzahl in Tagen oder Stunden.
-            </li>
-            <li>
-              Für Aus- und Weiterbildungen, die in die arbeitsfreie Zeit fallen, wird keine
-              AZE gewährt (Ausnahmen sind möglich, bspw. Weiterbildung, die regelmässig nur
-              samstags stattfindet).
-            </li>
-            <li>
-              Die Bereiche/Konzerngesellschaften können eigene Vorgaben zu den AZE erlassen.
-            </li>
-          </ul>
-        </div>
-      </AwbDialog>
+      {validationErrorCount > 0 && messagePopoverOpen ? (
+        <Popover
+          className="awb-wizard__message-popover"
+          open
+          opener={MESSAGE_BUTTON_ID}
+          placement="Top"
+          verticalAlign="Bottom"
+          horizontalAlign="Start"
+          onClose={() => setMessagePopoverOpen(false)}
+        >
+          <MessageView groupItems>
+            {validationMessages.map((message) => (
+              <MessageItem
+                key={message.fieldId}
+                type="Negative"
+                groupName={message.section}
+                titleText={message.label}
+                subtitleText={message.message}
+                onClick={() => handleValidationNavigate(message.fieldId)}
+              />
+            ))}
+          </MessageView>
+        </Popover>
+      ) : null}
 
       <AwbDialog
         open={deleteOpen}

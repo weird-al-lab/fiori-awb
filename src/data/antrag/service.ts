@@ -6,10 +6,9 @@ import {
   VERTRAG_SCHWELLENWERT_CHF,
   VG_AKTUELL_BEI_LABEL,
 } from './constants'
-import { deleteDokumentBlob } from './dokumente'
 import {
-  consumeFormKommentar,
   createAktivitaetEintrag,
+  createKommentarEintrag,
   normalizeAntragFeed,
 } from './feed'
 import { formatBeschaeftigungsgradOption } from './format'
@@ -24,6 +23,7 @@ import {
   isMaUeberarbeitungPhase,
   isVgAntragPruefungEditable,
   isVgDraftResubmit,
+  hasAntragAenderungen,
 } from './phases'
 import type {
   AntragFormData,
@@ -34,7 +34,6 @@ import type {
 
 export function createEmptyForm(): AntragFormData {
   return {
-    vorbesprochen: '',
     titel: '',
     anbieter: '',
     von: '',
@@ -42,20 +41,14 @@ export function createEmptyForm(): AntragFormData {
     niveau: '',
     fachrichtung: '',
     stufe: '',
-    pruefungszulassung: '',
-    zulassungErklaerung: '',
     bund50: '',
     kurskosten: '',
     zusaetzlicheKosten: '',
-    anzahlAusbildungstage: '',
-    wochentage: [],
-    schulzeitenBemerkungen: '',
     beschaeftigungsgradAnpassen: '',
     gewuenschterBeschaeftigungsgrad: '',
     arbeitszeiterleichterung: '',
     anzahlTageErleichterung: '',
     begruendungErleichterung: '',
-    kommentar: '',
   }
 }
 
@@ -80,7 +73,6 @@ export function createNewAntrag(employeeId: string): WeiterbildungAntrag {
     bis: '',
     hasVertrag: false,
     form,
-    dokumente: [],
     aktuellBeiLabel: null,
     createdAt: now,
     updatedAt: now,
@@ -96,8 +88,9 @@ export function beginVgAntragEdit(antrag: WeiterbildungAntrag): WeiterbildungAnt
     ...antrag,
     vgBearbeitungAktiv: true,
     aktuellBeiLabel: VG_AKTUELL_BEI_LABEL,
-    formBaselineVorUeberarbeitung: undefined,
-    dokumenteBaselineVorUeberarbeitung: undefined,
+    // Snapshot current values so Speichern can log / highlight what VG changed.
+    formBaselineVorUeberarbeitung:
+      antrag.formBaselineVorUeberarbeitung ?? snapshotFormForBaseline(antrag.form),
     ueberarbeitungKommentarVg: null,
   })
 }
@@ -110,15 +103,16 @@ export function cancelVgAntragEdit(antrag: WeiterbildungAntrag): WeiterbildungAn
   return upsertAntrag({
     ...antrag,
     vgBearbeitungAktiv: false,
+    // Drop a baseline that only existed for this VG edit session.
+    formBaselineVorUeberarbeitung:
+      antrag.unterstatus === 'Wieder eingereicht'
+        ? antrag.formBaselineVorUeberarbeitung
+        : undefined,
   })
 }
 
 function snapshotFormForBaseline(form: AntragFormData): AntragFormData {
-  return {
-    ...form,
-    kommentar: '',
-    wochentage: [...form.wochentage],
-  }
+  return { ...form }
 }
 
 function syncHasVertrag(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
@@ -231,10 +225,7 @@ export function approveAntragAndCreateOffer(
   const normalized = normalizeAntragFeed(antrag)
   const now = new Date().toISOString()
   const employee = getEmployee(antrag.employeeId)
-  let feed = [...(normalized.kommentareAktivitaeten ?? [])]
-  let form = antrag.form
-
-  ;({ feed, form } = consumeFormKommentar(antrag, feed, autorName, now))
+  const feed = [...(normalized.kommentareAktivitaeten ?? [])]
 
   if (!feed.some((entry) => entry.titel === 'Antrag genehmigt')) {
     feed.push(
@@ -252,14 +243,12 @@ export function approveAntragAndCreateOffer(
 
   return upsertAntrag({
     ...antrag,
-    form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Vereinbarung',
     unterstatus: 'Angebot erstellen',
     aktuellBeiLabel: VG_AKTUELL_BEI_LABEL,
     vereinbarung: antrag.vereinbarung ?? createDefaultVereinbarung(antrag.form),
     formBaselineVorUeberarbeitung: undefined,
-    dokumenteBaselineVorUeberarbeitung: undefined,
   })
 }
 
@@ -270,10 +259,7 @@ export function sendAngebotToMa(
   const normalized = normalizeAntragFeed(antrag)
   const now = new Date().toISOString()
   const employee = getEmployee(antrag.employeeId)
-  let feed = [...(normalized.kommentareAktivitaeten ?? [])]
-  let form = antrag.form
-
-  ;({ feed, form } = consumeFormKommentar(antrag, feed, autorName, now))
+  const feed = [...(normalized.kommentareAktivitaeten ?? [])]
 
   if (!feed.some((entry) => entry.titel === 'Angebot an MA gesendet')) {
     feed.push(
@@ -291,7 +277,6 @@ export function sendAngebotToMa(
 
   return upsertAntrag({
     ...antrag,
-    form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Vereinbarung',
     unterstatus: 'Angebot zur Prüfung',
@@ -305,12 +290,10 @@ export function acceptAngebotByMa(
   autorName: string = CURRENT_USER_NAME,
 ): WeiterbildungAntrag {
   const normalized = normalizeAntragFeed(antrag)
-  const now = new Date().toISOString()
+  const acceptedAt = new Date()
+  const startedAt = new Date(acceptedAt.getTime() + 1000)
   const employee = getEmployee(antrag.employeeId)
-  let feed = [...(normalized.kommentareAktivitaeten ?? [])]
-  let form = antrag.form
-
-  ;({ feed, form } = consumeFormKommentar(antrag, feed, autorName, now))
+  const feed = [...(normalized.kommentareAktivitaeten ?? [])]
 
   if (!feed.some((entry) => entry.titel === 'Angebot angenommen')) {
     feed.push(
@@ -318,7 +301,7 @@ export function acceptAngebotByMa(
         'Angebot angenommen',
         'Das Angebot wurde vom Mitarbeitenden angenommen.',
         autorName,
-        now,
+        acceptedAt.toISOString(),
         'accept',
       ),
     )
@@ -332,7 +315,7 @@ export function acceptAngebotByMa(
           ? `Die Ausbildung für ${employee.name} wurde gestartet.`
           : 'Die Ausbildung wurde gestartet.',
         autorName,
-        now,
+        startedAt.toISOString(),
         'activity-2',
       ),
     )
@@ -340,7 +323,6 @@ export function acceptAngebotByMa(
 
   return upsertAntrag({
     ...antrag,
-    form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Ausbildung',
     unterstatus: 'Ausbildung gestartet',
@@ -362,15 +344,12 @@ export function sendAntragToUeberarbeitung(
   const normalized = normalizeAntragFeed(antrag)
   const now = new Date().toISOString()
   const employee = getEmployee(antrag.employeeId)
-  const kommentarText = (kommentarOverride ?? antrag.form.kommentar).trim()
-  let feed = [...(normalized.kommentareAktivitaeten ?? [])]
-  let form = antrag.form
-  const antragForFeed =
-    kommentarOverride !== undefined
-      ? { ...antrag, form: { ...antrag.form, kommentar: kommentarOverride } }
-      : antrag
+  const kommentarText = (kommentarOverride ?? '').trim()
+  const feed = [...(normalized.kommentareAktivitaeten ?? [])]
 
-  ;({ feed, form } = consumeFormKommentar(antragForFeed, feed, autorName, now))
+  if (kommentarText) {
+    feed.push(createKommentarEintrag(kommentarText, autorName, now))
+  }
 
   const sendBackIteration =
     feed.filter((entry) => entry.titel === 'Zur Überarbeitung gesendet').length + 1
@@ -389,18 +368,16 @@ export function sendAntragToUeberarbeitung(
     ),
   )
 
-  const baseline = snapshotFormForBaseline(form)
+  const baseline = snapshotFormForBaseline(antrag.form)
 
   return upsertAntrag({
     ...antrag,
-    form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Antrag',
     unterstatus: 'Zur Überarbeitung',
     aktuellBeiLabel: employee?.name ?? null,
     ueberarbeitungKommentarVg: kommentarText || null,
     formBaselineVorUeberarbeitung: baseline,
-    dokumenteBaselineVorUeberarbeitung: antrag.dokumente.map((doc) => doc.id),
   })
 }
 
@@ -410,10 +387,7 @@ export function rejectAntragByVg(
 ): WeiterbildungAntrag {
   const normalized = normalizeAntragFeed(antrag)
   const now = new Date().toISOString()
-  let feed = [...(normalized.kommentareAktivitaeten ?? [])]
-  let form = antrag.form
-
-  ;({ feed, form } = consumeFormKommentar(antrag, feed, autorName, now))
+  const feed = [...(normalized.kommentareAktivitaeten ?? [])]
 
   feed.push(
     createAktivitaetEintrag(
@@ -427,13 +401,11 @@ export function rejectAntragByVg(
 
   return upsertAntrag({
     ...antrag,
-    form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Abschluss',
     unterstatus: 'Antrag abgelehnt',
     aktuellBeiLabel: null,
     formBaselineVorUeberarbeitung: undefined,
-    dokumenteBaselineVorUeberarbeitung: undefined,
   })
 }
 
@@ -443,10 +415,7 @@ export function rejectAngebotByMa(
 ): WeiterbildungAntrag {
   const normalized = normalizeAntragFeed(antrag)
   const now = new Date().toISOString()
-  let feed = [...(normalized.kommentareAktivitaeten ?? [])]
-  let form = antrag.form
-
-  ;({ feed, form } = consumeFormKommentar(antrag, feed, autorName, now))
+  const feed = [...(normalized.kommentareAktivitaeten ?? [])]
 
   feed.push(
     createAktivitaetEintrag(
@@ -460,7 +429,6 @@ export function rejectAngebotByMa(
 
   return upsertAntrag({
     ...antrag,
-    form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Abschluss',
     unterstatus: 'Angebot abgelehnt',
@@ -606,10 +574,7 @@ export function submitAntrag(
   const employee = getEmployee(antrag.employeeId)
   const isResubmit = isMaUeberarbeitungPhase(antrag)
   const isVgResubmit = isVgDraftResubmit(antrag)
-  let feed = [...(normalized.kommentareAktivitaeten ?? [])]
-  let form = antrag.form
-
-  ;({ feed, form } = consumeFormKommentar(antrag, feed, autorName, now))
+  const feed = [...(normalized.kommentareAktivitaeten ?? [])]
 
   if (!isVgResubmit) {
     const aktivitaetTitel = isResubmit ? 'Antrag wieder eingereicht' : 'Antrag eingereicht'
@@ -640,12 +605,23 @@ export function submitAntrag(
       )
     }
   } else {
+    const editIteration =
+      feed.filter((entry) => entry.titel === 'Antrag durch Führungsperson geändert')
+        .length + 1
+    const editSuffix =
+      editIteration > 1 ? ` (${editIteration}. Anpassung)` : ''
+    const hasChanges = hasAntragAenderungen(antrag)
+
     feed.push(
       createAktivitaetEintrag(
-        'Antrag bearbeitet',
-        employee
-          ? `Antrag für ${employee.name} wurde von der Führungsperson bearbeitet.`
-          : 'Antrag wurde von der Führungsperson bearbeitet.',
+        'Antrag durch Führungsperson geändert',
+        hasChanges
+          ? employee
+            ? `${autorName} hat den eingereichten Antrag für ${employee.name} geändert${editSuffix}.`
+            : `${autorName} hat den eingereichten Antrag geändert${editSuffix}.`
+          : employee
+            ? `${autorName} hat den Antrag für ${employee.name} gespeichert${editSuffix}.`
+            : `${autorName} hat den Antrag gespeichert${editSuffix}.`,
         autorName,
         now,
         'edit',
@@ -655,7 +631,6 @@ export function submitAntrag(
 
   return upsertAntrag({
     ...antrag,
-    form,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Antrag',
     unterstatus: isVgResubmit
@@ -665,23 +640,14 @@ export function submitAntrag(
         : 'In Prüfung VG',
     aktuellBeiLabel: VG_AKTUELL_BEI_LABEL,
     vgBearbeitungAktiv: false,
-    formBaselineVorUeberarbeitung: isVgResubmit
-      ? undefined
-      : antrag.formBaselineVorUeberarbeitung,
-    dokumenteBaselineVorUeberarbeitung: isVgResubmit
-      ? undefined
-      : antrag.dokumenteBaselineVorUeberarbeitung,
+    formBaselineVorUeberarbeitung: antrag.formBaselineVorUeberarbeitung,
     ueberarbeitungKommentarVg: null,
   })
 }
 
 export function deleteAntrag(id: string): void {
-  const existing = getAntrag(id)
   const all = readAll().filter((item) => item.id !== id)
   writeAll(all)
-  if (existing) {
-    void Promise.all(existing.dokumente.map((doc) => deleteDokumentBlob(doc.id)))
-  }
 }
 
 export function isPersistedAntragId(id: string): boolean {

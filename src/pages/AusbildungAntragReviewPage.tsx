@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Bar } from '@ui5/webcomponents-react/Bar'
@@ -7,7 +7,11 @@ import { AwbDialog } from '../components/AwbDialog'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
 import { Icon } from '@ui5/webcomponents-react/Icon'
 import { Label } from '@ui5/webcomponents-react/Label'
+import { MessageItem } from '@ui5/webcomponents-react/MessageItem'
 import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
+import { MessageView } from '@ui5/webcomponents-react/MessageView'
+import { MessageViewButton } from '@ui5/webcomponents-react/MessageViewButton'
+import { Popover } from '@ui5/webcomponents-react/Popover'
 import {
   ObjectPage,
   type ObjectPageDomRef,
@@ -20,9 +24,6 @@ import { Text } from '@ui5/webcomponents-react/Text'
 import { TextArea } from '@ui5/webcomponents-react/TextArea'
 import { Title } from '@ui5/webcomponents-react/Title'
 import { Toast } from '@ui5/webcomponents-react/Toast'
-import { BusyIndicator } from '@ui5/webcomponents-react/BusyIndicator'
-import { UploadCollection } from '@ui5/webcomponents-react/UploadCollection'
-import { UploadCollectionItem } from '@ui5/webcomponents-react/UploadCollectionItem'
 import { FlexBoxAlignItems } from '@ui5/webcomponents-react/enums/FlexBoxAlignItems'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
 import { FlexBoxJustifyContent } from '@ui5/webcomponents-react/enums/FlexBoxJustifyContent'
@@ -44,23 +45,22 @@ import { VereinbarungSection } from '../components/VereinbarungSection'
 import { usePrototypePersona } from '../context/PrototypePersonaContext'
 import {
   acceptAngebotByMa,
-  addKommentarToAntrag,
   approveAntragAndCreateOffer,
+  ausbildungValidationToFieldErrors,
   beginVgAntragEdit,
-  canConfirmAusbildungUpdate,
   confirmAusbildungUpdate,
   ensureAusbildungUpdate,
   ensureVereinbarung,
-  flushFormKommentarToFeed,
+  firstInvalidAusbildungFieldId,
+  focusAusbildungFormField,
   formatChf,
   formatChfRate,
-  formatFileSize,
   getAntragAenderungen,
   getAntrag,
   getArbeitszeitGrundlage,
+  getAusbildungConsequenceConfirm,
   getBundBeteiligung,
-  getDokumentBlob,
-  getFeedEintraege,
+  getAktivitaetFeedEintraege,
   getPostKostenGrundlage,
   isAbschlussPhase,
   isAntragPruefungPhase,
@@ -78,6 +78,9 @@ import {
   sendAntragToUeberarbeitung,
   jaNeinLabel,
   upsertAntrag,
+  validateAusbildungUpdate,
+  type AusbildungConsequenceConfirm,
+  type AusbildungFormFieldId,
   type AusbildungUpdateDraft,
   type VereinbarungData,
   type WeiterbildungAntrag,
@@ -85,6 +88,8 @@ import {
 import { getEmployee } from '../data/employees'
 import type { WeiterbildungHauptstatus } from '../data/weiterbildungen'
 import './AusbildungAntragReviewPage.css'
+
+const AUSBILDUNG_MESSAGE_BUTTON_ID = 'awb-ausbildung-message-btn'
 
 function DisplayField({
   label,
@@ -188,7 +193,7 @@ function ReviewProcessFlow({
 
   return (
     <div className="awb-review__process-band">
-      <MicroProcessFlow steps={steps} aria-label="Ausbildungsprozess" />
+      <MicroProcessFlow steps={steps} aria-label="Weiterbildungsprozess" />
     </div>
   )
 }
@@ -208,6 +213,8 @@ export function AusbildungAntragReviewPage() {
   const [toastText, setToastText] = useState('')
   const [rejectAntragOpen, setRejectAntragOpen] = useState(false)
   const [rejectAngebotOpen, setRejectAngebotOpen] = useState(false)
+  const [ueberarbeitungDialogOpen, setUeberarbeitungDialogOpen] = useState(false)
+  const [ueberarbeitungKommentar, setUeberarbeitungKommentar] = useState('')
   const [ueberarbeitungConfirmOpen, setUeberarbeitungConfirmOpen] = useState(false)
   const [hrBeratungOpen, setHrBeratungOpen] = useState(false)
   const [maAngebotEinverstanden, setMaAngebotEinverstanden] = useState(false)
@@ -217,7 +224,15 @@ export function AusbildungAntragReviewPage() {
   const [showVgResubmitBanner, setShowVgResubmitBanner] = useState(true)
   const [showRoleBanner, setShowRoleBanner] = useState(true)
   const [showAusbildungBanner, setShowAusbildungBanner] = useState(true)
-  const [docsBusy, setDocsBusy] = useState(false)
+  const [showAngebotSentStrip, setShowAngebotSentStrip] = useState(true)
+  const [showAngebotAcceptedStrip, setShowAngebotAcceptedStrip] = useState(true)
+  const [showAntragSubmittedStrip, setShowAntragSubmittedStrip] = useState(false)
+  const [ausbildungConfirmAttempted, setAusbildungConfirmAttempted] =
+    useState(false)
+  const [ausbildungMessagePopoverOpen, setAusbildungMessagePopoverOpen] =
+    useState(false)
+  const [ausbildungConsequenceConfirm, setAusbildungConsequenceConfirm] =
+    useState<AusbildungConsequenceConfirm | null>(null)
   const [programmaticSectionId, setProgrammaticSectionId] = useState<
     string | undefined
   >(undefined)
@@ -230,6 +245,12 @@ export function AusbildungAntragReviewPage() {
     setShowMaReviewBanner(true)
     setShowMaUeberarbeitungBanner(true)
     setShowVgResubmitBanner(true)
+    setShowAngebotSentStrip(true)
+    setShowAngebotAcceptedStrip(true)
+    setShowAntragSubmittedStrip(false)
+    setAusbildungConfirmAttempted(false)
+    setAusbildungMessagePopoverOpen(false)
+    setAusbildungConsequenceConfirm(null)
   }, [antragId])
 
   useEffect(() => {
@@ -286,12 +307,21 @@ export function AusbildungAntragReviewPage() {
   }, [vereinbarungTabEnabled, ausbildungTabEnabled])
 
   useEffect(() => {
-    const state = location.state as { toast?: string } | null
-    if (state?.toast) {
+    const state = location.state as {
+      toast?: string
+      antragSubmitted?: boolean
+    } | null
+    if (!state?.toast && !state?.antragSubmitted) {
+      return
+    }
+    if (state.antragSubmitted) {
+      setShowAntragSubmittedStrip(true)
+    }
+    if (state.toast) {
       setToastText(state.toast)
       setToastOpen(true)
-      navigate(location.pathname, { replace: true, state: {} })
     }
+    navigate(location.pathname, { replace: true, state: {} })
   }, [location.pathname, location.state, navigate])
 
   const goBack = () => {
@@ -319,22 +349,27 @@ export function AusbildungAntragReviewPage() {
       setToastOpen(true)
       return
     }
-    const withComment = flushFormKommentarToFeed(antrag, persona.name)
-    const toSave = isVereinbarungPhase(withComment)
-      ? { ...withComment, vereinbarung: ensureVereinbarung(withComment) }
-      : withComment
+    const toSave = isVereinbarungPhase(antrag)
+      ? { ...antrag, vereinbarung: ensureVereinbarung(antrag) }
+      : antrag
     const saved = upsertAntrag(toSave)
     setAntrag(saved)
     setToastText('Änderungen gespeichert')
     setToastOpen(true)
   }
 
-  const executeSendToUeberarbeitung = () => {
+  const closeUeberarbeitungDialog = () => {
+    setUeberarbeitungDialogOpen(false)
+    setUeberarbeitungKommentar('')
+  }
+
+  const executeSendToUeberarbeitung = (kommentar: string) => {
     if (!antrag) {
       return
     }
-    const updated = sendAntragToUeberarbeitung(antrag, persona.name)
+    const updated = sendAntragToUeberarbeitung(antrag, persona.name, kommentar)
     setAntrag(updated)
+    closeUeberarbeitungDialog()
     setUeberarbeitungConfirmOpen(false)
     setToastText('Antrag wurde zur Überarbeitung an die/ den Mitarbeitende/n gesendet')
     setToastOpen(true)
@@ -344,11 +379,16 @@ export function AusbildungAntragReviewPage() {
     if (!antrag) {
       return
     }
-    if (!antrag.form.kommentar.trim()) {
+    setUeberarbeitungKommentar('')
+    setUeberarbeitungDialogOpen(true)
+  }
+
+  const handleUeberarbeitungDialogSubmit = () => {
+    if (!ueberarbeitungKommentar.trim()) {
       setUeberarbeitungConfirmOpen(true)
       return
     }
-    executeSendToUeberarbeitung()
+    executeSendToUeberarbeitung(ueberarbeitungKommentar.trim())
   }
 
   const handleApproveAntrag = () => {
@@ -375,8 +415,8 @@ export function AusbildungAntragReviewPage() {
       persona.name,
     )
     setAntrag(updated)
-    setToastText('Angebot wurde an die/ den Mitarbeitende/n zur Prüfung gesendet')
-    setToastOpen(true)
+    setProgrammaticSectionId('vereinbarung')
+    setShowAngebotSentStrip(true)
   }
 
   const handleAcceptAngebot = () => {
@@ -390,12 +430,9 @@ export function AusbildungAntragReviewPage() {
       },
       persona.name,
     )
-    flushSync(() => {
-      setAntrag(updated)
-    })
-    navigate(`/weiterbildung/${employeeId}`, {
-      state: { toast: 'Angebot angenommen — Ausbildung gestartet' },
-    })
+    setAntrag(updated)
+    setProgrammaticSectionId('ausbildung')
+    setShowAngebotAcceptedStrip(true)
   }
 
   const handleRejectAntragConfirm = () => {
@@ -439,21 +476,54 @@ export function AusbildungAntragReviewPage() {
     setAntrag({ ...antrag, ausbildungUpdate: draft })
   }
 
-  const handleConfirmAusbildung = () => {
+  const focusAusbildungValidationField = (fieldId: AusbildungFormFieldId) => {
+    setProgrammaticSectionId('ausbildung')
+    setAusbildungMessagePopoverOpen(false)
+    window.requestAnimationFrame(() => {
+      focusAusbildungFormField(fieldId)
+    })
+  }
+
+  const applyAusbildungConfirm = () => {
     if (!antrag) {
       return
     }
     const draft = ensureAusbildungUpdate(antrag)
-    if (!canConfirmAusbildungUpdate(antrag, draft)) {
-      return
-    }
     const updated = confirmAusbildungUpdate(antrag, draft, persona.name)
+    setAusbildungConfirmAttempted(false)
+    setAusbildungMessagePopoverOpen(false)
+    setAusbildungConsequenceConfirm(null)
     setAntrag(updated)
     setProgrammaticSectionId(
       getPreferredReviewSectionId(updated.hauptstatus, updated.unterstatus),
     )
     setToastText('Status aktualisiert')
     setToastOpen(true)
+  }
+
+  const handleConfirmAusbildung = () => {
+    if (!antrag) {
+      return
+    }
+    const draft = ensureAusbildungUpdate(antrag)
+    const messages = validateAusbildungUpdate(antrag, draft)
+    setAusbildungConfirmAttempted(true)
+    if (messages.length > 0) {
+      setProgrammaticSectionId('ausbildung')
+      const firstField = firstInvalidAusbildungFieldId(messages)
+      if (firstField) {
+        window.requestAnimationFrame(() => {
+          focusAusbildungFormField(firstField)
+        })
+      }
+      return
+    }
+    const consequence = getAusbildungConsequenceConfirm(draft)
+    if (consequence) {
+      setAusbildungConsequenceConfirm(consequence)
+      return
+    }
+    applyAusbildungConfirm()
   }
 
   const handleVereinbarungChange = (vereinbarung: VereinbarungData) => {
@@ -468,37 +538,26 @@ export function AusbildungAntragReviewPage() {
     setToastOpen(true)
   }
 
-  const handlePostKommentar = (text: string) => {
-    if (!antrag) {
-      return
-    }
-    const flushed = flushFormKommentarToFeed(antrag, persona.name)
-    const updated = addKommentarToAntrag(flushed, text, persona.name)
-    const saved = upsertAntrag(updated)
-    setAntrag(saved)
-    setToastText('Kommentar hinzugefügt')
-    setToastOpen(true)
-  }
+  const maAusbildungUpdate =
+    Boolean(antrag) && isMa && ownCase && isAusbildungPhase(antrag!)
 
-  const openDokument = async (dokumentId: string, fileName: string) => {
-    setDocsBusy(true)
-    try {
-      const blob = await getDokumentBlob(dokumentId)
-      if (!blob) {
-        setToastText('Dokument konnte nicht geladen werden')
-        setToastOpen(true)
-        return
-      }
-      const url = URL.createObjectURL(blob)
-      const anchor = document.createElement('a')
-      anchor.href = url
-      anchor.download = fileName
-      anchor.click()
-      URL.revokeObjectURL(url)
-    } finally {
-      setDocsBusy(false)
+  const ausbildungValidationMessages = useMemo(() => {
+    if (!antrag || !maAusbildungUpdate || !ausbildungConfirmAttempted) {
+      return []
     }
-  }
+    return validateAusbildungUpdate(antrag)
+  }, [antrag, ausbildungConfirmAttempted, maAusbildungUpdate])
+  const ausbildungFieldErrors = useMemo(
+    () => ausbildungValidationToFieldErrors(ausbildungValidationMessages),
+    [ausbildungValidationMessages],
+  )
+  const ausbildungValidationErrorCount = ausbildungValidationMessages.length
+
+  useEffect(() => {
+    if (ausbildungValidationErrorCount === 0) {
+      setAusbildungMessagePopoverOpen(false)
+    }
+  }, [ausbildungValidationErrorCount])
 
   if (!employee || !antrag) {
     return null
@@ -508,7 +567,7 @@ export function AusbildungAntragReviewPage() {
   const bundBetrag = getBundBeteiligung(form)
   const postGrundlage = getPostKostenGrundlage(form)
   const arbeitszeit = getArbeitszeitGrundlage(form, employee.tagessatz)
-  const feedEintraege = getFeedEintraege(antrag)
+  const feedEintraege = getAktivitaetFeedEintraege(antrag)
   const inVereinbarungPhase = isVereinbarungPhase(antrag)
   const inAusbildungPhase = isAusbildungPhase(antrag)
   const inAbschlussPhase = isAbschlussPhase(antrag)
@@ -516,22 +575,30 @@ export function AusbildungAntragReviewPage() {
   const maUeberarbeitung = isMa && ownCase && isMaUeberarbeitungPhase(antrag)
   const vgResubmitReview =
     isVg && ownCase && antrag.unterstatus === 'Wieder eingereicht'
-  const aenderungen = vgResubmitReview ? getAntragAenderungen(antrag) : new Set<string>()
+  const aenderungen = getAntragAenderungen(antrag)
   const fieldChanged = (key: string) => aenderungen.has(key)
+  const showAenderungenBanner = aenderungen.size > 0
+  const aenderungenDurchVg =
+    showAenderungenBanner && antrag.unterstatus === 'In Prüfung VG'
   const schrittLabel = antrag.unterstatus
   const maAngebotPruefung =
     isMa && ownCase && antrag.unterstatus === 'Angebot zur Prüfung'
-  const maAusbildungUpdate =
-    isMa && ownCase && inAusbildungPhase
+  const vgAngebotGesendet =
+    isVg && antrag.unterstatus === 'Angebot zur Prüfung'
+  const maAngebotAngenommen =
+    isMa && ownCase && antrag.unterstatus === 'Ausbildung gestartet'
+  const maAntragSubmittedStrip =
+    isMa &&
+    ownCase &&
+    showAntragSubmittedStrip &&
+    (antrag.unterstatus === 'In Prüfung VG' ||
+      antrag.unterstatus === 'Wieder eingereicht')
   const canEditAntrag = (isVg && inAntragPruefung) || maUeberarbeitung
-  const canConfirmAusbildung =
-    maAusbildungUpdate && canConfirmAusbildungUpdate(antrag)
   const showWorkflowFooter =
     (isVg && inAntragPruefung) ||
     (isVg && antrag.unterstatus === 'Angebot erstellen') ||
     maAngebotPruefung ||
-    maAusbildungUpdate ||
-    maUeberarbeitung
+    maAusbildungUpdate
   const hrBeratungBlocksSend =
     isVg &&
     antrag.unterstatus === 'Angebot erstellen' &&
@@ -576,7 +643,7 @@ export function AusbildungAntragReviewPage() {
                 className="awb-review__title-row"
               >
                 <Title level="H1" size="H3">
-                  Aus- / Weiterbildung
+                  Weiterbildung
                 </Title>
                 <UnterstatusTag unterstatus={antrag.unterstatus} />
               </FlexBox>
@@ -591,6 +658,11 @@ export function AusbildungAntragReviewPage() {
                 <Button design="Transparent" onClick={goBack}>
                   Schliessen
                 </Button>
+                {canEditAntrag ? (
+                  <Button design="Default" onClick={() => openEdit(1)}>
+                    Bearbeiten
+                  </Button>
+                ) : null}
                 {ownCase &&
                 ((isVg && inVereinbarungPhase && antrag.unterstatus === 'Angebot erstellen') ||
                   maAusbildungUpdate) ? (
@@ -611,7 +683,7 @@ export function AusbildungAntragReviewPage() {
               />
 
               <FlexBox wrap={FlexBoxWrap.Wrap} className="awb-review__facets">
-                <DisplayField label="Ausbildung" value={antrag.ausbildung} />
+                <DisplayField label="Weiterbildung" value={antrag.ausbildung} />
                 <DisplayField label="Von" value={antrag.von} />
                 <DisplayField label="Bis" value={antrag.bis} />
                 <DisplayField label="Schritt" value={schrittLabel} />
@@ -626,6 +698,17 @@ export function AusbildungAntragReviewPage() {
       >
         <ObjectPageSection id="antrag" titleText="Antrag">
           <SectionMain sectionId="antrag">
+            {maAntragSubmittedStrip ? (
+              <MessageStrip
+                design="Positive"
+                className="awb-review__content-banner"
+                onClose={() => setShowAntragSubmittedStrip(false)}
+              >
+                {antrag.unterstatus === 'Wieder eingereicht'
+                  ? `Dein überarbeiteter Antrag wurde eingereicht. ${employee.direkterVorgesetzter} prüft ihn als Nächstes.`
+                  : `Dein Antrag wurde eingereicht. ${employee.direkterVorgesetzter} prüft ihn als Nächstes.`}
+              </MessageStrip>
+            ) : null}
             {!inVereinbarungPhase &&
             !inAusbildungPhase &&
             !inAbschlussPhase &&
@@ -647,9 +730,15 @@ export function AusbildungAntragReviewPage() {
                 className="awb-review__content-banner"
                 onClose={() => setShowMaUeberarbeitungBanner(false)}
               >
-                {antrag.ueberarbeitungKommentarVg
-                  ? `Überarbeite den Antrag. Kommentar VG: ${antrag.ueberarbeitungKommentarVg}`
-                  : 'Überarbeite den Antrag.'}
+                <div className="awb-review__ueberarbeitung-banner">
+                  <Text>Bitte überarbeite deinen Antrag.</Text>
+                  {antrag.ueberarbeitungKommentarVg ? (
+                    <div className="awb-review__ueberarbeitung-kommentar">
+                      <Label showColon>Was muss überarbeitet werden</Label>
+                      <Text>{antrag.ueberarbeitungKommentarVg}</Text>
+                    </div>
+                  ) : null}
+                </div>
               </MessageStrip>
             ) : null}
             {vgResubmitReview && showVgResubmitBanner ? (
@@ -661,6 +750,12 @@ export function AusbildungAntragReviewPage() {
                 {aenderungen.size > 0
                   ? 'Antrag erneut eingereicht. Geänderte Felder sind markiert.'
                   : 'Antrag erneut eingereicht.'}
+              </MessageStrip>
+            ) : null}
+            {aenderungenDurchVg ? (
+              <MessageStrip design="Information" hideCloseButton className="awb-review__content-banner">
+                Die Führungsperson hat den eingereichten Antrag geändert. Geänderte Felder
+                sind markiert.
               </MessageStrip>
             ) : null}
             <ReviewPanel
@@ -682,25 +777,13 @@ export function AusbildungAntragReviewPage() {
                     changed={fieldChanged('bis')}
                   />
                 </Group>
-                <Group title="Abschluss und Zulassung">
+                <Group title="Abschluss">
                   <DisplayField label="Typ" value={form.niveau} changed={fieldChanged('niveau')} />
                   <DisplayField
                     label="Fachrichtung"
                     value={form.fachrichtung}
                     changed={fieldChanged('fachrichtung')}
                   />
-                  <DisplayField
-                    label="Prüfungszulassung"
-                    value={jaNeinLabel(form.pruefungszulassung)}
-                    changed={fieldChanged('pruefungszulassung')}
-                  />
-                  {form.pruefungszulassung === 'nein' ? (
-                    <DisplayField
-                      label="Erklärung"
-                      value={form.zulassungErklaerung}
-                      changed={fieldChanged('zulassungErklaerung')}
-                    />
-                  ) : null}
                 </Group>
               </div>
             </ReviewPanel>
@@ -717,7 +800,7 @@ export function AusbildungAntragReviewPage() {
                     changed={fieldChanged('bund50')}
                   />
                 </Group>
-                <Group title="Ausbildungskosten">
+                <Group title="Weiterbildungskosten">
                   <DisplayField
                     label="Kurskosten"
                     value={form.kurskosten || '—'}
@@ -744,7 +827,7 @@ export function AusbildungAntragReviewPage() {
                     className="awb-review__info"
                     icon={<Icon name="money-bills" slot="icon" />}
                   >
-                    Die Grundlage für die Beteiligung Post an den Ausbildungskosten ist{' '}
+                    Die Grundlage für die Beteiligung Post an den Weiterbildungskosten ist{' '}
                     {formatChf(postGrundlage)}
                   </MessageStrip>
                 </Group>
@@ -756,24 +839,7 @@ export function AusbildungAntragReviewPage() {
               onEdit={canEditAntrag ? () => openEdit(3) : undefined}
             >
               <div className="awb-review__two-col">
-                <Group title="Ausbildungstage">
-                  <DisplayField
-                    label="Anzahl Ausbildungstage"
-                    value={form.anzahlAusbildungstage}
-                    changed={fieldChanged('anzahlAusbildungstage')}
-                  />
-                  <DisplayField
-                    label="Wochentage"
-                    value={form.wochentage.join(', ')}
-                    changed={fieldChanged('wochentage')}
-                  />
-                  <DisplayField
-                    label="Schulzeiten / Bemerkungen"
-                    value={form.schulzeitenBemerkungen}
-                    changed={fieldChanged('schulzeitenBemerkungen')}
-                  />
-                </Group>
-                <Group title="Arbeitspensum / Erleichterung">
+                <Group title="Arbeitspensum">
                   <DisplayField
                     label="Beschäftigungsgrad anpassen"
                     value={jaNeinLabel(form.beschaeftigungsgradAnpassen)}
@@ -786,8 +852,10 @@ export function AusbildungAntragReviewPage() {
                       changed={fieldChanged('gewuenschterBeschaeftigungsgrad')}
                     />
                   ) : null}
+                </Group>
+                <Group title="Arbeitszeiterleichterung">
                   <DisplayField
-                    label="Arbeitszeiterleichterung"
+                    label="Arbeitszeiterleichterung beantragen"
                     value={jaNeinLabel(form.arbeitszeiterleichterung)}
                     changed={fieldChanged('arbeitszeiterleichterung')}
                   />
@@ -821,26 +889,6 @@ export function AusbildungAntragReviewPage() {
                 </Group>
               </div>
             </ReviewPanel>
-
-            {isVg ? (
-              <ReviewPanel title="Kommentar" fixed>
-                <TextArea
-                  className="awb-review__comment-input"
-                  rows={4}
-                  value={form.kommentar}
-                  placeholder="Schreibe einen Kommentar zum Antrag …"
-                  onInput={(event) =>
-                    setAntrag({
-                      ...antrag,
-                      form: {
-                        ...antrag.form,
-                        kommentar: event.target.value ?? '',
-                      },
-                    })
-                  }
-                />
-              </ReviewPanel>
-            ) : null}
           </SectionMain>
         </ObjectPageSection>
 
@@ -850,6 +898,16 @@ export function AusbildungAntragReviewPage() {
           tabRef={setVereinbarungTabRef}
         >
           <SectionMain sectionId="vereinbarung">
+            {vgAngebotGesendet && showAngebotSentStrip ? (
+              <MessageStrip
+                design="Positive"
+                className="awb-review__content-banner"
+                onClose={() => setShowAngebotSentStrip(false)}
+              >
+                Angebot wurde an {employee.name} zur Prüfung gesendet. Du kannst den Fall
+                schliessen — die Entscheidung der/des Mitarbeitenden folgt als Nächstes.
+              </MessageStrip>
+            ) : null}
             {vereinbarungTabEnabled &&
             (inVereinbarungPhase ||
               inAusbildungPhase ||
@@ -901,18 +959,47 @@ export function AusbildungAntragReviewPage() {
           tabRef={setAusbildungTabRef}
         >
           <SectionMain sectionId="ausbildung">
+            {maAngebotAngenommen && showAngebotAcceptedStrip ? (
+              <MessageStrip
+                design="Positive"
+                className="awb-review__content-banner"
+                onClose={() => setShowAngebotAcceptedStrip(false)}
+              >
+                Angebot angenommen — deine Ausbildung ist gestartet. Bitte halte den
+                Status hier aktuell, sobald sich etwas ändert.
+              </MessageStrip>
+            ) : null}
             {ausbildungTabEnabled && (inAusbildungPhase || inAbschlussPhase) ? (
-              <AusbildungSection
-                antrag={antrag}
-                readOnly={!maAusbildungUpdate}
-                showUpdateBanner={showAusbildungBanner}
-                onCloseBanner={() => setShowAusbildungBanner(false)}
-                onChange={handleAusbildungChange}
-                onWeisungClick={() => {
-                  setToastText('Weisung folgt in einer späteren Prototyp-Etappe')
-                  setToastOpen(true)
-                }}
-              />
+              <>
+                {ausbildungValidationErrorCount > 0 ? (
+                  <MessageStrip
+                    design="Negative"
+                    hideCloseButton
+                    className="awb-review__content-banner"
+                  >
+                    Die Ausbildung enthält Fehler. Bitte korrigiere die markierten
+                    Felder.
+                  </MessageStrip>
+                ) : null}
+                <AusbildungSection
+                  antrag={antrag}
+                  readOnly={!maAusbildungUpdate}
+                  showUpdateBanner={showAusbildungBanner && !maAngebotAngenommen}
+                  onCloseBanner={() => setShowAusbildungBanner(false)}
+                  onChange={handleAusbildungChange}
+                  fieldErrors={ausbildungFieldErrors}
+                  onWeisungClick={() => {
+                    setToastText('Weisung folgt in einer späteren Prototyp-Etappe')
+                    setToastOpen(true)
+                  }}
+                  onProfilUpdateClick={() => {
+                    setToastText(
+                      'Profilaktualisierung folgt in einer späteren Prototyp-Etappe',
+                    )
+                    setToastOpen(true)
+                  }}
+                />
+              </>
             ) : (
               <MessageStrip design="Information" hideCloseButton>
                 Dieser Bereich wird verfügbar, sobald die Ausbildung gestartet
@@ -922,56 +1009,10 @@ export function AusbildungAntragReviewPage() {
           </SectionMain>
         </ObjectPageSection>
 
-        <ObjectPageSection id="dokumente" titleText="Dokumente">
-          <SectionMain sectionId="dokumente">
-            <ReviewPanel
-              title="Dokumente"
-              onEdit={canEditAntrag ? () => openEdit(4) : undefined}
-            >
-              <div
-                className={
-                  fieldChanged('dokumente')
-                    ? 'awb-review__dokumente awb-review__dokumente--changed'
-                    : 'awb-review__dokumente'
-                }
-              >
-                <BusyIndicator
-                  active={docsBusy}
-                  delay={0}
-                  text="Dokument wird geladen …"
-                  className="awb-review__dokumente-busy"
-                >
-                  <UploadCollection noDataText="Keine Dokumente vorhanden" hideDragOverlay>
-                  {antrag.dokumente.map((doc) => (
-                    <UploadCollectionItem
-                      key={doc.id}
-                      fileName={doc.name}
-                      uploadState="Complete"
-                      hideDeleteButton
-                      onClick={() => {
-                        void openDokument(doc.id, doc.name)
-                      }}
-                    >
-                      <Text slot="thumbnail">{formatFileSize(doc.size)}</Text>
-                    </UploadCollectionItem>
-                  ))}
-                  </UploadCollection>
-                </BusyIndicator>
-              </div>
-            </ReviewPanel>
-          </SectionMain>
-        </ObjectPageSection>
-
-        <ObjectPageSection
-          id="kommentare"
-          titleText="Kommentare und Aktivitäten"
-        >
-          <SectionMain sectionId="kommentare">
-            <ReviewPanel title="Kommentare und Aktivitäten">
-              <KommentarFeed
-                eintraege={feedEintraege}
-                onPost={handlePostKommentar}
-              />
+        <ObjectPageSection id="aktivitaeten" titleText="Aktivitäten">
+          <SectionMain sectionId="aktivitaeten">
+            <ReviewPanel title="Verlauf">
+              <KommentarFeed eintraege={feedEintraege} />
             </ReviewPanel>
           </SectionMain>
         </ObjectPageSection>
@@ -981,6 +1022,16 @@ export function AusbildungAntragReviewPage() {
         <Bar
           className="awb-review__footer"
           design="FloatingFooter"
+          startContent={
+            maAusbildungUpdate && ausbildungValidationErrorCount > 0 ? (
+              <MessageViewButton
+                id={AUSBILDUNG_MESSAGE_BUTTON_ID}
+                type="Negative"
+                counter={ausbildungValidationErrorCount}
+                onClick={() => setAusbildungMessagePopoverOpen(true)}
+              />
+            ) : undefined
+          }
           endContent={
             <FlexBox
               justifyContent={FlexBoxJustifyContent.End}
@@ -1005,6 +1056,12 @@ export function AusbildungAntragReviewPage() {
                   <Button design="Default" onClick={() => setRejectAntragOpen(true)}>
                     Antrag ablehnen
                   </Button>
+                  {hrBeratungBlocksSend ? (
+                    <Text className="awb-review__footer-hint">
+                      Senden nicht möglich: Begründung erfassen und HR-Beratung beiziehen
+                      (siehe Hinweis oben).
+                    </Text>
+                  ) : null}
                   <Button
                     design="Emphasized"
                     disabled={hrBeratungBlocksSend}
@@ -1026,16 +1083,8 @@ export function AusbildungAntragReviewPage() {
                     {maAcceptAngebotLabel}
                   </Button>
                 </>
-              ) : maUeberarbeitung ? (
-                <Button design="Emphasized" onClick={() => openEdit(1)}>
-                  Antrag bearbeiten
-                </Button>
               ) : (
-                <Button
-                  design="Emphasized"
-                  disabled={!canConfirmAusbildung}
-                  onClick={handleConfirmAusbildung}
-                >
+                <Button design="Emphasized" onClick={handleConfirmAusbildung}>
                   Bestätigen
                 </Button>
               )}
@@ -1043,6 +1092,61 @@ export function AusbildungAntragReviewPage() {
           }
         />
       ) : null}
+
+      {maAusbildungUpdate &&
+      ausbildungValidationErrorCount > 0 &&
+      ausbildungMessagePopoverOpen ? (
+        <Popover
+          className="awb-review__message-popover"
+          open
+          opener={AUSBILDUNG_MESSAGE_BUTTON_ID}
+          placement="Top"
+          verticalAlign="Bottom"
+          horizontalAlign="Start"
+          onClose={() => setAusbildungMessagePopoverOpen(false)}
+        >
+          <MessageView groupItems>
+            {ausbildungValidationMessages.map((message) => (
+              <MessageItem
+                key={message.fieldId}
+                type="Negative"
+                groupName={message.section}
+                titleText={message.label}
+                subtitleText={message.message}
+                onClick={() => focusAusbildungValidationField(message.fieldId)}
+              />
+            ))}
+          </MessageView>
+        </Popover>
+      ) : null}
+
+      <AwbDialog
+        open={Boolean(ausbildungConsequenceConfirm)}
+        headerText={ausbildungConsequenceConfirm?.headerText ?? ''}
+        onClose={() => setAusbildungConsequenceConfirm(null)}
+        footer={
+          <Bar
+            design="Footer"
+            endContent={
+              <>
+                <Button
+                  design="Transparent"
+                  onClick={() => setAusbildungConsequenceConfirm(null)}
+                >
+                  Zurück
+                </Button>
+                <Button design="Negative" onClick={applyAusbildungConfirm}>
+                  {ausbildungConsequenceConfirm?.confirmLabel ?? 'Bestätigen'}
+                </Button>
+              </>
+            }
+          />
+        }
+      >
+        <div className="awb-dialog-content">
+          <Text>{ausbildungConsequenceConfirm?.body}</Text>
+        </div>
+      </AwbDialog>
 
       <AwbDialog
         open={rejectAntragOpen}
@@ -1101,6 +1205,44 @@ export function AusbildungAntragReviewPage() {
       </AwbDialog>
 
       <AwbDialog
+        open={ueberarbeitungDialogOpen}
+        headerText="An MA zur Überarbeitung"
+        onClose={closeUeberarbeitungDialog}
+        footer={
+          <Bar
+            design="Footer"
+            endContent={
+              <>
+                <Button design="Transparent" onClick={closeUeberarbeitungDialog}>
+                  Abbrechen
+                </Button>
+                <Button design="Emphasized" onClick={handleUeberarbeitungDialogSubmit}>
+                  Zurücksenden
+                </Button>
+              </>
+            }
+          />
+        }
+      >
+        <div className="awb-dialog-content awb-review__ueberarbeitung-dialog">
+          <Text>
+            Der Antrag wird an {employee.name} zur Überarbeitung zurückgesendet. Beschreibe,
+            was angepasst werden muss.
+          </Text>
+          <Label showColon className="awb-review__ueberarbeitung-dialog-label">
+            Was muss überarbeitet werden
+          </Label>
+          <TextArea
+            className="awb-review__comment-input"
+            rows={4}
+            value={ueberarbeitungKommentar}
+            placeholder="z. B. Bitte Titel und Kostenangaben nochmals prüfen …"
+            onInput={(event) => setUeberarbeitungKommentar(event.target.value ?? '')}
+          />
+        </div>
+      </AwbDialog>
+
+      <AwbDialog
         open={ueberarbeitungConfirmOpen}
         headerText="Ohne Kommentar zurücksenden"
         onClose={() => setUeberarbeitungConfirmOpen(false)}
@@ -1115,7 +1257,10 @@ export function AusbildungAntragReviewPage() {
                 >
                   Abbrechen
                 </Button>
-                <Button design="Emphasized" onClick={executeSendToUeberarbeitung}>
+                <Button
+                  design="Emphasized"
+                  onClick={() => executeSendToUeberarbeitung('')}
+                >
                   Zurücksenden
                 </Button>
               </>
@@ -1125,8 +1270,8 @@ export function AusbildungAntragReviewPage() {
       >
         <div className="awb-dialog-content">
           <Text>
-            Möchtest du den Antrag wirklich ohne Kommentar zur Überarbeitung an die/ den
-            Mitarbeitende/n zurücksenden?
+            Möchtest du den Antrag wirklich ohne Kommentar zur Überarbeitung an {employee.name}
+            zurücksenden?
           </Text>
         </div>
       </AwbDialog>

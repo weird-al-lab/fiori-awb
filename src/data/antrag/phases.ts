@@ -72,21 +72,15 @@ export function isVgDraftResubmit(antrag: WeiterbildungAntrag): boolean {
 }
 
 const UEBERARBEITUNG_FORM_KEYS: (keyof AntragFormData)[] = [
-  'vorbesprochen',
   'titel',
   'anbieter',
   'von',
   'bis',
   'niveau',
   'fachrichtung',
-  'pruefungszulassung',
-  'zulassungErklaerung',
   'bund50',
   'kurskosten',
   'zusaetzlicheKosten',
-  'anzahlAusbildungstage',
-  'wochentage',
-  'schulzeitenBemerkungen',
   'beschaeftigungsgradAnpassen',
   'gewuenschterBeschaeftigungsgrad',
   'arbeitszeiterleichterung',
@@ -99,18 +93,19 @@ function formFieldEqual(
   current: AntragFormData,
   key: keyof AntragFormData,
 ): boolean {
-  if (key === 'wochentage') {
-    const a = [...baseline.wochentage].sort().join('\0')
-    const b = [...current.wochentage].sort().join('\0')
-    return a === b
-  }
   return baseline[key] === current[key]
 }
 
-/** Changed form field keys since VG send-back; empty when not in Wieder eingereicht. */
+/** Changed form field keys vs baseline (MA resubmit or after VG edit). */
 export function getAntragAenderungen(antrag: WeiterbildungAntrag): Set<string> {
   const baseline = antrag.formBaselineVorUeberarbeitung
-  if (!baseline || antrag.unterstatus !== 'Wieder eingereicht') {
+  if (!baseline || antrag.hauptstatus !== 'Antrag') {
+    return new Set()
+  }
+  if (
+    antrag.unterstatus !== 'Wieder eingereicht' &&
+    antrag.unterstatus !== 'In Prüfung VG'
+  ) {
     return new Set()
   }
 
@@ -119,17 +114,6 @@ export function getAntragAenderungen(antrag: WeiterbildungAntrag): Set<string> {
     if (!formFieldEqual(baseline, antrag.form, key)) {
       changed.add(key)
     }
-  }
-
-  const baseDocIds = [...(antrag.dokumenteBaselineVorUeberarbeitung ?? [])].sort().join(
-    '\0',
-  )
-  const currentDocIds = antrag.dokumente
-    .map((doc) => doc.id)
-    .sort()
-    .join('\0')
-  if (baseDocIds !== currentDocIds) {
-    changed.add('dokumente')
   }
 
   return changed
@@ -176,6 +160,10 @@ export function canConfirmAusbildungUpdate(
     case 'weitere_pruefung_nicht_bestanden':
       return true
     case 'pruefung_nicht_bestanden':
+      // Retry phase: this radio is not confirmable — pick a closing status.
+      if (antrag.unterstatus === 'Prüfung nicht bestanden') {
+        return false
+      }
       if (draft.wiederholung === 'nein') {
         return true
       }

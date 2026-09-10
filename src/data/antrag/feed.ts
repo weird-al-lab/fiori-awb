@@ -1,7 +1,6 @@
 import { getEmployee } from '../employees'
 import { CURRENT_USER_NAME } from './constants'
-import type { AntragFormData, FeedEintrag, WeiterbildungAntrag } from './types'
-import { upsertAntrag } from './service'
+import type { FeedEintrag, WeiterbildungAntrag } from './types'
 
 export function createKommentarEintrag(
   text: string,
@@ -67,7 +66,7 @@ export function normalizeAntragFeed(antrag: WeiterbildungAntrag): WeiterbildungA
 export function getFeedEintraege(antrag: WeiterbildungAntrag): FeedEintrag[] {
   const normalized = normalizeAntragFeed(antrag)
   return [...(normalized.kommentareAktivitaeten ?? [])].sort(
-    (a, b) => new Date(b.erstelltAm).getTime() - new Date(a.erstelltAm).getTime(),
+    (a, b) => new Date(a.erstelltAm).getTime() - new Date(b.erstelltAm).getTime(),
   )
 }
 
@@ -92,42 +91,4 @@ export function addKommentarToAntrag(
       createKommentarEintrag(trimmed, autorName),
     ],
   }
-}
-
-/** Clears a pending `form.kommentar` without adding it to the activity feed. */
-export function consumeFormKommentar(
-  antrag: WeiterbildungAntrag,
-  feed: FeedEintrag[],
-  _autorName: string,
-  _erstelltAm: string,
-): { feed: FeedEintrag[]; form: AntragFormData } {
-  if (!antrag.form.kommentar.trim()) {
-    return { feed, form: antrag.form }
-  }
-
-  return {
-    feed,
-    form: { ...antrag.form, kommentar: '' },
-  }
-}
-
-/** Clears a pending review comment from `form.kommentar` without changing the feed. */
-export function flushFormKommentarToFeed(
-  antrag: WeiterbildungAntrag,
-  _autorName: string = CURRENT_USER_NAME,
-): WeiterbildungAntrag {
-  if (!antrag.form.kommentar.trim()) {
-    return normalizeAntragFeed(antrag)
-  }
-  const normalized = normalizeAntragFeed(antrag)
-  const { form } = consumeFormKommentar(
-    normalized,
-    [...(normalized.kommentareAktivitaeten ?? [])],
-    _autorName,
-    new Date().toISOString(),
-  )
-  return upsertAntrag({
-    ...normalized,
-    form,
-  })
 }

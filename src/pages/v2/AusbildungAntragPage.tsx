@@ -197,21 +197,17 @@ export function AusbildungAntragPage() {
     const persisted = persistRevisionDraft(antrag)
     setAntrag(persisted)
     const submitted = submitAntrag(persisted, persona.name)
-    const toast = isVgDraftResubmit(persisted)
-      ? 'Antrag wurde gespeichert.'
-      : isVg
-        ? 'Antrag wurde zur Prüfung weitergeleitet.'
-        : submitted.unterstatus === 'Wieder eingereicht'
-          ? 'Dein überarbeiteter Antrag wurde zur Prüfung weitergeleitet.'
-          : 'Dein Antrag wurde an Mettler Markus zur Prüfung weitergeleitet'
     if (isVg) {
+      const toast = isVgDraftResubmit(persisted)
+        ? 'Antrag wurde gespeichert.'
+        : 'Antrag wurde zur Prüfung weitergeleitet.'
       navigate(`/v2/weiterbildung/${employeeId}/antrag/${submitted.id}`, {
         state: { toast },
       })
       return
     }
-    navigate(`/v2/weiterbildung/${employeeId}`, {
-      state: { toast },
+    navigate(`/v2/weiterbildung/${employeeId}/antrag/${submitted.id}`, {
+      state: { antragSubmitted: true },
     })
   }
 

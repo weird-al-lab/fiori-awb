@@ -74,6 +74,7 @@
 
 .awb-review__content-banner {
   width: 100%;
+  margin-bottom: 1rem;
 }
 
 .awb-review__process-band {
@@ -100,10 +101,6 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.awb-review__comment-input {
-  width: 100%;
 }
 
 .awb-review__two-col {
@@ -158,22 +155,30 @@
   );
 }
 
-.awb-review__dokumente--changed {
-  box-sizing: border-box;
-  padding: 0.375rem 0.5rem 0.375rem 0.625rem;
-  border-radius: var(--sapElement_BorderCornerRadius, 0.25rem);
-  border-inline-start: 0.125rem solid
-    color-mix(in srgb, var(--sapInformationColor, #0070f2) 55%, transparent);
-  background-color: color-mix(
-    in srgb,
-    var(--sapInformationColor, #0070f2) 6%,
-    transparent
-  );
+.awb-review__comment-input {
+  width: 100%;
 }
 
-.awb-review__dokumente-busy {
-  display: block;
-  width: 100%;
+.awb-review__ueberarbeitung-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.awb-review__ueberarbeitung-dialog-label {
+  margin-top: 0.25rem;
+}
+
+.awb-review__ueberarbeitung-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.awb-review__ueberarbeitung-kommentar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .awb-review__footer {
@@ -185,6 +190,21 @@
 .awb-review__footer-actions {
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.awb-review__footer-hint {
+  color: var(--sapContent_LabelColor);
+  font-size: var(--sapFontSmallSize);
+  max-width: 22rem;
+  text-align: end;
+}
+
+.awb-review__message-popover::part(content) {
+  padding: 0;
+}
+
+.awb-review__message-popover ui5-message-view {
+  width: min(24rem, calc(100vw - 2rem));
 }
 
 @media (max-width: 900px) {

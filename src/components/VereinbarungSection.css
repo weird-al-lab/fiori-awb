@@ -188,6 +188,24 @@
   padding-left: 2rem;
 }
 
+.awb-vereinbarung__settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.awb-vereinbarung__settings-grid--single {
+  grid-template-columns: 1fr;
+}
+
+.awb-vereinbarung__settings-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
 .awb-vereinbarung__auszahlung-grid,
 .awb-vereinbarung__rueckzahlung-grid {
   display: grid;
@@ -222,7 +240,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-bottom: 1rem;
 }
 
 .awb-vereinbarung__radios--inline {
@@ -236,11 +253,12 @@
 
 .awb-vereinbarung__preview-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 @media (max-width: 900px) {
   .awb-vereinbarung__beteiligung-grid,
+  .awb-vereinbarung__settings-grid,
   .awb-vereinbarung__auszahlung-grid,
   .awb-vereinbarung__rueckzahlung-grid,
   .awb-vereinbarung__auszahlung-fields {

@@ -121,7 +121,6 @@ function buildDemoForm(
   const employee = getEmployee(employeeId)
   const course = DEMO_COURSES[courseIndex % DEMO_COURSES.length]
   const form = createEmptyForm()
-  form.vorbesprochen = 'ja'
   form.titel = course.titel
   form.anbieter = course.anbieter
   form.von = '01.09.2026'
@@ -129,12 +128,9 @@ function buildDemoForm(
   form.niveau = course.niveau
   form.fachrichtung = course.fachrichtung
   form.stufe = employee?.stufe ?? 'FS07'
-  form.pruefungszulassung = 'ja'
   form.bund50 = 'nein'
   form.kurskosten = '8500'
   form.zusaetzlicheKosten = '450'
-  form.anzahlAusbildungstage = '24'
-  form.wochentage = ['Freitag']
   form.beschaeftigungsgradAnpassen = 'nein'
   form.gewuenschterBeschaeftigungsgrad = formatBeschaeftigungsgradOption(
     employee?.beschaeftigungsgrad ?? 100,
@@ -428,7 +424,6 @@ export function buildDemoAntrag(
     bis: form.bis,
     hasVertrag,
     form,
-    dokumente: [],
     kommentareAktivitaeten: buildDemoFeed(employeeId, pair, updatedAt),
     aktuellBeiLabel: resolveAktuellBeiLabel(
       employeeId,
@@ -453,14 +448,12 @@ export function buildDemoAntrag(
   ) {
     antrag.ueberarbeitungKommentarVg =
       'Bitte Titel und Kostenangaben nochmals prüfen und konkretisieren.'
-    antrag.formBaselineVorUeberarbeitung = { ...form, kommentar: '' }
-    antrag.dokumenteBaselineVorUeberarbeitung = []
+    antrag.formBaselineVorUeberarbeitung = { ...form }
   }
 
   if (pair.unterstatus === 'Wieder eingereicht') {
-    const baseline = { ...form, kommentar: '', titel: `${form.titel} (alt)` }
+    const baseline = { ...form, titel: `${form.titel} (alt)` }
     antrag.formBaselineVorUeberarbeitung = baseline
-    antrag.dokumenteBaselineVorUeberarbeitung = []
     antrag.ueberarbeitungKommentarVg =
       'Bitte Titel und Kostenangaben nochmals prüfen und konkretisieren.'
   }

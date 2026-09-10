@@ -10,17 +10,17 @@ const VERSIONS = [
   {
     id: 'current',
     path: '/home',
-    title: 'Aktuelle Version',
-    description: 'Gesicherter Stand des bestehenden Flows',
-    additionalText: 'V1',
+    title: 'Variante mit Wizard',
+    description: 'Favorisierte Variante aus UX-Sicht',
+    additionalText: 'VWizard',
     icon: 'history',
   },
   {
     id: 'copy',
     path: '/v2',
-    title: 'Arbeitskopie',
-    description: 'Kopie zum Überarbeiten — der aktuelle Stand bleibt unverändert',
-    additionalText: 'V2',
+    title: 'Variante mit Formular',
+    description: 'Einfache Alternative',
+    additionalText: 'VForm',
     icon: 'copy',
   },
 ] as const
@@ -41,11 +41,6 @@ export function PrototypeIndexPage() {
       </header>
 
       <main className="page-content-column page-content-column--main prototype-index__main">
-        <Text className="prototype-index__intro">
-          Wählen Sie eine Version des Prototyps. Die aktuelle Version bleibt als
-          Referenz erhalten; Änderungen gehören in die Arbeitskopie.
-        </Text>
-
         <List
           accessibleName="Prototype-Versionen"
           className="prototype-index__list"
