@@ -61,7 +61,7 @@ Prototype index (/)
 | Persona (demo) | Role | Capabilities (summary) |
 |----------------|------|------------------------|
 | Markus Mettler | Vorgesetzte/r | List employees, review Anträge, edit while in Prüfung, create/send Angebot, reject |
-| Fankhauser Fabian | Mitarbeitende/r | Own case only: create/edit Entwurf, revise after send-back, accept/reject Angebot, **confirm Ausbildung outcomes** |
+| Fankhauser Fabian | Mitarbeitende/r | Own case only: create/edit Entwurf, revise after send-back, accept/reject Angebot, confirm Ausbildung outcomes |
 
 Access guard: `ownsEmployee(employeeId)` — VG owns all; MA only own `employeeId`.
 
@@ -206,16 +206,3 @@ Effort drivers visible in V1: multi-step wizard validation, revision loop + fiel
 | `src/context/PrototypePersonaContext.tsx` | Demo roles only |
 
 **V2 footnote:** pages under `src/pages/v2/` implement a single-page form capture. Same `src/data/antrag/` domain. Prefer V1 for UX and estimation.
-
----
-
-## 9. Cleanup already done for handover
-
-- Domain logic under `src/data/antrag/`
-- Shared `OwnCaseGuard` for case access messaging
-- Vite `code-inspector` plugin removed
-- Non-navigable list seed removed; lists persist Anträge only
-- Versioned navigable demo seed with Fabian status showcase
-- Impeccable design tooling/docs removed from the repo
-- Theme Lab launchpad tile hidden (route `/theme-lab` remains for internal use)
-- README maintained as developer setup; this file as SAP estimator entry (V1 baseline)
