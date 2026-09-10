@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { List } from '@ui5/webcomponents-react/List'
 import { ListItemStandard } from '@ui5/webcomponents-react/ListItemStandard'
-import { Text } from '@ui5/webcomponents-react/Text'
 import { Title } from '@ui5/webcomponents-react/Title'
 import { AppShellBar } from '../components/AppShellBar'
 import './PrototypeIndexPage.css'

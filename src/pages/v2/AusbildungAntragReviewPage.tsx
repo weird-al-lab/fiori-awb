@@ -358,7 +358,7 @@ export function AusbildungAntragReviewPage() {
       const endDateChanged =
         draft.outcome === 'in_ausbildung' &&
         Boolean(draft.neuesEnddatum?.trim()) &&
-        draft.neuesEnddatum.trim() !== previousBis
+        (draft.neuesEnddatum?.trim() ?? '') !== previousBis
       setAntrag(saved)
       setToastText(endDateChanged ? 'Enddatum gespeichert' : 'Änderungen gespeichert')
       setToastOpen(true)
