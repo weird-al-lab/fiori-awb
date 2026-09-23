@@ -92,6 +92,7 @@ export const SCHULEN_ANBIETER_OPTIONS = [
   'KV Business School Zürich',
   'KV Luzern',
   'Minerva Schulen',
+  'OST - Ostschweizer Fachhochschule',
   'PH Bern Weiterbildung',
   'SAWI Akademie',
   'SIU Schweizerisches Institut für Unternehmerschulung',

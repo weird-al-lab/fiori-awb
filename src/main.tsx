@@ -21,9 +21,11 @@ import './layout/dialog-content.css'
 import { PrototypeThemeProvider } from './context/PrototypeThemeContext'
 import { PrototypeGate } from './components/PrototypeGate'
 import { ensureDemoAntraege } from './data/antrag/demoSeed'
+import { removeSampleInboxTasks } from './data/inbox'
 import App from './App.tsx'
 
 ensureDemoAntraege()
+removeSampleInboxTasks()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

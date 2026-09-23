@@ -1,12 +1,44 @@
 import { isBund50NiveauEligible, VERTRAG_SCHWELLENWERT_CHF } from './constants'
 import { getDefaultAuszahlungsMonat, parseNumber } from './format'
 import type {
+  AkProzent,
   AntragFormData,
+  AzeModus,
   BeitragZeile,
   VereinbarungData,
   VereinbarungKosten,
   WeiterbildungAntrag,
 } from './types'
+
+export const AUTO_OFFER_AK_PROZENT = 50 satisfies AkProzent
+
+const AUTO_OFFER_MIN_AZE_SHARE = 0.5
+
+/** Prototype auto-offer: Post AZE = min 50 % of requested days, rounded up. */
+export function resolveAutoOfferAze(antrag: WeiterbildungAntrag): {
+  azeModus: AzeModus
+  azeTage: string
+} {
+  const { form } = antrag
+  if (form.arbeitszeiterleichterung !== 'ja') {
+    return { azeModus: 'keine', azeTage: '' }
+  }
+
+  const requestedDays = parseNumber(form.anzahlTageErleichterung)
+  if (requestedDays <= 0) {
+    return { azeModus: 'keine', azeTage: '' }
+  }
+
+  const offeredDays = Math.min(
+    requestedDays,
+    Math.ceil(requestedDays * AUTO_OFFER_MIN_AZE_SHARE),
+  )
+
+  return {
+    azeModus: 'pauschal',
+    azeTage: String(offeredDays),
+  }
+}
 
 export function getBundBeteiligung(form: AntragFormData): number {
   if (!isBund50NiveauEligible(form.niveau) || form.bund50 !== 'ja') {
@@ -47,7 +79,7 @@ export function createDefaultVereinbarung(
     akPauschalBetrag: '',
     azeModus: 'pauschal',
     azeTage: '',
-    sofortauszahlung: false,
+    sofortauszahlung: true,
     auszahlungsMonat: getDefaultAuszahlungsMonat(form),
     auszahlungsBetrag: '',
     rueckzahlungVereinbaren: 'nein',
@@ -95,11 +127,9 @@ export function getVereinbarungKosten(
 
   const maEingesetzteTage = Math.max(0, antragAzeTage - postAzeTage)
   const maEingesetzteBetrag = maEingesetzteTage * tagessatz
-  const maAbbauTage = postAze > 0 ? 1 : 0
-  const maAbbauBetrag = maAbbauTage * tagessatz
 
   const postTotal = postAk + postAze
-  const maTotal = maAk + maEingesetzteBetrag + maAbbauBetrag
+  const maTotal = maAk + maEingesetzteBetrag
   const gesamt = postTotal + maTotal
 
   const postZeilen: BeitragZeile[] = [
@@ -127,15 +157,6 @@ export function getVereinbarungKosten(
       indent: true,
     })
   }
-  if (maAbbauBetrag > 0) {
-    maZeilen.push({
-      label: 'Abbau verfügbare Guthaben',
-      tage: maAbbauTage,
-      ansatz: tagessatz,
-      total: maAbbauBetrag,
-      indent: true,
-    })
-  }
 
   return {
     akBasis,
@@ -145,8 +166,8 @@ export function getVereinbarungKosten(
     postAze,
     maEingesetzteTage,
     maEingesetzteBetrag,
-    maAbbauTage,
-    maAbbauBetrag,
+    maAbbauTage: 0,
+    maAbbauBetrag: 0,
     postTotal,
     maTotal,
     gesamt,

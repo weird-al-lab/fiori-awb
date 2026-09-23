@@ -1,3 +1,5 @@
+import { MARKUS_METTLER_EMPLOYEE_ID } from './employees'
+
 export type PrototypeRole = 'Vorgesetzter' | 'Mitarbeitender'
 
 export type PrototypePersona = {
@@ -23,6 +25,14 @@ export const PROTOTYPE_PERSONAS: readonly PrototypePersona[] = [
     aktuellBeiLabel: 'Mettler Markus, PN',
   },
   {
+    id: MARKUS_METTLER_EMPLOYEE_ID,
+    role: 'Mitarbeitender',
+    name: 'Markus Mettler',
+    initials: 'MM',
+    employeeId: MARKUS_METTLER_EMPLOYEE_ID,
+    aktuellBeiLabel: 'Markus Mettler',
+  },
+  {
     id: 'emp-006',
     role: 'Mitarbeitender',
     name: 'Fankhauser Fabian',
@@ -43,4 +53,11 @@ export function getPersonaById(id: string): PrototypePersona {
 
 export function roleLabel(role: PrototypeRole): string {
   return role === 'Vorgesetzter' ? 'Vorgesetzte/r' : 'Mitarbeitende/r'
+}
+
+export function isMarkusMaPersona(persona: PrototypePersona): boolean {
+  return (
+    persona.role === 'Mitarbeitender' &&
+    persona.employeeId === MARKUS_METTLER_EMPLOYEE_ID
+  )
 }

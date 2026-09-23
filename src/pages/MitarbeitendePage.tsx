@@ -1,14 +1,21 @@
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@ui5/webcomponents-react/Button'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
 import { Tab } from '@ui5/webcomponents-react/Tab'
 import { TabContainer } from '@ui5/webcomponents-react/TabContainer'
 import { TabSeparator } from '@ui5/webcomponents-react/TabSeparator'
 import { Title } from '@ui5/webcomponents-react/Title'
+import { Toast } from '@ui5/webcomponents-react/Toast'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
 import { FlexBoxWrap } from '@ui5/webcomponents-react/enums/FlexBoxWrap'
 import { AppShellBar } from '../components/AppShellBar'
 import { LaunchpadTile } from '../components/LaunchpadTile'
+import { usePrototypePersona } from '../context/PrototypePersonaContext'
+import {
+  countOpenInboxItemsForPersona,
+  subscribeMaInbox,
+} from '../data/inbox'
 import './MitarbeitendePage.css'
 
 const HOME_TAB = 'Meine Startseite'
@@ -42,15 +49,7 @@ type TileSection = {
 const TILE_SECTIONS: TileSection[] = [
   {
     title: 'Allgemein',
-    tiles: [
-      {
-        title: 'Meine HR-Tickets',
-        icon: 'doc-attachment',
-        value: '1',
-        valueColor: 'Critical',
-        footer: 'Offene/s Ticket/s',
-      },
-    ],
+    tiles: [],
   },
   {
     title: 'Spesen & Finanzen',
@@ -170,6 +169,49 @@ function TileSectionView({
 
 export function MitarbeitendePage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { persona } = usePrototypePersona()
+  const [inboxTick, setInboxTick] = useState(0)
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastText, setToastText] = useState('')
+
+  useEffect(() => subscribeMaInbox(() => setInboxTick((value) => value + 1)), [])
+
+  useEffect(() => {
+    const state = location.state as { toast?: string } | null
+    if (!state?.toast) {
+      return
+    }
+    setToastText(state.toast)
+    setToastOpen(true)
+    navigate(location.pathname, { replace: true, state: {} })
+  }, [location.pathname, location.state, navigate])
+
+  const openInboxCount = useMemo(() => {
+    return countOpenInboxItemsForPersona(persona)
+  }, [persona, inboxTick])
+
+  const sections = useMemo<TileSection[]>(() => {
+    const inboxTile: LaunchpadTileData = {
+      title: 'Meine HR-Tickets',
+      icon: 'inbox',
+      value: String(openInboxCount),
+      valueColor: openInboxCount > 0 ? 'Critical' : 'Neutral',
+      footer:
+        openInboxCount === 1
+          ? 'Offene Aufgabe'
+          : openInboxCount > 1
+            ? 'Offene Aufgaben'
+            : 'Keine offenen Aufgaben',
+      to: '/posteingang',
+    }
+
+    return TILE_SECTIONS.map((section) =>
+      section.title === 'Allgemein'
+        ? { ...section, tiles: [inboxTile, ...section.tiles] }
+        : section,
+    )
+  }, [openInboxCount])
 
   return (
     <div className="mitarbeitende-page app-page">
@@ -185,7 +227,7 @@ export function MitarbeitendePage() {
             </Title>
 
             <FlexBox direction={FlexBoxDirection.Column} className="mitarbeitende-page__sections">
-              {TILE_SECTIONS.map((section) => (
+              {sections.map((section) => (
                 <TileSectionView
                   key={section.title}
                   section={section}
@@ -195,6 +237,10 @@ export function MitarbeitendePage() {
             </FlexBox>
         </div>
       </main>
+
+      <Toast open={toastOpen} onClose={() => setToastOpen(false)} placement="BottomCenter">
+        {toastText}
+      </Toast>
     </div>
   )
 }

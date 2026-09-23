@@ -9,6 +9,7 @@ import { MitarbeitendePage } from './pages/MitarbeitendePage'
 import { PrototypeIndexPage } from './pages/PrototypeIndexPage'
 import { ThemeLabCategoryPage } from './pages/theme-lab/ThemeLabCategoryPage'
 import { ThemeLabIndexPage } from './pages/theme-lab/ThemeLabIndexPage'
+import { PosteingangPage } from './pages/PosteingangPage'
 import { WeiterbildungEmployeeListPage } from './pages/WeiterbildungEmployeeListPage'
 import { WeiterbildungEmployeeObjectPage } from './pages/WeiterbildungEmployeeObjectPage'
 import { AusbildungAntragReviewPage as AusbildungAntragReviewPageV2 } from './pages/v2/AusbildungAntragReviewPage'
@@ -27,6 +28,8 @@ function App() {
       <Routes>
         <Route path="/" element={<PrototypeIndexPage />} />
         <Route path="/home" element={<MitarbeitendePage />} />
+        <Route path="/posteingang" element={<PosteingangPage />} />
+        <Route path="/posteingang/:taskId" element={<PosteingangPage />} />
         <Route path="/weiterbildung" element={<WeiterbildungEmployeeListPage />} />
         <Route
           path="/weiterbildung/:employeeId"

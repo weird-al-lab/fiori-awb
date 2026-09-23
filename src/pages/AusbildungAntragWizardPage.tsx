@@ -45,6 +45,7 @@ import {
   type WeiterbildungAntrag,
 } from '../data/antraege'
 import { getEmployee } from '../data/employees'
+import { removeInboxItemsForAntrag } from '../data/inbox'
 import {
   AntragFormArbeitszeitSection,
   AntragFormGrunddatenSection,
@@ -414,6 +415,7 @@ export function AusbildungAntragWizardPage() {
 
   const handleDeleteConfirm = () => {
     if (antrag && isPersisted(antrag)) {
+      removeInboxItemsForAntrag(antrag.id)
       deleteAntrag(antrag.id)
     }
     setDeleteOpen(false)

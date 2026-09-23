@@ -1,0 +1,93 @@
+.inbox-page {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.inbox-page__fcl {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.inbox-start,
+.inbox-mid {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--sapGroup_ContentBackground);
+}
+
+.inbox-start {
+  border-inline-end: 1px solid var(--sapGroup_ContentBorderColor);
+}
+
+.inbox-start__header {
+  flex-shrink: 0;
+  padding: 0.75rem 1rem 0.5rem;
+}
+
+.inbox-start__search {
+  flex-shrink: 0;
+  padding: 0 1rem 0.75rem;
+}
+
+.inbox-start__search ui5-input {
+  width: 100%;
+}
+
+.inbox-start__list {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.inbox-start__empty,
+.inbox-mid__empty,
+.inbox-mid__guard {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.inbox-mid__header {
+  flex-shrink: 0;
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--sapObjectHeader_BorderColor, var(--sapGroup_TitleBorderColor));
+  background: var(--sapObjectHeader_Background, var(--sapGroup_ContentBackground));
+}
+
+.inbox-mid__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.inbox-mid__title-row {
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.inbox-mid__status {
+  margin-top: 0.25rem;
+}
+
+.inbox-mid__content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 1rem 1.5rem;
+  box-sizing: border-box;
+}
+
+.inbox-mid__footer {
+  flex-shrink: 0;
+}

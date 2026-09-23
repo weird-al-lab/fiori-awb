@@ -1,3 +1,4 @@
+import { syncInboxForAntrag } from '../inbox'
 import { getEmployee } from '../employees'
 import { getAktuellBei, type VertragFilter } from '../weiterbildungen'
 import {
@@ -180,7 +181,7 @@ export function getAntrag(id: string): WeiterbildungAntrag | undefined {
   return antrag ? normalizeAntragFeed(antrag) : undefined
 }
 
-export function upsertAntrag(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
+export function persistAntrag(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
   const synced = syncHasVertrag(
     syncListFields({
       ...antrag,
@@ -195,6 +196,12 @@ export function upsertAntrag(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
     all.push(synced)
   }
   writeAll(all)
+  return synced
+}
+
+export function upsertAntrag(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
+  const synced = persistAntrag(antrag)
+  syncInboxForAntrag(synced)
   return synced
 }
 

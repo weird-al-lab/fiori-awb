@@ -54,59 +54,6 @@ See **[HANDOVER.md](./HANDOVER.md)** for role & status matrices, data model, dem
 | `npm run lint` | Oxlint |
 | `npm run preview` | Preview production build |
 
-## Deploy (GitHub Pages + Vercel)
-
-Both platforms build from the same repo. Vite picks the asset base path automatically:
-
-| Platform | URL pattern | Production `base` |
-|---|---|---|
-| **GitHub Pages** | `https://<user>.github.io/fiori-awb/` | `/fiori-awb/` |
-| **Vercel** | `https://<project>.vercel.app/` | `/` |
-
-Vercel sets `VERCEL` during its build. GitHub Actions does not, so Pages keeps the subpath.
-
-**GitHub Pages** — workflow: `.github/workflows/deploy-pages.yml`  
-Build: `npm run build:theme && npm run build` · Gate secret: `PROTOTYPE_GATE_PASSWORD`
-
-**Vercel** — import repo, same build command, output `dist`  
-Gate env var: `VITE_PROTOTYPE_GATE_PASSWORD` · SPA routing: `vercel.json`
-
-**Preview a GitHub Pages build locally**
-
-```bash
-npm run build:theme && npm run build && npm run preview
-# open http://localhost:4173/fiori-awb/
-```
-
-**Preview a Vercel build locally**
-
-```bash
-npm run build:theme && VERCEL=1 npm run build && npm run preview
-# open http://localhost:4173/
-```
-
-## GitHub Pages + password gate
-
-The published prototype can show a **client-side password screen** before the app loads. This keeps casual visitors and most crawlers out; it is **not** cryptographic security (the bundle can be inspected).
-
-**Enable on GitHub Pages**
-
-1. Repo → **Settings** → **Secrets and variables** → **Actions**
-2. Add secret **`PROTOTYPE_GATE_PASSWORD`** with your chosen password
-3. Push to `main` (or re-run **Deploy to GitHub Pages**)
-
-The workflow passes it as `VITE_PROTOTYPE_GATE_PASSWORD` at build time. Without the secret, the gate is **off** in production builds.
-
-**Local development**
-
-- Gate is **off** by default (no password in env).
-- To test locally: copy `.env.example` → `.env.local` and set `VITE_PROTOTYPE_GATE_PASSWORD`.
-
-**SEO**
-
-- `index.html` uses `noindex, nofollow`
-- `public/robots.txt` disallows all crawlers
-
 ## Important
 
 This is **not** a production SAP app: no OData/CAP, no real auth, persistence is `localStorage` (+ unused IndexedDB scaffolding for documents) for demo only.

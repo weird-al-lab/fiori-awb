@@ -1,3 +1,6 @@
+/** Markus Mettler as employee (MA playthrough). Not a direct report of himself. */
+export const MARKUS_METTLER_EMPLOYEE_ID = 'emp-016'
+
 export type Employee = {
   id: string
   name: string
@@ -271,6 +274,23 @@ export const EMPLOYEES: Employee[] = [
     plzOrt: '3011 Bern',
     geburtsdatum: '02.12.1987',
     eintrittPost: '01.08.2016',
+  },
+  {
+    id: MARKUS_METTLER_EMPLOYEE_ID,
+    name: 'Markus Mettler',
+    personalnummer: '0123471',
+    organisationseinheit: 'PN 24.2',
+    direkterVorgesetzter: 'Nathalie Perrin',
+    isDirectReport: false,
+    funktion: 'Team Lead',
+    anstellungsverhaeltnis: 'GAV',
+    stufe: 'FS09',
+    tagessatz: 445,
+    beschaeftigungsgrad: 100,
+    adresse: 'Sihlstrasse 20',
+    plzOrt: '8001 Zürich',
+    geburtsdatum: '18.04.1978',
+    eintrittPost: '01.03.2008',
   },
 ]
 

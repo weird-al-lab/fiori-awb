@@ -1,4 +1,5 @@
-import { EMPLOYEES, getEmployee } from '../employees'
+import { EMPLOYEES, MARKUS_METTLER_EMPLOYEE_ID, getEmployee } from '../employees'
+import { clearMaInbox, syncInboxForAntrag } from '../inbox'
 import {
   getAktuellBei,
   HAUPTSTATUS_ORDER,
@@ -12,7 +13,7 @@ import { createAktivitaetEintrag } from './feed'
 import { formatBeschaeftigungsgradOption } from './format'
 import { createDefaultVereinbarung } from './kosten'
 import { createDefaultAusbildungUpdate } from './phases'
-import { createEmptyForm, replaceAllAntraege } from './service'
+import { createEmptyForm, getAntrag, replaceAllAntraege } from './service'
 import type {
   AntragFormData,
   FeedEintrag,
@@ -20,11 +21,41 @@ import type {
   WeiterbildungAntrag,
 } from './types'
 
-export const DEMO_ANTRAEGE_VERSION = '6'
+export const DEMO_ANTRAEGE_VERSION = '10'
 export const DEMO_ANTRAEGE_VERSION_KEY = 'awb-demo-antraege-version'
 
 /** Fabian Fankhauser — full status showcase */
 export const DEMO_SHOWCASE_EMPLOYEE_ID = 'emp-006'
+
+/** Usability path: 2nd row on Fabian's list + Markus VG inbox (In Prüfung VG). */
+export const DEMO_FABIAN_USABILITY_ANTRAG_ID =
+  'demo-emp-006-antrag-in-prufung-vg'
+
+/** Full wizard snapshot for Fabian's usability-test Antrag (not generic demo defaults). */
+function buildUsabilityShowcaseForm(employeeId: string): AntragFormData {
+  const employee = getEmployee(employeeId)
+  return {
+    titel: 'CAS UX Management',
+    anbieter: 'OST - Ostschweizer Fachhochschule',
+    von: '13.11.2026',
+    bis: '12.07.2027',
+    niveau: 'CAS',
+    fachrichtung: 'Leadership / Management',
+    stufe: employee?.stufe ?? 'FS08',
+    bund50: 'nein',
+    kurskosten: '14700',
+    zusaetzlicheKosten: '0',
+    beschaeftigungsgradAnpassen: 'nein',
+    gewuenschterBeschaeftigungsgrad: formatBeschaeftigungsgradOption(
+      employee?.beschaeftigungsgrad ?? 100,
+      employee?.beschaeftigungsgrad ?? 100,
+    ),
+    arbeitszeiterleichterung: 'ja',
+    anzahlTageErleichterung: '6',
+    begruendungErleichterung:
+      '6 Präsenztage am Freitag, rest Samstags',
+  }
+}
 
 const DEMO_COURSES = [
   {
@@ -461,19 +492,75 @@ export function buildDemoAntrag(
   return antrag
 }
 
+function buildUsabilityShowcaseAntrag(hoursAgo: number): WeiterbildungAntrag {
+  const employeeId = DEMO_SHOWCASE_EMPLOYEE_ID
+  const pair: StatusPair = {
+    hauptstatus: 'Antrag',
+    unterstatus: 'In Prüfung VG',
+    aktuellBei: 'Vorgesetzter',
+  }
+  const form = buildUsabilityShowcaseForm(employeeId)
+  const updatedAt = new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString()
+
+  return {
+    id: DEMO_FABIAN_USABILITY_ANTRAG_ID,
+    employeeId,
+    hauptstatus: pair.hauptstatus,
+    unterstatus: pair.unterstatus,
+    ausbildung: form.titel,
+    anbieter: form.anbieter,
+    von: form.von,
+    bis: form.bis,
+    hasVertrag: false,
+    form,
+    kommentareAktivitaeten: buildDemoFeed(employeeId, pair, updatedAt),
+    aktuellBeiLabel: resolveAktuellBeiLabel(
+      employeeId,
+      pair.hauptstatus,
+      pair.unterstatus,
+    ),
+    createdAt: updatedAt,
+    updatedAt,
+  }
+}
+
+function resolveFabianShowcaseHoursAgo(
+  index: number,
+  pair: StatusPair,
+): number {
+  const defaultHoursAgo = STATUS_CATALOG.length - 1 - index
+  if (pair.hauptstatus === 'Antrag' && pair.unterstatus === 'In Prüfung VG') {
+    return 1
+  }
+  if (index === 15) {
+    return 2
+  }
+  return defaultHoursAgo
+}
+
 export function buildAllDemoAntraege(): WeiterbildungAntrag[] {
   const antraege: WeiterbildungAntrag[] = []
 
   // Later catalog entries get more recent updatedAt (show near top when sorted by last change)
   for (const [index, pair] of STATUS_CATALOG.entries()) {
-    const hoursAgo = STATUS_CATALOG.length - 1 - index
+    const hoursAgo = resolveFabianShowcaseHoursAgo(index, pair)
+    if (
+      pair.hauptstatus === 'Antrag' &&
+      pair.unterstatus === 'In Prüfung VG'
+    ) {
+      antraege.push(buildUsabilityShowcaseAntrag(hoursAgo))
+      continue
+    }
     antraege.push(
       buildDemoAntrag(DEMO_SHOWCASE_EMPLOYEE_ID, pair, index, hoursAgo),
     )
   }
 
   for (const employee of EMPLOYEES) {
-    if (employee.id === DEMO_SHOWCASE_EMPLOYEE_ID) {
+    if (
+      employee.id === DEMO_SHOWCASE_EMPLOYEE_ID ||
+      employee.id === MARKUS_METTLER_EMPLOYEE_ID
+    ) {
       continue
     }
     const [first, second] = pickTwoStatusPairs(employee.id)
@@ -492,6 +579,11 @@ export function ensureDemoAntraege(): void {
       return
     }
     replaceAllAntraege(buildAllDemoAntraege())
+    clearMaInbox()
+    const usabilityAntrag = getAntrag(DEMO_FABIAN_USABILITY_ANTRAG_ID)
+    if (usabilityAntrag) {
+      syncInboxForAntrag(usabilityAntrag)
+    }
     localStorage.setItem(DEMO_ANTRAEGE_VERSION_KEY, DEMO_ANTRAEGE_VERSION)
   } catch {
     // Ignore storage failures in restricted environments
