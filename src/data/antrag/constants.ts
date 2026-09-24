@@ -97,6 +97,7 @@ export const SCHULEN_ANBIETER_OPTIONS = [
   'SAWI Akademie',
   'SIU Schweizerisches Institut für Unternehmerschulung',
   'TEKO Schweizerische Fachschule',
+  'Universität Bern',
   'VHS Zürich',
   'WISS Schulen für Wirtschaft Informatik Immobilien',
   'WKS KV Bildung Bern',

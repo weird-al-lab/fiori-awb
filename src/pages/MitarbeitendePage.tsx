@@ -72,25 +72,6 @@ const TILE_SECTIONS: TileSection[] = [
     ],
   },
   {
-    title: 'Arbeitszeit',
-    tiles: [
-      {
-        title: 'Zeitwirtschaft',
-        subtitle: 'Zoom',
-        icon: 'sales-document',
-        tcode: 'ERP35020',
-      },
-    ],
-  },
-  {
-    title: 'Gesundheit',
-    tiles: [
-      { title: 'Arztzeugnis hochladen', icon: 'sales-document', tcode: 'ERP35020' },
-      { title: 'Nichtberufsunfall melden', icon: 'pdf-attachment', tcode: 'ERP35020' },
-      { title: 'Arbeitsaufnahme melden', icon: 'pdf-attachment', tcode: 'ERP35020' },
-    ],
-  },
-  {
     title: 'Beurteilen & Entwickeln',
     tiles: [
       { title: 'DIALOG', icon: 'sales-document', tcode: 'SFSF' },
@@ -108,6 +89,25 @@ const TILE_SECTIONS: TileSection[] = [
         subtitle: 'Intern/Extern',
         icon: 'pdf-attachment',
         tcode: 'Viva Learning',
+      },
+    ],
+  },
+  {
+    title: 'Gesundheit',
+    tiles: [
+      { title: 'Arztzeugnis hochladen', icon: 'sales-document', tcode: 'ERP35020' },
+      { title: 'Nichtberufsunfall melden', icon: 'pdf-attachment', tcode: 'ERP35020' },
+      { title: 'Arbeitsaufnahme melden', icon: 'pdf-attachment', tcode: 'ERP35020' },
+    ],
+  },
+  {
+    title: 'Arbeitszeit',
+    tiles: [
+      {
+        title: 'Zeitwirtschaft',
+        subtitle: 'Zoom',
+        icon: 'sales-document',
+        tcode: 'ERP35020',
       },
     ],
   },
