@@ -1,8 +1,4 @@
-import {
-  ADAM_APFEL_EMPLOYEE_ID,
-  MARKUS_METTLER_EMPLOYEE_ID,
-  isFastTrackMaEmployeeId,
-} from './employees'
+import { MARKUS_METTLER_EMPLOYEE_ID, isFastTrackMaEmployeeId } from './employees'
 
 export type PrototypeRole = 'Vorgesetzter' | 'Mitarbeitender'
 
@@ -43,14 +39,6 @@ export const PROTOTYPE_PERSONAS: readonly PrototypePersona[] = [
     initials: 'FF',
     employeeId: 'emp-006',
     aktuellBeiLabel: 'Fankhauser Fabian',
-  },
-  {
-    id: ADAM_APFEL_EMPLOYEE_ID,
-    role: 'Mitarbeitender',
-    name: 'Apfel Adam',
-    initials: 'AA',
-    employeeId: ADAM_APFEL_EMPLOYEE_ID,
-    aktuellBeiLabel: 'Apfel Adam',
   },
 ] as const
 
