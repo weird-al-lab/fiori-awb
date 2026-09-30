@@ -1,6 +1,16 @@
 /** Markus Mettler as employee (MA playthrough). Not a direct report of himself. */
 export const MARKUS_METTLER_EMPLOYEE_ID = 'emp-016'
 
+/** Adam Apfel — MA persona with empty Weiterbildung list (prototype). */
+export const ADAM_APFEL_EMPLOYEE_ID = 'emp-001'
+
+const FAST_TRACK_MA_EMPLOYEE_IDS = new Set<string>([MARKUS_METTLER_EMPLOYEE_ID])
+
+/** Prototype: skip VG Antragsprüfung; inbox + Posteingang fast-track to Angebot. */
+export function isFastTrackMaEmployeeId(employeeId: string): boolean {
+  return FAST_TRACK_MA_EMPLOYEE_IDS.has(employeeId)
+}
+
 export type Employee = {
   id: string
   name: string

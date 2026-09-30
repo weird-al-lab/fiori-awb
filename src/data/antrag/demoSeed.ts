@@ -1,4 +1,9 @@
-import { EMPLOYEES, MARKUS_METTLER_EMPLOYEE_ID, getEmployee } from '../employees'
+import {
+  ADAM_APFEL_EMPLOYEE_ID,
+  EMPLOYEES,
+  MARKUS_METTLER_EMPLOYEE_ID,
+  getEmployee,
+} from '../employees'
 import { clearMaInbox, syncInboxForAntrag } from '../inbox'
 import {
   getAktuellBei,
@@ -8,7 +13,11 @@ import {
   type WeiterbildungHauptstatus,
   type WeiterbildungUnterstatus,
 } from '../weiterbildungen'
-import { VG_AKTUELL_BEI_LABEL } from './constants'
+import {
+  DEMO_FABIAN_USABILITY_ANTRAG_ID,
+  DEMO_SHOWCASE_EMPLOYEE_ID,
+  VG_AKTUELL_BEI_LABEL,
+} from './constants'
 import { createAktivitaetEintrag } from './feed'
 import { formatBeschaeftigungsgradOption } from './format'
 import { createDefaultVereinbarung } from './kosten'
@@ -21,30 +30,25 @@ import type {
   WeiterbildungAntrag,
 } from './types'
 
-export const DEMO_ANTRAEGE_VERSION = '10'
+export const DEMO_ANTRAEGE_VERSION = '12'
 export const DEMO_ANTRAEGE_VERSION_KEY = 'awb-demo-antraege-version'
 
-/** Fabian Fankhauser — full status showcase */
-export const DEMO_SHOWCASE_EMPLOYEE_ID = 'emp-006'
-
-/** Usability path: 2nd row on Fabian's list + Markus VG inbox (In Prüfung VG). */
-export const DEMO_FABIAN_USABILITY_ANTRAG_ID =
-  'demo-emp-006-antrag-in-prufung-vg'
+export { DEMO_FABIAN_USABILITY_ANTRAG_ID, DEMO_SHOWCASE_EMPLOYEE_ID } from './constants'
 
 /** Full wizard snapshot for Fabian's usability-test Antrag (not generic demo defaults). */
 function buildUsabilityShowcaseForm(employeeId: string): AntragFormData {
   const employee = getEmployee(employeeId)
   return {
-    titel: 'CAS UX Management',
+    titel: 'CAS in Data Architecture & Data-driven Business',
     ausbildungLink: '',
-    anbieter: 'OST - Ostschweizer Fachhochschule',
-    von: '13.11.2026',
-    bis: '12.07.2027',
+    anbieter: 'HWZ Hochschule für Wirtschaft Zürich',
+    von: '27.11.2026',
+    bis: '25.06.2027',
     niveau: 'CAS',
-    fachrichtung: 'Leadership / Management',
+    fachrichtung: 'Informatik / IT-Security',
     stufe: employee?.stufe ?? 'FS08',
     bund50: 'nein',
-    kurskosten: '14700',
+    kurskosten: '9800',
     zusaetzlicheKosten: '0',
     beschaeftigungsgradAnpassen: 'nein',
     gewuenschterBeschaeftigungsgrad: formatBeschaeftigungsgradOption(
@@ -52,9 +56,8 @@ function buildUsabilityShowcaseForm(employeeId: string): AntragFormData {
       employee?.beschaeftigungsgrad ?? 100,
     ),
     arbeitszeiterleichterung: 'ja',
-    anzahlTageErleichterung: '6',
-    begruendungErleichterung:
-      '6 Präsenztage am Freitag, rest Samstags',
+    anzahlTageErleichterung: '8',
+    begruendungErleichterung: '8x freitags, 8x samstags Schule',
   }
 }
 
@@ -560,7 +563,8 @@ export function buildAllDemoAntraege(): WeiterbildungAntrag[] {
   for (const employee of EMPLOYEES) {
     if (
       employee.id === DEMO_SHOWCASE_EMPLOYEE_ID ||
-      employee.id === MARKUS_METTLER_EMPLOYEE_ID
+      employee.id === MARKUS_METTLER_EMPLOYEE_ID ||
+      employee.id === ADAM_APFEL_EMPLOYEE_ID
     ) {
       continue
     }

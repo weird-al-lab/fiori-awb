@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Bar } from '@ui5/webcomponents-react/Bar'
 import { Button } from '@ui5/webcomponents-react/Button'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
@@ -41,7 +41,7 @@ import {
   type InboxTaskType,
   type MaInboxItem,
 } from '../data/inbox'
-import { isMarkusMaPersona } from '../data/personas'
+import { isFastTrackMaPersona } from '../data/personas'
 import './PosteingangPage.css'
 
 type InboxRow = {
@@ -112,6 +112,16 @@ function taskMessage(item: MaInboxItem, mitarbeiter: string): string {
   }
 }
 
+function usePosteingangRoutes() {
+  const location = useLocation()
+  const isV3 = location.pathname.startsWith('/v3/posteingang')
+  return {
+    homePath: isV3 ? '/v3' : '/home',
+    inboxBase: isV3 ? '/v3/posteingang' : '/posteingang',
+    weiterbildungBase: isV3 ? '/v3/weiterbildung' : '/weiterbildung',
+  }
+}
+
 function taskActionLabel(type: InboxTaskType): string | null {
   switch (type) {
     case 'antrag-pruefen':
@@ -130,6 +140,7 @@ function taskActionLabel(type: InboxTaskType): string | null {
 export function PosteingangPage() {
   const { taskId = '' } = useParams()
   const navigate = useNavigate()
+  const { homePath, inboxBase, weiterbildungBase } = usePosteingangRoutes()
   const { persona, isVg } = usePrototypePersona()
   const [tick, setTick] = useState(0)
   const [query, setQuery] = useState('')
@@ -185,34 +196,34 @@ export function PosteingangPage() {
 
   useEffect(() => {
     if (selectionMissing) {
-      navigate('/posteingang', { replace: true })
+      navigate(inboxBase, { replace: true })
     }
-  }, [navigate, selectionMissing])
+  }, [inboxBase, navigate, selectionMissing])
 
   useEffect(() => {
     if (!taskId && filteredRows.length > 0) {
-      navigate(`/posteingang/${filteredRows[0].item.id}`, { replace: true })
+      navigate(`${inboxBase}/${filteredRows[0].item.id}`, { replace: true })
     }
-  }, [filteredRows, navigate, taskId])
+  }, [filteredRows, inboxBase, navigate, taskId])
 
   const goHome = () => {
-    navigate('/home')
+    navigate(homePath)
   }
 
   const closeDetail = () => {
-    navigate('/posteingang')
+    navigate(inboxBase)
   }
 
   const openItem = (id: string) => {
-    navigate(`/posteingang/${id}`)
+    navigate(`${inboxBase}/${id}`)
   }
 
   const openAntragReview = (employeeId: string, antragId: string) => {
-    navigate(`/weiterbildung/${employeeId}/antrag/${antragId}`)
+    navigate(`${weiterbildungBase}/${employeeId}/antrag/${antragId}`)
   }
 
   const openAntragWizard = (employeeId: string, antragId: string) => {
-    navigate(`/weiterbildung/${employeeId}/antrag/${antragId}/bearbeiten/1`)
+    navigate(`${weiterbildungBase}/${employeeId}/antrag/${antragId}/bearbeiten/1`)
   }
 
   const handleTaskAction = () => {
@@ -230,13 +241,13 @@ export function PosteingangPage() {
         return
       case 'angebot-pruefen':
         if (
-          isMarkusMaPersona(persona) &&
+          isFastTrackMaPersona(persona) &&
           persona.employeeId === selectedItem.employeeId &&
           isAntragPruefungPhase(antrag)
         ) {
           const updated = materializeInboxAngebot(selectedItem.id)
           if (!updated) {
-            navigate('/posteingang', { replace: true })
+            navigate(inboxBase, { replace: true })
             return
           }
           openAntragReview(updated.employeeId, updated.id)

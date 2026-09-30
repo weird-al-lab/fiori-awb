@@ -115,6 +115,8 @@ function App() {
           path="/v3/weiterbildung/:employeeId/antrag/:antragId"
           element={<AusbildungAntragReviewPageV3 />}
         />
+        <Route path="/v3/posteingang" element={<PosteingangPage />} />
+        <Route path="/v3/posteingang/:taskId" element={<PosteingangPage />} />
         <Route path="/theme-lab" element={<ThemeLabIndexPage />} />
         <Route path="/theme-lab/:category" element={<ThemeLabCategoryPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

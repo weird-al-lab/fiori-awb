@@ -1,7 +1,4 @@
-import {
-  MARKUS_METTLER_EMPLOYEE_ID,
-  getEmployee,
-} from './employees'
+import { getEmployee, isFastTrackMaEmployeeId } from './employees'
 import { isAntragPruefungPhase } from './antrag/phases'
 import {
   AUTO_OFFER_AK_PROZENT,
@@ -248,7 +245,7 @@ function resolveExpectedInboxTask(antrag: WeiterbildungAntrag): ExpectedInboxTas
     case 'In Prüfung VG':
     case 'Eingereicht':
     case 'Wieder eingereicht':
-      if (antrag.employeeId === MARKUS_METTLER_EMPLOYEE_ID) {
+      if (isFastTrackMaEmployeeId(antrag.employeeId)) {
         return {
           type: 'angebot-pruefen',
           assigneeRole: 'ma',

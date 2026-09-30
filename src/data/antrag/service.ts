@@ -1,9 +1,11 @@
-import { syncInboxForAntrag } from '../inbox'
+import { removeInboxItemsForAntrag, syncInboxForAntrag } from '../inbox'
 import { getEmployee } from '../employees'
 import { getAktuellBei, type VertragFilter } from '../weiterbildungen'
 import {
   ANTRAEGE_STORAGE_KEY,
   CURRENT_USER_NAME,
+  DEMO_FABIAN_USABILITY_ANTRAG_ID,
+  DEMO_SHOWCASE_EMPLOYEE_ID,
   VERTRAG_SCHWELLENWERT_CHF,
   VG_AKTUELL_BEI_LABEL,
 } from './constants'
@@ -131,7 +133,7 @@ function syncHasVertrag(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
   return {
     ...antrag,
     hasVertrag:
-      kosten.postAk > VERTRAG_SCHWELLENWERT_CHF ||
+      kosten.postTotal > VERTRAG_SCHWELLENWERT_CHF ||
       antrag.vereinbarung.rueckzahlungVereinbaren === 'ja',
   }
 }
@@ -577,6 +579,41 @@ export function confirmAusbildungUpdate(
   })
 }
 
+/** Fabian submissions replace the fixed VG-inbox usability showcase (single In Prüfung VG row). */
+function consolidateFabianUsabilityShowcase(
+  submitted: WeiterbildungAntrag,
+): WeiterbildungAntrag {
+  if (submitted.employeeId !== DEMO_SHOWCASE_EMPLOYEE_ID) {
+    return submitted
+  }
+  if (submitted.id === DEMO_FABIAN_USABILITY_ANTRAG_ID) {
+    return submitted
+  }
+  if (
+    submitted.unterstatus !== 'In Prüfung VG' &&
+    submitted.unterstatus !== 'Wieder eingereicht'
+  ) {
+    return submitted
+  }
+
+  const previousId = submitted.id
+  const showcase: WeiterbildungAntrag = {
+    ...submitted,
+    id: DEMO_FABIAN_USABILITY_ANTRAG_ID,
+    ausbildung: submitted.form.titel.trim() || submitted.ausbildung,
+    anbieter: submitted.form.anbieter.trim(),
+    von: submitted.form.von,
+    bis: submitted.form.bis,
+  }
+
+  if (previousId !== DEMO_FABIAN_USABILITY_ANTRAG_ID) {
+    deleteAntrag(previousId)
+    removeInboxItemsForAntrag(previousId)
+  }
+
+  return upsertAntrag(showcase)
+}
+
 export function submitAntrag(
   antrag: WeiterbildungAntrag,
   autorName: string = CURRENT_USER_NAME,
@@ -641,7 +678,7 @@ export function submitAntrag(
     )
   }
 
-  return upsertAntrag({
+  const submitted = upsertAntrag({
     ...antrag,
     kommentareAktivitaeten: feed,
     hauptstatus: 'Antrag',
@@ -655,6 +692,8 @@ export function submitAntrag(
     formBaselineVorUeberarbeitung: antrag.formBaselineVorUeberarbeitung,
     ueberarbeitungKommentarVg: null,
   })
+
+  return consolidateFabianUsabilityShowcase(submitted)
 }
 
 export function deleteAntrag(id: string): void {

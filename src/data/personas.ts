@@ -1,4 +1,8 @@
-import { MARKUS_METTLER_EMPLOYEE_ID } from './employees'
+import {
+  ADAM_APFEL_EMPLOYEE_ID,
+  MARKUS_METTLER_EMPLOYEE_ID,
+  isFastTrackMaEmployeeId,
+} from './employees'
 
 export type PrototypeRole = 'Vorgesetzter' | 'Mitarbeitender'
 
@@ -40,6 +44,14 @@ export const PROTOTYPE_PERSONAS: readonly PrototypePersona[] = [
     employeeId: 'emp-006',
     aktuellBeiLabel: 'Fankhauser Fabian',
   },
+  {
+    id: ADAM_APFEL_EMPLOYEE_ID,
+    role: 'Mitarbeitender',
+    name: 'Apfel Adam',
+    initials: 'AA',
+    employeeId: ADAM_APFEL_EMPLOYEE_ID,
+    aktuellBeiLabel: 'Apfel Adam',
+  },
 ] as const
 
 export const DEFAULT_PERSONA_ID = PROTOTYPE_PERSONAS[0].id
@@ -59,5 +71,13 @@ export function isMarkusMaPersona(persona: PrototypePersona): boolean {
   return (
     persona.role === 'Mitarbeitender' &&
     persona.employeeId === MARKUS_METTLER_EMPLOYEE_ID
+  )
+}
+
+export function isFastTrackMaPersona(persona: PrototypePersona): boolean {
+  return (
+    persona.role === 'Mitarbeitender' &&
+    persona.employeeId != null &&
+    isFastTrackMaEmployeeId(persona.employeeId)
   )
 }

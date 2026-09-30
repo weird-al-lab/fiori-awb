@@ -203,7 +203,7 @@ export function MitarbeitendePage() {
           : openInboxCount > 1
             ? 'Offene Aufgaben'
             : 'Keine offenen Aufgaben',
-      to: '/posteingang',
+      to: '/v3/posteingang',
     }
 
     return TILE_SECTIONS.map((section) =>

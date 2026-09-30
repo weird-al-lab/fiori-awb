@@ -182,7 +182,7 @@ export function getVereinbarungKosten(
     postTotal,
     maTotal,
     gesamt,
-    vertragErforderlich: postAk > VERTRAG_SCHWELLENWERT_CHF,
+    vertragErforderlich: postTotal > VERTRAG_SCHWELLENWERT_CHF,
     postZeilen,
     maZeilen,
   }
@@ -212,7 +212,7 @@ export function showsZwingendeAusbildungFrage(
 ): boolean {
   const kosten = getVereinbarungKosten(form, vereinbarung, tagessatz)
   return (
-    kosten.postAk > VERTRAG_SCHWELLENWERT_CHF &&
+    kosten.postTotal > VERTRAG_SCHWELLENWERT_CHF &&
     isPostAkVolleBeteiligung(form, vereinbarung, tagessatz)
   )
 }
@@ -228,7 +228,7 @@ export function hasMaRueckzahlungspflicht(
 ): boolean {
   const kosten = getVereinbarungKosten(form, vereinbarung, tagessatz)
   return (
-    kosten.postAk > VERTRAG_SCHWELLENWERT_CHF ||
+    kosten.postTotal > VERTRAG_SCHWELLENWERT_CHF ||
     vereinbarung.rueckzahlungVereinbaren === 'ja'
   )
 }

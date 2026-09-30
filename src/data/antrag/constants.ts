@@ -108,7 +108,15 @@ export const SCHULEN_ANBIETER_OPTIONS = [
 
 export const BESCHAEFTIGUNGSGRAD_PERCENTS = [100, 90, 80, 70, 60, 50] as const
 
+/** Post-Gesamtbeteiligung (AK + AZE in CHF) muss darüber liegen. */
 export const VERTRAG_SCHWELLENWERT_CHF = 5000
+
+/** Fabian Fankhauser — full status showcase + VG inbox usability path */
+export const DEMO_SHOWCASE_EMPLOYEE_ID = 'emp-006'
+
+/** Fixed id for Fabian's «In Prüfung VG» demo row and Markus VG Posteingang task */
+export const DEMO_FABIAN_USABILITY_ANTRAG_ID =
+  'demo-emp-006-antrag-in-prufung-vg'
 
 export const AK_PROZENT_OPTIONS: readonly { value: AkProzent; label: string }[] = [
   { value: 25, label: '25 % (motivierend)' },

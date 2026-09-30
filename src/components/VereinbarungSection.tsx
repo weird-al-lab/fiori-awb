@@ -534,7 +534,7 @@ export function VereinbarungSection({
   const auszahlungsBetragNum = parseNumber(vereinbarung.auszahlungsBetrag)
   const mitNaechstemLohn = Math.max(0, kosten.postAk - auszahlungsBetragNum)
   const lohnBetrag = formatChfDecimal(mitNaechstemLohn)
-  const vertragPflichtig = kosten.postAk > VERTRAG_SCHWELLENWERT_CHF
+  const vertragPflichtig = kosten.postTotal > VERTRAG_SCHWELLENWERT_CHF
   const showZwingendeFrage = showsZwingendeAusbildungFrage(
     antrag.form,
     vereinbarung,
