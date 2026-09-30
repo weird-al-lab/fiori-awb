@@ -7,6 +7,14 @@ import './PrototypeIndexPage.css'
 
 const VERSIONS = [
   {
+    id: 'wizard-v3',
+    path: '/v3',
+    title: 'Wizard — Verbesserungen',
+    description: 'Kopie der Wizard-Variante zum Iterieren',
+    additionalText: 'VWizard+',
+    icon: 'edit',
+  },
+  {
     id: 'current',
     path: '/home',
     title: 'Variante mit Wizard',

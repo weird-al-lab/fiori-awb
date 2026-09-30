@@ -72,13 +72,15 @@ function fieldValueStateMessage(error?: string) {
   return error ? <span slot="valueStateMessage">{error}</span> : undefined
 }
 
+const IN_AUSBILDUNG_OUTCOME_LABEL = 'Ausbildung geplant/gestartet'
+
 function outcomeLabel(
   outcome: AusbildungOutcome,
   phase: 'gestartet' | 'pruefung',
 ): string {
   switch (outcome) {
     case 'in_ausbildung':
-      return 'In Ausbildung'
+      return IN_AUSBILDUNG_OUTCOME_LABEL
     case 'pruefung_nicht_bestanden':
       return 'Prüfung nicht bestanden'
     case 'weitere_pruefung_nicht_bestanden':
@@ -88,7 +90,9 @@ function outcomeLabel(
     case 'abbruch':
       return 'Abbruch der Ausbildung'
     default:
-      return phase === 'gestartet' ? 'In Ausbildung' : 'Prüfung nicht bestanden'
+      return phase === 'gestartet'
+        ? IN_AUSBILDUNG_OUTCOME_LABEL
+        : 'Prüfung nicht bestanden'
   }
 }
 
@@ -218,7 +222,7 @@ export function AusbildungSection({
                     <>
                       <RadioButton
                         name="ausbildung-outcome"
-                        text="In Ausbildung"
+                        text={IN_AUSBILDUNG_OUTCOME_LABEL}
                         checked={draft.outcome === 'in_ausbildung'}
                         onChange={() => setOutcome('in_ausbildung')}
                       />

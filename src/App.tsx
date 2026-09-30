@@ -20,6 +20,14 @@ import {
 import { MitarbeitendePage as MitarbeitendePageV2 } from './pages/v2/MitarbeitendePage'
 import { WeiterbildungEmployeeListPage as WeiterbildungEmployeeListPageV2 } from './pages/v2/WeiterbildungEmployeeListPage'
 import { WeiterbildungEmployeeObjectPage as WeiterbildungEmployeeObjectPageV2 } from './pages/v2/WeiterbildungEmployeeObjectPage'
+import { AusbildungAntragReviewPage as AusbildungAntragReviewPageV3 } from './pages/v3/AusbildungAntragReviewPage'
+import {
+  AusbildungAntragWizardPage as AusbildungAntragWizardPageV3,
+  AusbildungAntragWizardRedirect as AusbildungAntragWizardRedirectV3,
+} from './pages/v3/AusbildungAntragWizardPage'
+import { MitarbeitendePage as MitarbeitendePageV3 } from './pages/v3/MitarbeitendePage'
+import { WeiterbildungEmployeeListPage as WeiterbildungEmployeeListPageV3 } from './pages/v3/WeiterbildungEmployeeListPage'
+import { WeiterbildungEmployeeObjectPage as WeiterbildungEmployeeObjectPageV3 } from './pages/v3/WeiterbildungEmployeeObjectPage'
 
 function App() {
   return (
@@ -80,6 +88,32 @@ function App() {
         <Route
           path="/v2/weiterbildung/:employeeId/antrag/:antragId"
           element={<AusbildungAntragReviewPageV2 />}
+        />
+        <Route path="/v3" element={<MitarbeitendePageV3 />} />
+        <Route path="/v3/weiterbildung" element={<WeiterbildungEmployeeListPageV3 />} />
+        <Route
+          path="/v3/weiterbildung/:employeeId"
+          element={<WeiterbildungEmployeeObjectPageV3 />}
+        />
+        <Route
+          path="/v3/weiterbildung/:employeeId/antrag/neu"
+          element={<AusbildungAntragWizardRedirectV3 />}
+        />
+        <Route
+          path="/v3/weiterbildung/:employeeId/antrag/neu/:step"
+          element={<AusbildungAntragWizardPageV3 />}
+        />
+        <Route
+          path="/v3/weiterbildung/:employeeId/antrag/:antragId/bearbeiten"
+          element={<AusbildungAntragWizardRedirectV3 />}
+        />
+        <Route
+          path="/v3/weiterbildung/:employeeId/antrag/:antragId/bearbeiten/:step"
+          element={<AusbildungAntragWizardPageV3 />}
+        />
+        <Route
+          path="/v3/weiterbildung/:employeeId/antrag/:antragId"
+          element={<AusbildungAntragReviewPageV3 />}
         />
         <Route path="/theme-lab" element={<ThemeLabIndexPage />} />
         <Route path="/theme-lab/:category" element={<ThemeLabCategoryPage />} />

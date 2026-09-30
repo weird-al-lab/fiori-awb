@@ -7,6 +7,7 @@ import { AwbDialog } from '../../components/AwbDialog'
 import { FlexBox } from '@ui5/webcomponents-react/FlexBox'
 import { Icon } from '@ui5/webcomponents-react/Icon'
 import { Label } from '@ui5/webcomponents-react/Label'
+import { Link } from '@ui5/webcomponents-react/Link'
 import { MessageItem } from '@ui5/webcomponents-react/MessageItem'
 import { MessageStrip } from '@ui5/webcomponents-react/MessageStrip'
 import { MessageView } from '@ui5/webcomponents-react/MessageView'
@@ -33,16 +34,12 @@ import { Panel } from '@ui5/webcomponents-react/Panel'
 import { AppShellBar } from '../../components/AppShellBar'
 import { AusbildungSection } from '../../components/AusbildungSection'
 import { OwnCaseGuard } from '../../components/OwnCaseGuard'
-import {
-  buildProcessSteps,
-  getPreferredReviewSectionId,
-  MicroProcessFlow,
-} from '../../components/MicroProcessFlow'
+import { getPreferredReviewSectionId } from '../../components/MicroProcessFlow'
+import { AntragSubmittedOutlook } from './AntragSubmittedOutlook'
 import { useObjectPageHeaderExpanded } from '../../layout/useObjectPageHeaderExpanded'
 import { KommentarFeed } from '../../components/KommentarFeed'
 import { UnterstatusTag } from '../../components/UnterstatusTag'
 import { VereinbarungSection } from '../../components/VereinbarungSection'
-import { AntragReviewArbeitszeitSection } from './AntragFormPanels'
 import { usePrototypePersona } from '../../context/PrototypePersonaContext'
 import {
   acceptAngebotByMa,
@@ -55,11 +52,14 @@ import {
   firstInvalidAusbildungFieldId,
   focusAusbildungFormField,
   formatChf,
+  normalizeExternalUrl,
+  formatChfRate,
   getAntragAenderungen,
   getAntrag,
-  getAktivitaetFeedEintraege,
+  getArbeitszeitGrundlage,
   getAusbildungConsequenceConfirm,
   getBundBeteiligung,
+  getAktivitaetFeedEintraege,
   getPostKostenGrundlage,
   isAbschlussPhase,
   isAntragPruefungPhase,
@@ -85,20 +85,27 @@ import {
   type WeiterbildungAntrag,
 } from '../../data/antraege'
 import { getEmployee } from '../../data/employees'
-import type { WeiterbildungHauptstatus } from '../../data/weiterbildungen'
 import './AusbildungAntragReviewPage.css'
 
-const AUSBILDUNG_MESSAGE_BUTTON_ID = 'awb-v2-ausbildung-message-btn'
+const AUSBILDUNG_MESSAGE_BUTTON_ID = 'awb-ausbildung-message-btn'
+
+const V3_VEREINBARUNG_INIT = { beteiligungKeine: true } as const
 
 function DisplayField({
   label,
   value,
   changed,
+  href,
 }: {
   label: string
   value: string
   changed?: boolean
+  /** When set with a non-empty value, the value is shown as an external link. */
+  href?: string
 }) {
+  const displayValue = value || '—'
+  const showLink = Boolean(href && value.trim())
+
   return (
     <div
       className={`awb-review__field${changed ? ' awb-review__field--changed' : ''}`}
@@ -113,7 +120,20 @@ function DisplayField({
           <Text className="awb-review__field-changed-hint">Geändert</Text>
         ) : null}
       </FlexBox>
-      <Text>{value || '—'}</Text>
+      {showLink ? (
+        <Link
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          wrappingType="Normal"
+          endIcon="action"
+          accessibleName={`${value}, externer Link, öffnet in neuem Tab`}
+        >
+          {value}
+        </Link>
+      ) : (
+        <Text>{displayValue}</Text>
+      )}
     </div>
   )
 }
@@ -181,22 +201,6 @@ function Group({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
-function ReviewProcessFlow({
-  hauptstatus,
-  unterstatus,
-}: {
-  hauptstatus: WeiterbildungHauptstatus
-  unterstatus: WeiterbildungAntrag['unterstatus']
-}) {
-  const steps = buildProcessSteps(hauptstatus, unterstatus)
-
-  return (
-    <div className="awb-review__process-band">
-      <MicroProcessFlow steps={steps} aria-label="Weiterbildungsprozess" />
-    </div>
-  )
-}
-
 export function AusbildungAntragReviewPage() {
   const { employeeId = '', antragId = '' } = useParams()
   const navigate = useNavigate()
@@ -225,7 +229,8 @@ export function AusbildungAntragReviewPage() {
   const [showAusbildungBanner, setShowAusbildungBanner] = useState(true)
   const [showAngebotSentStrip, setShowAngebotSentStrip] = useState(true)
   const [showAngebotAcceptedStrip, setShowAngebotAcceptedStrip] = useState(true)
-  const [showAntragSubmittedStrip, setShowAntragSubmittedStrip] = useState(false)
+  const [showAntragSubmittedOutlook, setShowAntragSubmittedOutlook] =
+    useState(false)
   const [ausbildungConfirmAttempted, setAusbildungConfirmAttempted] =
     useState(false)
   const [ausbildungMessagePopoverOpen, setAusbildungMessagePopoverOpen] =
@@ -246,7 +251,7 @@ export function AusbildungAntragReviewPage() {
     setShowVgResubmitBanner(true)
     setShowAngebotSentStrip(true)
     setShowAngebotAcceptedStrip(true)
-    setShowAntragSubmittedStrip(false)
+    setShowAntragSubmittedOutlook(false)
     setAusbildungConfirmAttempted(false)
     setAusbildungMessagePopoverOpen(false)
     setAusbildungConsequenceConfirm(null)
@@ -254,16 +259,16 @@ export function AusbildungAntragReviewPage() {
 
   useEffect(() => {
     if (!employee) {
-      navigate('/v2/weiterbildung', { replace: true })
+      navigate('/v3/weiterbildung', { replace: true })
       return
     }
     const existing = getAntrag(antragId)
     if (!existing || existing.employeeId !== employee.id) {
-      navigate(`/v2/weiterbildung/${employee.id}`, { replace: true })
+      navigate(`/v3/weiterbildung/${employee.id}`, { replace: true })
       return
     }
     const loaded = isVereinbarungPhase(existing)
-      ? { ...existing, vereinbarung: ensureVereinbarung(existing) }
+      ? { ...existing, vereinbarung: ensureVereinbarung(existing, V3_VEREINBARUNG_INIT) }
       : isAusbildungPhase(existing)
         ? { ...existing, ausbildungUpdate: ensureAusbildungUpdate(existing) }
         : existing
@@ -272,18 +277,6 @@ export function AusbildungAntragReviewPage() {
       getPreferredReviewSectionId(loaded.hauptstatus, loaded.unterstatus),
     )
   }, [antragId, employee, navigate])
-
-  useEffect(() => {
-    if (!antrag || !employee || !isMa || !ownCase) {
-      return
-    }
-    if (isMaUeberarbeitungPhase(antrag)) {
-      navigate(
-        `/v2/weiterbildung/${employeeId}/antrag/${antragId}/bearbeiten`,
-        { replace: true },
-      )
-    }
-  }, [antrag, employee, employeeId, antragId, isMa, ownCase, navigate])
 
   useObjectPageHeaderExpanded(objectPageRef, antrag?.id)
 
@@ -326,7 +319,7 @@ export function AusbildungAntragReviewPage() {
       return
     }
     if (state.antragSubmitted) {
-      setShowAntragSubmittedStrip(true)
+      setShowAntragSubmittedOutlook(true)
     }
     if (state.toast) {
       setToastText(state.toast)
@@ -336,15 +329,17 @@ export function AusbildungAntragReviewPage() {
   }, [location.pathname, location.state, navigate])
 
   const goBack = () => {
-    navigate(`/v2/weiterbildung/${employeeId}`)
+    navigate(`/v3/weiterbildung/${employeeId}`)
   }
 
-  const openEdit = () => {
+  const openEdit = (step: number) => {
     if (antrag && isVg && isVgAntragPruefungEditable(antrag)) {
       const updated = beginVgAntragEdit(antrag)
       setAntrag(updated)
     }
-    navigate(`/v2/weiterbildung/${employeeId}/antrag/${antragId}/bearbeiten`)
+    navigate(
+      `/v3/weiterbildung/${employeeId}/antrag/${antragId}/bearbeiten/${step}`,
+    )
   }
 
   const handleReviewSave = () => {
@@ -352,20 +347,14 @@ export function AusbildungAntragReviewPage() {
       return
     }
     if (isAusbildungPhase(antrag)) {
-      const draft = ensureAusbildungUpdate(antrag)
-      const previousBis = antrag.bis || antrag.form.bis
-      const saved = saveAusbildungDraft(antrag, draft)
-      const endDateChanged =
-        draft.outcome === 'in_ausbildung' &&
-        Boolean(draft.neuesEnddatum?.trim()) &&
-        (draft.neuesEnddatum?.trim() ?? '') !== previousBis
+      const saved = saveAusbildungDraft(antrag, ensureAusbildungUpdate(antrag))
       setAntrag(saved)
-      setToastText(endDateChanged ? 'Enddatum gespeichert' : 'Änderungen gespeichert')
+      setToastText('Entwurf gespeichert')
       setToastOpen(true)
       return
     }
     const toSave = isVereinbarungPhase(antrag)
-      ? { ...antrag, vereinbarung: ensureVereinbarung(antrag) }
+      ? { ...antrag, vereinbarung: ensureVereinbarung(antrag, V3_VEREINBARUNG_INIT) }
       : antrag
     const saved = upsertAntrag(toSave)
     setAntrag(saved)
@@ -410,7 +399,11 @@ export function AusbildungAntragReviewPage() {
     if (!antrag) {
       return
     }
-    const approved = approveAntragAndCreateOffer(antrag, persona.name)
+    const approved = approveAntragAndCreateOffer(
+      antrag,
+      persona.name,
+      V3_VEREINBARUNG_INIT,
+    )
     setAntrag(approved)
     setProgrammaticSectionId('vereinbarung')
     setShowRoleBanner(true)
@@ -425,7 +418,7 @@ export function AusbildungAntragReviewPage() {
     const updated = sendAngebotToMa(
       {
         ...antrag,
-        vereinbarung: ensureVereinbarung(antrag),
+        vereinbarung: ensureVereinbarung(antrag, V3_VEREINBARUNG_INIT),
       },
       persona.name,
     )
@@ -441,7 +434,7 @@ export function AusbildungAntragReviewPage() {
     const updated = acceptAngebotByMa(
       {
         ...antrag,
-        vereinbarung: ensureVereinbarung(antrag),
+        vereinbarung: ensureVereinbarung(antrag, V3_VEREINBARUNG_INIT),
       },
       persona.name,
     )
@@ -471,7 +464,7 @@ export function AusbildungAntragReviewPage() {
     const updated = rejectAngebotByMa(
       {
         ...antrag,
-        vereinbarung: ensureVereinbarung(antrag),
+        vereinbarung: ensureVereinbarung(antrag, V3_VEREINBARUNG_INIT),
       },
       persona.name,
     )
@@ -479,7 +472,7 @@ export function AusbildungAntragReviewPage() {
       setAntrag(updated)
       setRejectAngebotOpen(false)
     })
-    navigate(`/v2/weiterbildung/${employeeId}`, {
+    navigate(`/v3/weiterbildung/${employeeId}`, {
       state: { toast: 'Angebot abgelehnt' },
     })
   }
@@ -579,8 +572,10 @@ export function AusbildungAntragReviewPage() {
   }
 
   const { form } = antrag
+  const ausbildungTitelHref = normalizeExternalUrl(form.ausbildungLink ?? '')
   const bundBetrag = getBundBeteiligung(form)
   const postGrundlage = getPostKostenGrundlage(form)
+  const arbeitszeit = getArbeitszeitGrundlage(form, employee.tagessatz)
   const feedEintraege = getAktivitaetFeedEintraege(antrag)
   const inVereinbarungPhase = isVereinbarungPhase(antrag)
   const inAusbildungPhase = isAusbildungPhase(antrag)
@@ -591,8 +586,9 @@ export function AusbildungAntragReviewPage() {
     isVg && ownCase && antrag.unterstatus === 'Wieder eingereicht'
   const aenderungen = getAntragAenderungen(antrag)
   const fieldChanged = (key: string) => aenderungen.has(key)
+  const showAenderungenBanner = aenderungen.size > 0
   const aenderungenDurchVg =
-    aenderungen.size > 0 && antrag.unterstatus === 'In Prüfung VG'
+    showAenderungenBanner && antrag.unterstatus === 'In Prüfung VG'
   const schrittLabel = antrag.unterstatus
   const maAngebotPruefung =
     isMa && ownCase && antrag.unterstatus === 'Angebot zur Prüfung'
@@ -600,16 +596,12 @@ export function AusbildungAntragReviewPage() {
     isVg && antrag.unterstatus === 'Angebot zur Prüfung'
   const maAngebotAngenommen =
     isMa && ownCase && antrag.unterstatus === 'Ausbildung gestartet'
-  const maAntragSubmittedStrip =
+  const maAntragSubmittedOutlook =
     isMa &&
     ownCase &&
-    showAntragSubmittedStrip &&
+    showAntragSubmittedOutlook &&
     (antrag.unterstatus === 'In Prüfung VG' ||
       antrag.unterstatus === 'Wieder eingereicht')
-  const ausbildungEndDateEdit =
-    ownCase &&
-    inAusbildungPhase &&
-    antrag.unterstatus === 'Ausbildung gestartet'
   const canEditAntrag = (isVg && inAntragPruefung) || maUeberarbeitung
   const showWorkflowFooter =
     (isVg && inAntragPruefung) ||
@@ -619,10 +611,10 @@ export function AusbildungAntragReviewPage() {
   const hrBeratungBlocksSend =
     isVg &&
     antrag.unterstatus === 'Angebot erstellen' &&
-    isHrBeratungRequiredForSend(ensureVereinbarung(antrag))
+    isHrBeratungRequiredForSend(ensureVereinbarung(antrag, V3_VEREINBARUNG_INIT))
   const maRueckzahlungspflicht = hasMaRueckzahlungspflicht(
     form,
-    ensureVereinbarung(antrag),
+    ensureVereinbarung(antrag, V3_VEREINBARUNG_INIT),
     employee.tagessatz,
   )
   const maCanAcceptAngebot = maAngebotEinverstanden && maAngebotHrKostenPflicht
@@ -676,14 +668,13 @@ export function AusbildungAntragReviewPage() {
                   Schliessen
                 </Button>
                 {canEditAntrag ? (
-                  <Button design="Default" onClick={openEdit}>
+                  <Button design="Default" onClick={() => openEdit(1)}>
                     Bearbeiten
                   </Button>
                 ) : null}
                 {ownCase &&
                 ((isVg && inVereinbarungPhase && antrag.unterstatus === 'Angebot erstellen') ||
-                  maAusbildungUpdate ||
-                  ausbildungEndDateEdit) ? (
+                  maAusbildungUpdate) ? (
                   <Button design="Default" onClick={handleReviewSave}>
                     Speichern
                   </Button>
@@ -695,11 +686,6 @@ export function AusbildungAntragReviewPage() {
         headerArea={
           <ObjectPageHeader>
             <div className="awb-review__header-body">
-              <ReviewProcessFlow
-                hauptstatus={antrag.hauptstatus}
-                unterstatus={antrag.unterstatus}
-              />
-
               <FlexBox wrap={FlexBoxWrap.Wrap} className="awb-review__facets">
                 <DisplayField label="Weiterbildung" value={antrag.ausbildung} />
                 <DisplayField label="Von" value={antrag.von} />
@@ -716,24 +702,18 @@ export function AusbildungAntragReviewPage() {
       >
         <ObjectPageSection id="antrag" titleText="Antrag">
           <SectionMain sectionId="antrag">
-            {maAntragSubmittedStrip ? (
-              <MessageStrip
-                design="Positive"
-                className="awb-review__content-banner"
-                onClose={() => setShowAntragSubmittedStrip(false)}
-              >
-                {antrag.unterstatus === 'Wieder eingereicht'
-                  ? `Dein überarbeiteter Antrag wurde eingereicht. ${employee.direkterVorgesetzter} prüft ihn als Nächstes.`
-                  : `Dein Antrag wurde eingereicht. ${employee.direkterVorgesetzter} prüft ihn als Nächstes.`}
-              </MessageStrip>
+            {maAntragSubmittedOutlook ? (
+              <AntragSubmittedOutlook
+                reviewerName={employee.direkterVorgesetzter}
+                isResubmit={antrag.unterstatus === 'Wieder eingereicht'}
+              />
             ) : null}
             {!inVereinbarungPhase &&
             !inAusbildungPhase &&
             !inAbschlussPhase &&
             isVg &&
             showRoleBanner &&
-            !vgResubmitReview &&
-            !isMaUeberarbeitungPhase(antrag) ? (
+            !vgResubmitReview ? (
               <MessageStrip
                 design="Information"
                 className="awb-review__content-banner"
@@ -777,10 +757,26 @@ export function AusbildungAntragReviewPage() {
                 sind markiert.
               </MessageStrip>
             ) : null}
-            <ReviewPanel title="Grunddaten">
+            <ReviewPanel
+              title="Grunddaten"
+              onEdit={canEditAntrag ? () => openEdit(1) : undefined}
+            >
               <div className="awb-review__two-col">
+                <Group title="Abschluss">
+                  <DisplayField
+                    label="Ausbildungstitel"
+                    value={form.titel}
+                    href={ausbildungTitelHref || undefined}
+                    changed={fieldChanged('titel') || fieldChanged('ausbildungLink')}
+                  />
+                  <DisplayField label="Typ" value={form.niveau} changed={fieldChanged('niveau')} />
+                  <DisplayField
+                    label="Fachrichtung"
+                    value={form.fachrichtung}
+                    changed={fieldChanged('fachrichtung')}
+                  />
+                </Group>
                 <Group title="Anbieter und Dauer">
-                  <DisplayField label="Titel" value={form.titel} changed={fieldChanged('titel')} />
                   <DisplayField
                     label="Anbieter/-in / Schule"
                     value={form.anbieter}
@@ -793,18 +789,13 @@ export function AusbildungAntragReviewPage() {
                     changed={fieldChanged('bis')}
                   />
                 </Group>
-                <Group title="Abschluss">
-                  <DisplayField label="Typ" value={form.niveau} changed={fieldChanged('niveau')} />
-                  <DisplayField
-                    label="Fachrichtung"
-                    value={form.fachrichtung}
-                    changed={fieldChanged('fachrichtung')}
-                  />
-                </Group>
               </div>
             </ReviewPanel>
 
-            <ReviewPanel title="Kosten">
+            <ReviewPanel
+              title="Kosten"
+              onEdit={canEditAntrag ? () => openEdit(2) : undefined}
+            >
               <div className="awb-review__two-col">
                 <Group title="Beteiligung Bund">
                   <DisplayField
@@ -813,9 +804,9 @@ export function AusbildungAntragReviewPage() {
                     changed={fieldChanged('bund50')}
                   />
                 </Group>
-                <Group title="Weiterbildungskosten">
+                <Group title="Kurs- und Lehrgangskosten">
                   <DisplayField
-                    label="Kurskosten"
+                    label="Kurskosten in CHF"
                     value={form.kurskosten || '—'}
                     changed={fieldChanged('kurskosten')}
                   />
@@ -829,7 +820,7 @@ export function AusbildungAntragReviewPage() {
                     changed={fieldChanged('bund50') || fieldChanged('kurskosten')}
                   />
                   <DisplayField
-                    label="Zusätzliche Kosten"
+                    label="Zusätzliche Kosten in CHF"
                     value={form.zusaetzlicheKosten || '—'}
                     changed={fieldChanged('zusaetzlicheKosten')}
                   />
@@ -847,11 +838,61 @@ export function AusbildungAntragReviewPage() {
               </div>
             </ReviewPanel>
 
-            <AntragReviewArbeitszeitSection
-              form={form}
-              employeeTagessatz={employee.tagessatz}
-              fieldChanged={fieldChanged}
-            />
+            <ReviewPanel
+              title="Arbeitszeit / Pensum"
+              onEdit={canEditAntrag ? () => openEdit(3) : undefined}
+            >
+              <div className="awb-review__two-col">
+                <Group title="Arbeitspensum">
+                  <DisplayField
+                    label="Beschäftigungsgrad anpassen"
+                    value={jaNeinLabel(form.beschaeftigungsgradAnpassen)}
+                    changed={fieldChanged('beschaeftigungsgradAnpassen')}
+                  />
+                  {form.beschaeftigungsgradAnpassen === 'ja' ? (
+                    <DisplayField
+                      label="Gewünschter Beschäftigungsgrad"
+                      value={form.gewuenschterBeschaeftigungsgrad}
+                      changed={fieldChanged('gewuenschterBeschaeftigungsgrad')}
+                    />
+                  ) : null}
+                </Group>
+                <Group title="Arbeitszeiterleichterung">
+                  <DisplayField
+                    label="Arbeitszeiterleichterung beantragen"
+                    value={jaNeinLabel(form.arbeitszeiterleichterung)}
+                    changed={fieldChanged('arbeitszeiterleichterung')}
+                  />
+                  {form.arbeitszeiterleichterung === 'ja' ? (
+                    <>
+                      <DisplayField
+                        label="Anzahl Tage"
+                        value={form.anzahlTageErleichterung}
+                        changed={fieldChanged('anzahlTageErleichterung')}
+                      />
+                      <DisplayField
+                        label="Begründung"
+                        value={form.begruendungErleichterung}
+                        changed={fieldChanged('begruendungErleichterung')}
+                      />
+                      <MessageStrip
+                        design="ColorSet2"
+                        colorScheme="9"
+                        hideCloseButton
+                        className="awb-review__info"
+                        icon={<Icon name="timesheet" slot="icon" />}
+                      >
+                        Die Grundlage für die Beteiligung Post an der Arbeitszeit ist{' '}
+                        {formatChf(arbeitszeit.betrag)}
+                        {arbeitszeit.tage > 0
+                          ? ` (${arbeitszeit.tage} Tage à ${formatChfRate(arbeitszeit.tagessatz)})`
+                          : ''}
+                      </MessageStrip>
+                    </>
+                  ) : null}
+                </Group>
+              </div>
+            </ReviewPanel>
           </SectionMain>
         </ObjectPageSection>
 
@@ -877,10 +918,11 @@ export function AusbildungAntragReviewPage() {
               inAusbildungPhase ||
               (inAbschlussPhase && antrag.vereinbarung)) ? (
               <VereinbarungSection
+                beteiligungKeineFirst
                 antrag={
                   antrag.vereinbarung
                     ? antrag
-                    : { ...antrag, vereinbarung: ensureVereinbarung(antrag) }
+                    : { ...antrag, vereinbarung: ensureVereinbarung(antrag, V3_VEREINBARUNG_INIT) }
                 }
                 employee={employee}
                 employeeName={employee.name}
@@ -948,10 +990,7 @@ export function AusbildungAntragReviewPage() {
                 <AusbildungSection
                   antrag={antrag}
                   readOnly={!maAusbildungUpdate}
-                  endDateEditable={ausbildungEndDateEdit}
-                  showUpdateBanner={
-                    showAusbildungBanner && maAusbildungUpdate && !maAngebotAngenommen
-                  }
+                  showUpdateBanner={showAusbildungBanner && !maAngebotAngenommen}
                   onCloseBanner={() => setShowAusbildungBanner(false)}
                   onChange={handleAusbildungChange}
                   fieldErrors={ausbildungFieldErrors}
@@ -976,9 +1015,9 @@ export function AusbildungAntragReviewPage() {
           </SectionMain>
         </ObjectPageSection>
 
-        <ObjectPageSection id="prozessverlauf" titleText="Prozessverlauf">
-          <SectionMain sectionId="prozessverlauf">
-            <ReviewPanel title="Prozessverlauf">
+        <ObjectPageSection id="aktivitaeten" titleText="Aktivitäten">
+          <SectionMain sectionId="aktivitaeten">
+            <ReviewPanel title="Verlauf">
               <KommentarFeed eintraege={feedEintraege} />
             </ReviewPanel>
           </SectionMain>
@@ -1015,7 +1054,7 @@ export function AusbildungAntragReviewPage() {
                     An MA zur Überarbeitung
                   </Button>
                   <Button design="Emphasized" onClick={handleApproveAntrag}>
-                    Genehmigen und Angebot erstellen
+                    OK, Angebot erstellen
                   </Button>
                 </>
               ) : isVg && antrag.unterstatus === 'Angebot erstellen' ? (

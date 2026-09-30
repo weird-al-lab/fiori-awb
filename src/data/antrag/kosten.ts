@@ -70,14 +70,21 @@ export function getArbeitszeitGrundlage(
   return { tage, tagessatz, betrag: tage * tagessatz }
 }
 
+export type VereinbarungInitOptions = {
+  /** v3 review: AK/AZE segmented controls start on «Keine». */
+  beteiligungKeine?: boolean
+}
+
 export function createDefaultVereinbarung(
   form: AntragFormData,
+  options?: VereinbarungInitOptions,
 ): VereinbarungData {
+  const keine = options?.beteiligungKeine === true
   return {
-    akModus: 'prozentual',
+    akModus: keine ? 'keine' : 'prozentual',
     akProzent: null,
     akPauschalBetrag: '',
-    azeModus: 'pauschal',
+    azeModus: keine ? 'keine' : 'pauschal',
     azeTage: '',
     sofortauszahlung: true,
     auszahlungsMonat: getDefaultAuszahlungsMonat(form),
@@ -89,8 +96,12 @@ export function createDefaultVereinbarung(
   }
 }
 
-export function ensureVereinbarung(antrag: WeiterbildungAntrag): VereinbarungData {
-  const base = antrag.vereinbarung ?? createDefaultVereinbarung(antrag.form)
+export function ensureVereinbarung(
+  antrag: WeiterbildungAntrag,
+  options?: VereinbarungInitOptions,
+): VereinbarungData {
+  const base =
+    antrag.vereinbarung ?? createDefaultVereinbarung(antrag.form, options)
   return {
     ...base,
     rueckzahlungVereinbaren: base.rueckzahlungVereinbaren ?? 'nein',

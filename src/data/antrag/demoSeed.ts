@@ -36,6 +36,7 @@ function buildUsabilityShowcaseForm(employeeId: string): AntragFormData {
   const employee = getEmployee(employeeId)
   return {
     titel: 'CAS UX Management',
+    ausbildungLink: '',
     anbieter: 'OST - Ostschweizer Fachhochschule',
     von: '13.11.2026',
     bis: '12.07.2027',

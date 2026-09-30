@@ -904,8 +904,9 @@ export function AusbildungAntragReviewPage() {
                 className="awb-review__content-banner"
                 onClose={() => setShowAngebotSentStrip(false)}
               >
-                Angebot wurde an {employee.name} zur Prüfung gesendet. Du kannst den Fall
-                schliessen — die Entscheidung der/des Mitarbeitenden folgt als Nächstes.
+                Angebot an {employee.name} zur Prüfung gesendet. Du kannst den Fall
+                schliessen und erhältst eine Benachrichtigung nach der Entscheidung. Bei
+                Zustimmung: Arbeitspensum anpassen, AZE-Guthaben erfassen falls vereinbart.
               </MessageStrip>
             ) : null}
             {vereinbarungTabEnabled &&
@@ -965,7 +966,7 @@ export function AusbildungAntragReviewPage() {
                 className="awb-review__content-banner"
                 onClose={() => setShowAngebotAcceptedStrip(false)}
               >
-                Angebot angenommen — deine Ausbildung ist gestartet. Bitte halte den
+                Angebot angenommen — deine Ausbildung ist geplant. Bitte halte den
                 Status hier aktuell, sobald sich etwas ändert.
               </MessageStrip>
             ) : null}

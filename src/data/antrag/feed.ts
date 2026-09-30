@@ -66,7 +66,7 @@ export function normalizeAntragFeed(antrag: WeiterbildungAntrag): WeiterbildungA
 export function getFeedEintraege(antrag: WeiterbildungAntrag): FeedEintrag[] {
   const normalized = normalizeAntragFeed(antrag)
   return [...(normalized.kommentareAktivitaeten ?? [])].sort(
-    (a, b) => new Date(a.erstelltAm).getTime() - new Date(b.erstelltAm).getTime(),
+    (a, b) => new Date(b.erstelltAm).getTime() - new Date(a.erstelltAm).getTime(),
   )
 }
 

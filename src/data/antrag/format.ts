@@ -1,6 +1,18 @@
 import { BESCHAEFTIGUNGSGRAD_PERCENTS } from './constants'
 import type { AntragFormData, JaNein } from './types'
 
+/** Prepends https:// when missing; returns empty string for blank input. */
+export function normalizeExternalUrl(value: string): string {
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return ''
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed
+  }
+  return `https://${trimmed}`
+}
+
 export function parseNumber(value: string): number {
   const normalized = value.replace(/'/g, '').replace(/\s/g, '').replace(',', '.')
   const n = Number(normalized)

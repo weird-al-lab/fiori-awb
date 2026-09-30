@@ -73,6 +73,7 @@ export function isVgDraftResubmit(antrag: WeiterbildungAntrag): boolean {
 
 const UEBERARBEITUNG_FORM_KEYS: (keyof AntragFormData)[] = [
   'titel',
+  'ausbildungLink',
   'anbieter',
   'von',
   'bis',

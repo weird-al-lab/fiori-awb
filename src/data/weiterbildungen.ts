@@ -205,3 +205,25 @@ export function isHauptstatusReached(
     HAUPTSTATUS_ORDER[phase]
   )
 }
+
+export const WEITERBILDUNG_TABLE_NO_DATA_EMPTY =
+  'Noch nichts geplant. Starte mit «Weiterbildung beantragen» oben.'
+
+export const WEITERBILDUNG_TABLE_NO_DATA_FILTERED =
+  'Keine Weiterbildungen gefunden. Passen Sie Filter oder Suche an.'
+
+/** Copy for ui5-table noDataText on the employee object page. */
+export function getWeiterbildungTableNoDataText(
+  totalWeiterbildungCount: number,
+  vertragFilter: VertragFilter,
+  search: string,
+): string {
+  if (totalWeiterbildungCount === 0) {
+    return WEITERBILDUNG_TABLE_NO_DATA_EMPTY
+  }
+  const filterNarrowed = vertragFilter !== 'all' || search.trim().length > 0
+  if (filterNarrowed) {
+    return WEITERBILDUNG_TABLE_NO_DATA_FILTERED
+  }
+  return WEITERBILDUNG_TABLE_NO_DATA_EMPTY
+}

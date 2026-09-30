@@ -1,0 +1,62 @@
+.mitarbeitende-page__sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mitarbeitende-page__nav-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.625rem;
+  width: 100%;
+  padding-block: 0;
+}
+
+.mitarbeitende-page__edit-tab-btn {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.mitarbeitende-page__tabs {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  --sapContent_Space_Medium: 2rem;
+}
+
+.mitarbeitende-page__tabs::part(tabstrip) {
+  gap: 2rem;
+}
+
+.mitarbeitende-page__home-tab {
+  color: var(--sapTab_Selected_TextColor);
+}
+
+.mitarbeitende-page__content-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.mitarbeitende-page__page-title {
+  color: var(--sapGroup_TitleTextColor);
+}
+
+.mitarbeitende-page__sections {
+  gap: 2rem;
+}
+
+.tile-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tile-section__title {
+  padding: 0.5rem 0 1rem;
+  color: var(--sapShell_GroupTitleTextColor);
+}
+
+.tile-section__grid {
+  gap: 1rem;
+}

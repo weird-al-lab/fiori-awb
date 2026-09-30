@@ -17,6 +17,7 @@ import {
   createDefaultVereinbarung,
   ensureVereinbarung,
   getVereinbarungKosten,
+  type VereinbarungInitOptions,
 } from './kosten'
 import {
   canConfirmAusbildungUpdate,
@@ -36,6 +37,7 @@ import type {
 export function createEmptyForm(): AntragFormData {
   return {
     titel: '',
+    ausbildungLink: '',
     anbieter: '',
     von: '',
     bis: '',
@@ -228,6 +230,7 @@ export function saveDraft(antrag: WeiterbildungAntrag): WeiterbildungAntrag {
 export function approveAntragAndCreateOffer(
   antrag: WeiterbildungAntrag,
   autorName: string = CURRENT_USER_NAME,
+  vereinbarungInit?: VereinbarungInitOptions,
 ): WeiterbildungAntrag {
   const normalized = normalizeAntragFeed(antrag)
   const now = new Date().toISOString()
@@ -254,7 +257,9 @@ export function approveAntragAndCreateOffer(
     hauptstatus: 'Vereinbarung',
     unterstatus: 'Angebot erstellen',
     aktuellBeiLabel: VG_AKTUELL_BEI_LABEL,
-    vereinbarung: antrag.vereinbarung ?? createDefaultVereinbarung(antrag.form),
+    vereinbarung:
+      antrag.vereinbarung ??
+      createDefaultVereinbarung(antrag.form, vereinbarungInit),
     formBaselineVorUeberarbeitung: undefined,
   })
 }

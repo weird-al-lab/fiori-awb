@@ -41,6 +41,7 @@ import {
 import { getEmployee } from '../../data/employees'
 import { getPersonaById } from '../../data/personas'
 import {
+  getWeiterbildungTableNoDataText,
   type VertragFilter,
   type WeiterbildungUnterstatus,
 } from '../../data/weiterbildungen'
@@ -112,6 +113,21 @@ export function WeiterbildungEmployeeObjectPage() {
       search,
     })
   }, [employee, vertragFilter, search, storageTick])
+
+  const totalWeiterbildungCount = useMemo(() => {
+    if (!employee) {
+      return 0
+    }
+    return getMergedWeiterbildungenByEmployee(employee.id, {
+      vertrag: 'all',
+      search: '',
+    }).length
+  }, [employee, storageTick])
+
+  const tableNoDataText = useMemo(
+    () => getWeiterbildungTableNoDataText(totalWeiterbildungCount, vertragFilter, search),
+    [totalWeiterbildungCount, vertragFilter, search],
+  )
 
   const goBack = () => {
     if (isMa) {
@@ -303,7 +319,7 @@ export function WeiterbildungEmployeeObjectPage() {
               <Table
                 accessibleName="Weiterbildungen"
                 className="wb-object-page__table"
-                noDataText="Keine Weiterbildungen gefunden"
+                noDataText={tableNoDataText}
                 rowActionCount={2}
                 overflowMode="Scroll"
                 onRowClick={(event) => {

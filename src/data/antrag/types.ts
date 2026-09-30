@@ -50,6 +50,8 @@ export type VereinbarungData = {
 export type AntragFormData = {
   // Step 1 – Grunddaten
   titel: string
+  /** Optional URL; when set, review shows Ausbildungstitel as external link (v3+). */
+  ausbildungLink: string
   anbieter: string
   von: string
   bis: string

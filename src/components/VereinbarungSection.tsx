@@ -16,6 +16,8 @@ import { SegmentedButtonItem } from '@ui5/webcomponents-react/SegmentedButtonIte
 import { Switch } from '@ui5/webcomponents-react/Switch'
 import { Text } from '@ui5/webcomponents-react/Text'
 import { TextArea } from '@ui5/webcomponents-react/TextArea'
+import { Title } from '@ui5/webcomponents-react/Title'
+import entscheidhilfeWbPdf from '../assets/Entscheidhilfe-WB.pdf'
 import { FlexBoxDirection } from '@ui5/webcomponents-react/enums/FlexBoxDirection'
 import { FlexBoxWrap } from '@ui5/webcomponents-react/enums/FlexBoxWrap'
 import {
@@ -64,6 +66,8 @@ type VereinbarungSectionProps = {
   /** MA reviewing offer — banner + summary, read-only panels */
   maReview?: boolean
   readOnly?: boolean
+  /** v3: «Keine» first in AK/AZE segmented buttons */
+  beteiligungKeineFirst?: boolean
 }
 
 function GroupTitle({ children }: { children: string }) {
@@ -81,6 +85,17 @@ const AK_MODUS_OPTIONS = [
 const AZE_MODUS_OPTIONS = [
   { value: 'pauschal', label: 'Pauschal' },
   { value: 'keine', label: 'Keine' },
+] as const satisfies ReadonlyArray<{ value: AzeModus; label: string }>
+
+const AK_MODUS_OPTIONS_KEINE_FIRST = [
+  { value: 'keine', label: 'Keine' },
+  { value: 'prozentual', label: 'Prozentual' },
+  { value: 'pauschal', label: 'Pauschal' },
+] as const satisfies ReadonlyArray<{ value: AkModus; label: string }>
+
+const AZE_MODUS_OPTIONS_KEINE_FIRST = [
+  { value: 'keine', label: 'Keine' },
+  { value: 'pauschal', label: 'Pauschal' },
 ] as const satisfies ReadonlyArray<{ value: AzeModus; label: string }>
 
 function BeteiligungModeControl<T extends string>({
@@ -129,6 +144,7 @@ function VereinbarungPanel({
   collapsed = false,
   initiallyCollapsed = false,
   fixed = false,
+  helpPdfUrl,
   children,
 }: {
   title: string
@@ -137,10 +153,28 @@ function VereinbarungPanel({
   /** Start collapsed but allow expand (VG optional settings) */
   initiallyCollapsed?: boolean
   fixed?: boolean
+  /** Opens Entscheidhilfe PDF in a new tab from the panel header */
+  helpPdfUrl?: string
   children: ReactNode
 }) {
   const [userCollapsed, setUserCollapsed] = useState(initiallyCollapsed)
   const isCollapsed = collapsed || userCollapsed
+
+  const customHeader = helpPdfUrl ? (
+    <div slot="header" className="awb-review__panel-header">
+      <Title level="H2" size="H5">
+        {title}
+      </Title>
+      <Button
+        design="Transparent"
+        icon="sys-help"
+        accessibleName="Hilfe, Entscheidhilfe als PDF, öffnet in neuem Tab"
+        onClick={() => window.open(helpPdfUrl, '_blank', 'noopener,noreferrer')}
+      >
+        Hilfe
+      </Button>
+    </div>
+  ) : undefined
 
   return (
     <Panel
@@ -149,7 +183,8 @@ function VereinbarungPanel({
       fixed={fixed}
       accessibleName={title}
       headerLevel="H3"
-      headerText={title}
+      headerText={helpPdfUrl ? undefined : title}
+      header={customHeader}
       onToggle={(event) => {
         if (collapsed || fixed) {
           return
@@ -180,8 +215,22 @@ type OfferFacts = {
   azeText: string
   postTotal: string
   auszahlungText: string
-  rueckzahlung: 'Ja' | 'Nein'
+  /** MA summary — outcome wording, not Ja/Nein */
+  rueckzahlungDescription: string
   hasRueckzahlung: boolean
+}
+
+function rueckzahlungOfferDescription(
+  kosten: VereinbarungKosten,
+  hasRueckzahlung: boolean,
+): string {
+  if (kosten.postTotal <= 0) {
+    return 'Entfällt — die Post beteiligt sich nicht an den Kosten'
+  }
+  if (hasRueckzahlung) {
+    return 'Vereinbart — Rückzahlungsvertrag gilt'
+  }
+  return 'Entfällt — du musst den Post-Beitrag nicht zurückzahlen'
 }
 
 function auszahlungSummary(
@@ -222,7 +271,7 @@ function getOfferFacts(
         : 'Keine',
     postTotal: formatChfDecimal(kosten.postTotal),
     auszahlungText: auszahlungSummary(vereinbarung, kosten),
-    rueckzahlung: hasRueckzahlung ? 'Ja' : 'Nein',
+    rueckzahlungDescription: rueckzahlungOfferDescription(kosten, hasRueckzahlung),
     hasRueckzahlung,
   }
 }
@@ -282,7 +331,7 @@ function AngebotSummary({
         </ListItemStandard>
         <ListItemStandard
           icon="customer-order-entry"
-          description={facts.rueckzahlung}
+          description={facts.rueckzahlungDescription}
           wrappingType="Normal"
           type="Inactive"
         >
@@ -306,8 +355,8 @@ function AngebotSummary({
             }
             text={
               facts.hasRueckzahlung
-                ? 'Ich habe den Vertrag gelesen und bin mit dem Inhalt einverstanden (inkl. Rückzahlungsverpflichtung).'
-                : 'Ich habe Antrag und Angebot gelesen und bin mit dem Inhalt einverstanden.'
+                ? 'Ich habe den Vertrag gelesen und bin einverstanden (inkl. Rückzahlungsverpflichtung).'
+                : 'Ich habe Antrag und Angebot gelesen und bin einverstanden.'
             }
           />
           <CheckBox
@@ -315,11 +364,7 @@ function AngebotSummary({
             onChange={(event) =>
               maOfferAcceptance.onHrKostenPflichtChange(event.target.checked)
             }
-            text={
-              facts.hasRueckzahlung
-                ? 'Ich bestätige, dass ich vom Anbieter zugelassen worden bin. Falls die tatsächlichen Kosten der Aus- oder Weiterbildung unerwartet wesentlich tiefer ausfallen, bin ich verpflichtet, HR-Services zu informieren.'
-                : 'Ich bestätige, dass ich vom Anbieter zugelassen worden bin. Falls die tatsächlichen Kosten der Aus- oder Weiterbildung unerwartet wesentlich tiefer ausfallen, bin ich verpflichtet, HR-Services zu informieren.'
-            }
+            text="Ich bin vom Anbieter zugelassen. Liegen die tatsächlichen Kosten deutlich unter dem Beantragten, informiere ich HR-Services."
           />
         </div>
       </div>
@@ -445,7 +490,14 @@ export function VereinbarungSection({
   maOfferAcceptance,
   maReview = false,
   readOnly = false,
+  beteiligungKeineFirst = false,
 }: VereinbarungSectionProps) {
+  const akModusOptions = beteiligungKeineFirst
+    ? AK_MODUS_OPTIONS_KEINE_FIRST
+    : AK_MODUS_OPTIONS
+  const azeModusOptions = beteiligungKeineFirst
+    ? AZE_MODUS_OPTIONS_KEINE_FIRST
+    : AZE_MODUS_OPTIONS
   const vereinbarung = antrag.vereinbarung!
   const kosten = getVereinbarungKosten(antrag.form, vereinbarung, employee.tagessatz)
   const akBasis = getPostKostenGrundlage(antrag.form)
@@ -558,6 +610,7 @@ export function VereinbarungSection({
       <VereinbarungPanel
         title="Beteiligungsangebot der Post"
         collapsed={panelsCollapsed}
+        helpPdfUrl={entscheidhilfeWbPdf}
       >
         <div className="awb-vereinbarung__beteiligung-grid">
           <div className="awb-vereinbarung__controls">
@@ -566,7 +619,7 @@ export function VereinbarungSection({
               title="Beteiligung an Aus- und Weiterbildungskosten (AK)"
               accessibleName="Beteiligung Weiterbildungskosten"
               value={vereinbarung.akModus}
-              options={AK_MODUS_OPTIONS}
+              options={akModusOptions}
               onSelect={(akModus) => patch({ akModus })}
             />
 
@@ -612,7 +665,7 @@ export function VereinbarungSection({
                   title="Beteiligung an Arbeitszeiterleichterung (AZE)"
                   accessibleName="Beteiligung Arbeitszeiterleichterung"
                   value={vereinbarung.azeModus}
-                  options={AZE_MODUS_OPTIONS}
+                  options={azeModusOptions}
                   onSelect={(azeModus) => patch({ azeModus })}
                 />
 
@@ -764,9 +817,8 @@ export function VereinbarungSection({
                 ) : vertragPflichtig ? (
                   <MessageStrip design="Information" hideCloseButton>
                     Für diese Aus-/Weiterbildung wird zwingend ein gegenseitiger Vertrag
-                    erstellt, da der Beitrag der Post an den Weiterbildungskosten von CHF{' '}
-                    {formatChfDecimal(kosten.postAk)}.- den festgelegten Schwellenwert
-                    übersteigt
+                    erstellt, da der Beitrag der Post an den Weiterbildungskosten den
+                    festgelegten Schwellenwert übersteigt
                   </MessageStrip>
                 ) : (
                   <>
