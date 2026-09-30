@@ -30,7 +30,7 @@ import type {
   WeiterbildungAntrag,
 } from './types'
 
-export const DEMO_ANTRAEGE_VERSION = '12'
+export const DEMO_ANTRAEGE_VERSION = '13'
 export const DEMO_ANTRAEGE_VERSION_KEY = 'awb-demo-antraege-version'
 
 export { DEMO_FABIAN_USABILITY_ANTRAG_ID, DEMO_SHOWCASE_EMPLOYEE_ID } from './constants'
@@ -40,7 +40,8 @@ function buildUsabilityShowcaseForm(employeeId: string): AntragFormData {
   const employee = getEmployee(employeeId)
   return {
     titel: 'CAS in Data Architecture & Data-driven Business',
-    ausbildungLink: '',
+    ausbildungLink:
+      'https://fh-hwz.ch/de/weiterbildung/cas/cas-data-architecture-data-driven-business-hwz',
     anbieter: 'HWZ Hochschule für Wirtschaft Zürich',
     von: '27.11.2026',
     bis: '25.06.2027',
